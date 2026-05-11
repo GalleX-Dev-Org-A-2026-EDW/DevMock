@@ -1,0 +1,110 @@
+package com.devmock.backend.service.impl;
+
+import com.devmock.backend.dto.CreateInterviewSessionRequest;
+import com.devmock.backend.dto.UpdateInterviewSessionRequest;
+import com.devmock.backend.dto.InterviewSessionResponse;
+import com.devmock.backend.entity.InterviewSession;
+import com.devmock.backend.exception.ResourceNotFoundException;
+import com.devmock.backend.repository.InterviewSessionRepository;
+import com.devmock.backend.service.InterviewSessionService;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@Transactional
+public class InterviewSessionServiceImpl implements InterviewSessionService {
+
+    private final InterviewSessionRepository repository;
+
+    public InterviewSessionServiceImpl(InterviewSessionRepository repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public InterviewSessionResponse create(CreateInterviewSessionRequest request) {
+        InterviewSession s = new InterviewSession();
+
+        s.setStatus(request.getStatus());
+        s.setStartedAt(request.getStartedAt());
+        s.setFinishedAt(request.getFinishedAt());
+        s.setTotalTimeUsedSeconds(request.getTotalTimeUsedSeconds());
+        s.setFinalScore(request.getFinalScore());
+        s.setCorrectnessScore(request.getCorrectnessScore());
+        s.setEfficiencyScore(request.getEfficiencyScore());
+        s.setLogicScore(request.getLogicScore());
+        s.setClarityScore(request.getClarityScore());
+
+        InterviewSession saved = repository.save(s);
+
+        return toResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InterviewSessionResponse> list() {
+        return repository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public InterviewSessionResponse getById(UUID id) {
+        InterviewSession s = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Session " + id + " not found"));
+
+        return toResponse(s);
+    }
+
+    @Override
+    public InterviewSessionResponse update(UUID id, UpdateInterviewSessionRequest request) {
+        InterviewSession s = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Session " + id + " not found"));
+
+        if (request.getStatus() != null) s.setStatus(request.getStatus());
+        if (request.getStartedAt() != null) s.setStartedAt(request.getStartedAt());
+        if (request.getFinishedAt() != null) s.setFinishedAt(request.getFinishedAt());
+        if (request.getTotalTimeUsedSeconds() != null) s.setTotalTimeUsedSeconds(request.getTotalTimeUsedSeconds());
+        if (request.getFinalScore() != null) s.setFinalScore(request.getFinalScore());
+        if (request.getCorrectnessScore() != null) s.setCorrectnessScore(request.getCorrectnessScore());
+        if (request.getEfficiencyScore() != null) s.setEfficiencyScore(request.getEfficiencyScore());
+        if (request.getLogicScore() != null) s.setLogicScore(request.getLogicScore());
+        if (request.getClarityScore() != null) s.setClarityScore(request.getClarityScore());
+
+        return toResponse(repository.save(s));
+    }
+
+    @Override
+    public void delete(UUID id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Session " + id + " not found");
+        }
+        repository.deleteById(id);
+    }
+
+    // Mapper
+    private InterviewSessionResponse toResponse(InterviewSession s) {
+        InterviewSessionResponse r = new InterviewSessionResponse();
+
+        r.setId(s.getId());
+        r.setStatus(s.getStatus());
+        r.setStartedAt(s.getStartedAt());
+        r.setFinishedAt(s.getFinishedAt());
+        r.setTotalTimeUsedSeconds(s.getTotalTimeUsedSeconds());
+        r.setFinalScore(s.getFinalScore());
+        r.setCorrectnessScore(s.getCorrectnessScore());
+        r.setEfficiencyScore(s.getEfficiencyScore());
+        r.setLogicScore(s.getLogicScore());
+        r.setClarityScore(s.getClarityScore());
+
+        r.setCreatedAt(s.getCreatedAt());
+        r.setUpdatedAt(s.getUpdatedAt());
+
+        return r;
+    }
+}
