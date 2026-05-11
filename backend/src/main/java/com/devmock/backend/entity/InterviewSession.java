@@ -2,7 +2,6 @@ package com.devmock.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -14,7 +13,7 @@ import com.devmock.backend.entity.en_enum.SessionStatus;
 public class InterviewSession {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Enumerated(EnumType.STRING)
