@@ -27,6 +27,12 @@ public class GlobalExceptionHandler {
                 new ApiError("EMAIL_ALREADY_EXISTS", ex.getMessage(), Instant.now(), req.getRequestURI()));
     }
 
+    @ExceptionHandler(SlugAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleSlugAlreadyExists(SlugAlreadyExistsException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ApiError("SLUG_ALREADY_EXISTS", ex.getMessage(), Instant.now(), req.getRequestURI()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationError> handleValidation(MethodArgumentNotValidException ex,
             HttpServletRequest req) {
