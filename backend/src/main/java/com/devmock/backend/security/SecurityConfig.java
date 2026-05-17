@@ -36,7 +36,8 @@ public class SecurityConfig {
                                 "/api/interview-sessions/**",
                                 "/api/session-questions/**",
                                 "/api/user-performances/**",
-                                "/api/rankings/**")
+                                "/api/rankings/**",
+                                "/api/achievements/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter,
