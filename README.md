@@ -522,7 +522,8 @@ Authorization: Bearer <token>
   "oldValues": null,
   "newValues": null,
   "ipAddress": "192.168.1.1",
-  "userAgent": "Postman"
+  "userAgent": "Postman",
+  "userId": "uuid-del-usuario"
 }
 ```
 
