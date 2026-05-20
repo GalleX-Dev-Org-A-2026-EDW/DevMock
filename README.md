@@ -225,6 +225,7 @@ Authorization: Bearer <token>
   "basePoints": 100,
   "evaluationConfig": "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
   "tags": ["linked-list", "algorithms", "python"],
+  "difficultyId": "uuid-del-difficulty-level",
   "categoryId": "uuid-de-la-categoria",
   "createdById": "uuid-del-usuario-creador"
 }

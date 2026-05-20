@@ -64,6 +64,9 @@ public class Question {
     @ManyToOne
     private Category category;
 
+    @ManyToOne
+    private DifficultyLevel difficulty;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -175,6 +178,14 @@ public class Question {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public DifficultyLevel getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(DifficultyLevel difficulty) {
+        this.difficulty = difficulty;
     }
 
     public Boolean getIsActive() {

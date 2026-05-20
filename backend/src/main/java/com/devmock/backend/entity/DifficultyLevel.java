@@ -2,6 +2,8 @@ package com.devmock.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -32,10 +34,8 @@ public class DifficultyLevel {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    // Relaciones se habilitarán cuando existan todas las entidades
-
-    // @OneToMany(mappedBy = "difficulty")
-    // private List<Question> questions;
+    @OneToMany(mappedBy = "difficulty")
+    private List<Question> questions = new ArrayList<>();
 
     @PrePersist
     void onCreate() {
@@ -88,5 +88,13 @@ public class DifficultyLevel {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 }
