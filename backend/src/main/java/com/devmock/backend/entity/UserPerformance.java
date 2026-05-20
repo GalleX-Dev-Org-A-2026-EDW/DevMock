@@ -38,11 +38,11 @@ public class UserPerformance {
     @ManyToOne
     private User user;
 
-    //@ManyToOne
-    //private Category category;
+    @ManyToOne
+    private Category category;
 
-    //@ManyToOne
-    //private DifficultyLevel difficulty;
+    @ManyToOne
+    private DifficultyLevel difficulty;
 
     @PrePersist
     void onCreate() {
@@ -70,6 +70,22 @@ public class UserPerformance {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public DifficultyLevel getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(DifficultyLevel difficulty) {
+        this.difficulty = difficulty;
     }
 
     public Integer getTotalQuestionsAnswered() {

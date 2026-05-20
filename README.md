@@ -462,7 +462,10 @@ Authorization: Bearer <token>
   "avgScore": 85.00,
   "strengths": "Algorithms, Data Structures",
   "weaknesses": "Dynamic Programming",
-  "lastPracticedAt": "2026-05-20T12:00:00Z"
+  "lastPracticedAt": "2026-05-20T12:00:00Z",
+  "userId": "uuid-del-usuario",
+  "categoryId": "uuid-de-la-categoria",
+  "difficultyId": "uuid-del-difficulty-level"
 }
 ```
 
