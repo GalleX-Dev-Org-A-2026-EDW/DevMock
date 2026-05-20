@@ -258,6 +258,7 @@ Authorization: Bearer <token>
 
 ```json
 {
+  "questionId": "uuid-de-la-pregunta",
   "optionText": "O(n)",
   "isCorrect": true,
   "explanation": "Linear time complexity",
@@ -329,6 +330,8 @@ Authorization: Bearer <token>
 
 ```json
 {
+  "questionId": "uuid-de-la-pregunta",
+  "criterionId": "uuid-del-criterio",
   "weight": 40.00
 }
 ```
@@ -352,6 +355,7 @@ Authorization: Bearer <token>
   "status": "IN_PROGRESS",
   "startedAt": "2026-05-20T10:00:00Z",
   "totalTimeUsedSeconds": 0,
+  "userId": "uuid-del-usuario",
   "interviewTypeId": "uuid-del-tipo-de-entrevista",
   "difficultyId": "uuid-del-difficulty-level",
   "categoryId": "uuid-de-la-categoria"
@@ -434,6 +438,8 @@ Authorization: Bearer <token>
 
 ```json
 {
+  "userId": "uuid-del-usuario",
+  "achievementId": "uuid-del-achievement",
   "unlockedAt": "2026-05-20T12:00:00Z",
   "isViewed": false
 }
