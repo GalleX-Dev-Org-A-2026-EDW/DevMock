@@ -12,18 +12,12 @@ public class CreateAuditLogRequest {
     private AuditAction action;
 
     private String entityName;
-
     private UUID entityId;
-
     private String oldValues;
-
     private String newValues;
-
     private String ipAddress;
-
     private String userAgent;
-
-    // Getters y Setters
+    private UUID userId;
 
     public AuditAction getAction() {
         return action;
@@ -79,5 +73,13 @@ public class CreateAuditLogRequest {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 }

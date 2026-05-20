@@ -1,10 +1,15 @@
 package com.devmock.backend.dto;
 
+import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 public class CreateAnswerOptionRequest {
+
+    @NotNull(message = "questionId is required")
+    private UUID questionId;
 
     @NotBlank(message = "optionText is required")
     private String optionText;
@@ -16,6 +21,14 @@ public class CreateAnswerOptionRequest {
 
     @PositiveOrZero(message = "displayOrder must be zero or positive")
     private Integer displayOrder;
+
+    public UUID getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(UUID questionId) {
+        this.questionId = questionId;
+    }
 
     public String getOptionText() {
         return optionText;

@@ -20,6 +20,9 @@ public class QuestionResponse {
     private String evaluationConfig;
     private List<String> tags;
     private Boolean isActive;
+    private UUID createdById;
+    private UUID categoryId;
+    private UUID difficultyId;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -109,6 +112,30 @@ public class QuestionResponse {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public UUID getCreatedById() {
+        return createdById;
+    }
+
+    public void setCreatedById(UUID createdById) {
+        this.createdById = createdById;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public UUID getDifficultyId() {
+        return difficultyId;
+    }
+
+    public void setDifficultyId(UUID difficultyId) {
+        this.difficultyId = difficultyId;
     }
 
     public Instant getCreatedAt() {

@@ -3,26 +3,22 @@ package com.devmock.backend.dto;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.devmock.backend.entity.en_enum.RankingPeriod;
 
 public class UpdateRankingRequest {
 
     private RankingPeriod period;
-
     private LocalDate periodStartDate;
-
     private LocalDate periodEndDate;
-
     private BigDecimal totalScore;
-
     private Integer totalSessions;
-
     private Integer rankPosition;
-
     private Instant calculatedAt;
-
-    // Getters y Setters
+    private UUID userId;
+    private UUID categoryId;
+    private UUID difficultyId;
 
     public RankingPeriod getPeriod() {
         return period;
@@ -78,5 +74,29 @@ public class UpdateRankingRequest {
 
     public void setCalculatedAt(Instant calculatedAt) {
         this.calculatedAt = calculatedAt;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public UUID getDifficultyId() {
+        return difficultyId;
+    }
+
+    public void setDifficultyId(UUID difficultyId) {
+        this.difficultyId = difficultyId;
     }
 }

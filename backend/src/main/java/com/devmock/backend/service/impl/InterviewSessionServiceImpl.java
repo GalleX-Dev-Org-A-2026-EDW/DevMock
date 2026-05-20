@@ -3,9 +3,17 @@ package com.devmock.backend.service.impl;
 import com.devmock.backend.dto.CreateInterviewSessionRequest;
 import com.devmock.backend.dto.UpdateInterviewSessionRequest;
 import com.devmock.backend.dto.InterviewSessionResponse;
+import com.devmock.backend.entity.Category;
+import com.devmock.backend.entity.DifficultyLevel;
 import com.devmock.backend.entity.InterviewSession;
+import com.devmock.backend.entity.InterviewType;
+import com.devmock.backend.entity.User;
 import com.devmock.backend.exception.ResourceNotFoundException;
+import com.devmock.backend.repository.CategoryRepository;
+import com.devmock.backend.repository.DifficultyLevelRepository;
 import com.devmock.backend.repository.InterviewSessionRepository;
+import com.devmock.backend.repository.InterviewTypeRepository;
+import com.devmock.backend.repository.UserRepository;
 import com.devmock.backend.service.InterviewSessionService;
 
 import org.springframework.stereotype.Service;
@@ -19,9 +27,21 @@ import java.util.UUID;
 public class InterviewSessionServiceImpl implements InterviewSessionService {
 
     private final InterviewSessionRepository repository;
+    private final UserRepository userRepository;
+    private final InterviewTypeRepository interviewTypeRepository;
+    private final DifficultyLevelRepository difficultyLevelRepository;
+    private final CategoryRepository categoryRepository;
 
-    public InterviewSessionServiceImpl(InterviewSessionRepository repository) {
+    public InterviewSessionServiceImpl(InterviewSessionRepository repository,
+            UserRepository userRepository,
+            InterviewTypeRepository interviewTypeRepository,
+            DifficultyLevelRepository difficultyLevelRepository,
+            CategoryRepository categoryRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
+        this.interviewTypeRepository = interviewTypeRepository;
+        this.difficultyLevelRepository = difficultyLevelRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -38,8 +58,32 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
         s.setLogicScore(request.getLogicScore());
         s.setClarityScore(request.getClarityScore());
 
-        InterviewSession saved = repository.save(s);
+        if (request.getUserId() != null) {
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "User " + request.getUserId() + " not found"));
+            s.setUser(user);
+        }
+        if (request.getInterviewTypeId() != null) {
+            InterviewType type = interviewTypeRepository.findById(request.getInterviewTypeId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "InterviewType " + request.getInterviewTypeId() + " not found"));
+            s.setInterviewType(type);
+        }
+        if (request.getDifficultyId() != null) {
+            DifficultyLevel level = difficultyLevelRepository.findById(request.getDifficultyId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "DifficultyLevel " + request.getDifficultyId() + " not found"));
+            s.setDifficulty(level);
+        }
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category " + request.getCategoryId() + " not found"));
+            s.setCategory(category);
+        }
 
+        InterviewSession saved = repository.save(s);
         return toResponse(saved);
     }
 
@@ -57,7 +101,6 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
     public InterviewSessionResponse getById(UUID id) {
         InterviewSession s = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Session " + id + " not found"));
-
         return toResponse(s);
     }
 
@@ -76,6 +119,31 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
         if (request.getLogicScore() != null) s.setLogicScore(request.getLogicScore());
         if (request.getClarityScore() != null) s.setClarityScore(request.getClarityScore());
 
+        if (request.getUserId() != null) {
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "User " + request.getUserId() + " not found"));
+            s.setUser(user);
+        }
+        if (request.getInterviewTypeId() != null) {
+            InterviewType type = interviewTypeRepository.findById(request.getInterviewTypeId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "InterviewType " + request.getInterviewTypeId() + " not found"));
+            s.setInterviewType(type);
+        }
+        if (request.getDifficultyId() != null) {
+            DifficultyLevel level = difficultyLevelRepository.findById(request.getDifficultyId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "DifficultyLevel " + request.getDifficultyId() + " not found"));
+            s.setDifficulty(level);
+        }
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category " + request.getCategoryId() + " not found"));
+            s.setCategory(category);
+        }
+
         return toResponse(repository.save(s));
     }
 
@@ -87,7 +155,6 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
         repository.deleteById(id);
     }
 
-    // Mapper
     private InterviewSessionResponse toResponse(InterviewSession s) {
         InterviewSessionResponse r = new InterviewSessionResponse();
 
@@ -101,6 +168,11 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
         r.setEfficiencyScore(s.getEfficiencyScore());
         r.setLogicScore(s.getLogicScore());
         r.setClarityScore(s.getClarityScore());
+
+        if (s.getUser() != null) r.setUserId(s.getUser().getId());
+        if (s.getInterviewType() != null) r.setInterviewTypeId(s.getInterviewType().getId());
+        if (s.getDifficulty() != null) r.setDifficultyId(s.getDifficulty().getId());
+        if (s.getCategory() != null) r.setCategoryId(s.getCategory().getId());
 
         r.setCreatedAt(s.getCreatedAt());
         r.setUpdatedAt(s.getUpdatedAt());

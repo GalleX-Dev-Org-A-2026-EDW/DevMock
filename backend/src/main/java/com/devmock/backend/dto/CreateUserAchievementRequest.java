@@ -1,10 +1,17 @@
 package com.devmock.backend.dto;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.validation.constraints.NotNull;
 
 public class CreateUserAchievementRequest {
+
+    @NotNull(message = "userId is required")
+    private UUID userId;
+
+    @NotNull(message = "achievementId is required")
+    private UUID achievementId;
 
     @NotNull(message = "unlockedAt is required")
     private Instant unlockedAt;
@@ -12,7 +19,21 @@ public class CreateUserAchievementRequest {
     @NotNull(message = "isViewed is required")
     private Boolean isViewed;
 
-    // Getters y Setters
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getAchievementId() {
+        return achievementId;
+    }
+
+    public void setAchievementId(UUID achievementId) {
+        this.achievementId = achievementId;
+    }
 
     public Instant getUnlockedAt() {
         return unlockedAt;

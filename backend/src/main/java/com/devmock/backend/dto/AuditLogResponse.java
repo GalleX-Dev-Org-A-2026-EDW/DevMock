@@ -8,24 +8,15 @@ import com.devmock.backend.entity.en_enum.AuditAction;
 public class AuditLogResponse {
 
     private UUID id;
-
     private AuditAction action;
-
     private String entityName;
-
     private UUID entityId;
-
     private String oldValues;
-
     private String newValues;
-
     private String ipAddress;
-
     private String userAgent;
-
+    private UUID userId;
     private Instant createdAt;
-
-    // Getters y Setters
 
     public UUID getId() {
         return id;
@@ -89,6 +80,14 @@ public class AuditLogResponse {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 
     public Instant getCreatedAt() {

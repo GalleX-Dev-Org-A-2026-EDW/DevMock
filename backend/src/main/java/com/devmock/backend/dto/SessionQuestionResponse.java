@@ -7,28 +7,22 @@ import java.util.UUID;
 public class SessionQuestionResponse {
 
     private UUID id;
-
     private Integer questionOrder;
-
     private Integer assignedTimeSeconds;
     private Integer timeUsedSeconds;
-
     private String userAnswer;
-
     private BigDecimal obtainedPoints;
     private BigDecimal correctnessScore;
     private BigDecimal efficiencyScore;
     private BigDecimal logicScore;
     private BigDecimal clarityScore;
-
     private String evaluationFeedback;
-
     private Instant answeredAt;
-
+    private UUID sessionId;
+    private UUID questionId;
+    private UUID selectedOptionId;
     private Instant createdAt;
     private Instant updatedAt;
-
-    // Getters y Setters
 
     public UUID getId() {
         return id;
@@ -124,6 +118,30 @@ public class SessionQuestionResponse {
 
     public void setAnsweredAt(Instant answeredAt) {
         this.answeredAt = answeredAt;
+    }
+
+    public UUID getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public UUID getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(UUID questionId) {
+        this.questionId = questionId;
+    }
+
+    public UUID getSelectedOptionId() {
+        return selectedOptionId;
+    }
+
+    public void setSelectedOptionId(UUID selectedOptionId) {
+        this.selectedOptionId = selectedOptionId;
     }
 
     public Instant getCreatedAt() {
