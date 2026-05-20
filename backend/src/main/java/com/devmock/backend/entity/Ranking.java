@@ -38,11 +38,11 @@ public class Ranking {
     @ManyToOne
     private User user;
 
-    //@ManyToOne(optional = true)
-    //private Category category;
+    @ManyToOne(optional = true)
+    private Category category;
 
-    //@ManyToOne(optional = true)
-    //private DifficultyLevel difficulty;
+    @ManyToOne(optional = true)
+    private DifficultyLevel difficulty;
 
     // Getters y Setters
 
@@ -60,6 +60,22 @@ public class Ranking {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public DifficultyLevel getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(DifficultyLevel difficulty) {
+        this.difficulty = difficulty;
     }
 
     public RankingPeriod getPeriod() {

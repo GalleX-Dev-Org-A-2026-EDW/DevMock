@@ -491,7 +491,10 @@ Authorization: Bearer <token>
   "totalScore": 1500.00,
   "totalSessions": 5,
   "rankPosition": 1,
-  "calculatedAt": "2026-05-24T23:59:59Z"
+  "calculatedAt": "2026-05-24T23:59:59Z",
+  "userId": "uuid-del-usuario",
+  "categoryId": "uuid-de-la-categoria",
+  "difficultyId": "uuid-del-difficulty-level"
 }
 ```
 
