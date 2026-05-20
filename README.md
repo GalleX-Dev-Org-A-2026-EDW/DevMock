@@ -38,7 +38,8 @@ Authorization: Bearer <token>
   "fullName": "Test User",
   "role": "STUDENT",
   "avatarUrl": "https://example.com/avatar.jpg",
-  "professionalExperienceYears": 2
+  "professionalExperienceYears": 2,
+  "currentLevelId": "uuid-del-difficulty-level"
 }
 ```
 
@@ -74,7 +75,8 @@ Authorization: Bearer <token>
   "password": "password123",
   "fullName": "Dev User",
   "role": "PROFESSIONAL",
-  "professionalExperienceYears": 5
+  "professionalExperienceYears": 5,
+  "currentLevelId": "uuid-del-difficulty-level"
 }
 ```
 

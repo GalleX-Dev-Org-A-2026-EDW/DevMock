@@ -39,8 +39,8 @@ public class InterviewSession {
 
     // Relaciones despues que tengamos todo
 
-    // @ManyToOne
-    // private User user;
+    @ManyToOne
+    private User user;
 
     // @ManyToOne
     // private InterviewType interviewType;
@@ -76,6 +76,14 @@ public class InterviewSession {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public SessionStatus getStatus() {

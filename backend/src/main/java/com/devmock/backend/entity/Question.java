@@ -14,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -56,6 +57,9 @@ public class Question {
 
     @Column(nullable = false)
     private Boolean isActive;
+
+    @ManyToOne
+    private User createdBy;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -152,6 +156,14 @@ public class Question {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
     public Boolean getIsActive() {

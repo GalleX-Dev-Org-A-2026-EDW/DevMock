@@ -35,8 +35,8 @@ public class UserPerformance {
 
     // Relaciones después
 
-    //@ManyToOne
-    //private User user;
+    @ManyToOne
+    private User user;
 
     //@ManyToOne
     //private Category category;
@@ -62,6 +62,14 @@ public class UserPerformance {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Integer getTotalQuestionsAnswered() {

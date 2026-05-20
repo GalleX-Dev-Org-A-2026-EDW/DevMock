@@ -1,6 +1,7 @@
 package com.devmock.backend.dto;
 
 import com.devmock.backend.entity.en_enum.UserRole;
+import java.util.UUID;
 
 public class UpdateUserRequest {
     private String fullName;
@@ -10,6 +11,8 @@ public class UpdateUserRequest {
     private Boolean isActive;
     private Boolean isVerified;
     private String password;
+
+    private UUID currentLevelId;
 
     public String getFullName() {
         return fullName;
@@ -65,5 +68,13 @@ public class UpdateUserRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public UUID getCurrentLevelId() {
+        return currentLevelId;
+    }
+
+    public void setCurrentLevelId(UUID currentLevelId) {
+        this.currentLevelId = currentLevelId;
     }
 }

@@ -5,6 +5,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class UserResponse {
+    private UUID currentLevelId;
+    private String currentLevelName;
     private UUID id;
     private String email;
     private String fullName;
@@ -112,5 +114,21 @@ public class UserResponse {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public UUID getCurrentLevelId() {
+        return currentLevelId;
+    }
+
+    public void setCurrentLevelId(UUID currentLevelId) {
+        this.currentLevelId = currentLevelId;
+    }
+
+    public String getCurrentLevelName() {
+        return currentLevelName;
+    }
+
+    public void setCurrentLevelName(String currentLevelName) {
+        this.currentLevelName = currentLevelName;
     }
 }
