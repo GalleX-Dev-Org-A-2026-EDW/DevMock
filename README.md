@@ -384,7 +384,9 @@ Authorization: Bearer <token>
   "logicScore": 85.00,
   "clarityScore": 85.00,
   "evaluationFeedback": "Good solution, but could be optimized.",
-  "answeredAt": "2026-05-20T10:07:30Z"
+  "answeredAt": "2026-05-20T10:07:30Z",
+  "questionId": "uuid-de-la-pregunta",
+  "selectedOptionId": "uuid-de-la-opcion-seleccionada"
 }
 ```
 

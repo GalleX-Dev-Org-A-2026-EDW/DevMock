@@ -41,8 +41,11 @@ public class SessionQuestion {
     @ManyToOne
     private InterviewSession session;
 
-    //@ManyToOne
-    //private Question question;
+    @ManyToOne
+    private Question question;
+
+    @ManyToOne
+    private AnswerOption selectedOption;
 
     @PrePersist
     void onCreate() {
@@ -72,6 +75,22 @@ public class SessionQuestion {
 
     public void setSession(InterviewSession session) {
         this.session = session;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public AnswerOption getSelectedOption() {
+        return selectedOption;
+    }
+
+    public void setSelectedOption(AnswerOption selectedOption) {
+        this.selectedOption = selectedOption;
     }
 
     public Integer getQuestionOrder() {
