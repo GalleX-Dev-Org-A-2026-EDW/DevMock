@@ -38,10 +38,8 @@ public class SessionQuestion {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    // Relaciones después
-
-    //@ManyToOne
-    //private InterviewSession session;
+    @ManyToOne
+    private InterviewSession session;
 
     //@ManyToOne
     //private Question question;
@@ -66,6 +64,14 @@ public class SessionQuestion {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public InterviewSession getSession() {
+        return session;
+    }
+
+    public void setSession(InterviewSession session) {
+        this.session = session;
     }
 
     public Integer getQuestionOrder() {

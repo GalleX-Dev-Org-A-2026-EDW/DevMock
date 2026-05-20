@@ -352,7 +352,9 @@ Authorization: Bearer <token>
   "status": "IN_PROGRESS",
   "startedAt": "2026-05-20T10:00:00Z",
   "totalTimeUsedSeconds": 0,
-  "interviewTypeId": "uuid-del-tipo-de-entrevista"
+  "interviewTypeId": "uuid-del-tipo-de-entrevista",
+  "difficultyId": "uuid-del-difficulty-level",
+  "categoryId": "uuid-de-la-categoria"
 }
 ```
 

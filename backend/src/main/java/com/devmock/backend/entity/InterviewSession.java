@@ -2,6 +2,8 @@ package com.devmock.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -45,14 +47,14 @@ public class InterviewSession {
     @ManyToOne
     private InterviewType interviewType;
 
-    // @ManyToOne
-    // private DifficultyLevel difficulty;
+    @ManyToOne
+    private DifficultyLevel difficulty;
 
-    // @ManyToOne(optional = true)
-    // private Category category;
+    @ManyToOne
+    private Category category;
 
-    // @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    // private List<SessionQuestion> sessionQuestions;
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
+    private List<SessionQuestion> sessionQuestions = new ArrayList<>();
 
     // Métodos automáticos guiaa
 
@@ -165,6 +167,30 @@ public class InterviewSession {
     public void setClarityScore(BigDecimal clarityScore) {
         this.clarityScore = clarityScore;
     }
+    public DifficultyLevel getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(DifficultyLevel difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public List<SessionQuestion> getSessionQuestions() {
+        return sessionQuestions;
+    }
+
+    public void setSessionQuestions(List<SessionQuestion> sessionQuestions) {
+        this.sessionQuestions = sessionQuestions;
+    }
+
 // se relacionan en servicio
     public Instant getCreatedAt() {
         return createdAt;
