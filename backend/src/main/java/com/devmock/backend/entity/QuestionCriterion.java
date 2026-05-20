@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,11 +23,9 @@ public class QuestionCriterion {
     @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal weight;
 
-    // Relaciones despues
-
-    // @ManyToOne
-    // @JoinColumn(name = "question_id")
-    // private Question question;
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private Question question;
 
     // @ManyToOne
     // @JoinColumn(name = "criterion_id")
@@ -41,5 +41,13 @@ public class QuestionCriterion {
 
     public void setWeight(BigDecimal weight) {
         this.weight = weight;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 }

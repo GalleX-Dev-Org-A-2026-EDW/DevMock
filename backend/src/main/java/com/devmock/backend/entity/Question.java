@@ -1,7 +1,10 @@
 package com.devmock.backend.entity;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.devmock.backend.entity.en_enum.AnswerFormat;
@@ -13,8 +16,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -66,6 +71,12 @@ public class Question {
 
     @ManyToOne
     private DifficultyLevel difficulty;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<AnswerOption> answerOptions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "question")
+    private Set<QuestionCriterion> criteria = new HashSet<>();
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -186,6 +197,22 @@ public class Question {
 
     public void setDifficulty(DifficultyLevel difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public List<AnswerOption> getAnswerOptions() {
+        return answerOptions;
+    }
+
+    public void setAnswerOptions(List<AnswerOption> answerOptions) {
+        this.answerOptions = answerOptions;
+    }
+
+    public Set<QuestionCriterion> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(Set<QuestionCriterion> criteria) {
+        this.criteria = criteria;
     }
 
     public Boolean getIsActive() {
