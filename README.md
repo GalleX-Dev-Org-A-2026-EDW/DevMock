@@ -113,7 +113,8 @@ Authorization: Bearer <token>
   "slug": "algorithms",
   "description": "Algorithm and data structure questions",
   "icon": "code-icon",
-  "displayOrder": 1
+  "displayOrder": 1,
+  "parentId": "uuid-de-la-categoria-padre"
 }
 ```
 
@@ -223,7 +224,9 @@ Authorization: Bearer <token>
   "estimatedTimeSeconds": 600,
   "basePoints": 100,
   "evaluationConfig": "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-  "tags": ["linked-list", "algorithms", "python"]
+  "tags": ["linked-list", "algorithms", "python"],
+  "categoryId": "uuid-de-la-categoria",
+  "createdById": "uuid-del-usuario-creador"
 }
 ```
 

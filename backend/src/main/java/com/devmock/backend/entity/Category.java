@@ -1,6 +1,8 @@
 package com.devmock.backend.entity;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -36,17 +38,15 @@ public class Category {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    // Relaciones se habilitarán cuando existan todas las entidades
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Category parent;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "parent_id")
-    // private Category parent;
+    @OneToMany(mappedBy = "parent")
+    private List<Category> children = new ArrayList<>();
 
-    // @OneToMany(mappedBy = "parent")
-    // private List<Category> children;
-
-    // @OneToMany(mappedBy = "category")
-    // private List<Question> questions;
+    @OneToMany(mappedBy = "category")
+    private List<Question> questions = new ArrayList<>();
 
     @PrePersist
     void onCreate() {
@@ -120,5 +120,29 @@ public class Category {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Category getParent() {
+        return parent;
+    }
+
+    public void setParent(Category parent) {
+        this.parent = parent;
+    }
+
+    public List<Category> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Category> children) {
+        this.children = children;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 }

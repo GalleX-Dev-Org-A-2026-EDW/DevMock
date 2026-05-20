@@ -61,6 +61,9 @@ public class Question {
     @ManyToOne
     private User createdBy;
 
+    @ManyToOne
+    private Category category;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -164,6 +167,14 @@ public class Question {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Boolean getIsActive() {
