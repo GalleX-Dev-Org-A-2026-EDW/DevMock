@@ -27,9 +27,9 @@ public class QuestionCriterion {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    // @ManyToOne
-    // @JoinColumn(name = "criterion_id")
-    // private EvaluationCriterion criterion;
+    @ManyToOne
+    @JoinColumn(name = "criterion_id")
+    private EvaluationCriterion criterion;
 
     public UUID getId() {
         return id;
@@ -49,5 +49,13 @@ public class QuestionCriterion {
 
     public void setQuestion(Question question) {
         this.question = question;
+    }
+
+    public EvaluationCriterion getCriterion() {
+        return criterion;
+    }
+
+    public void setCriterion(EvaluationCriterion criterion) {
+        this.criterion = criterion;
     }
 }
