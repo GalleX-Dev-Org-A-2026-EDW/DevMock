@@ -1,6 +1,8 @@
 package com.devmock.backend.entity;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -32,10 +34,8 @@ public class Achievement {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    // Relaciones después
-
-    //@OneToMany(mappedBy = "achievement")
-    //private List<UserAchievement> userAchievements;
+    @OneToMany(mappedBy = "achievement")
+    private List<UserAchievement> userAchievements = new ArrayList<>();
 
     @PrePersist
     void onCreate() {
@@ -114,5 +114,13 @@ public class Achievement {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<UserAchievement> getUserAchievements() {
+        return userAchievements;
+    }
+
+    public void setUserAchievements(List<UserAchievement> userAchievements) {
+        this.userAchievements = userAchievements;
     }
 }
