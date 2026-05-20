@@ -1,0 +1,18 @@
+* [33m77c020d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/userPerformance[m[33m, [m[1;31morigin/feature/userPerformance[m[33m)[m feat:create userPerformance completo
+* [33m221dcc7[m[33m ([m[1;32mdevelop[m[33m)[m feat:create userPerformance
+*   [33me4d8689[m[33m ([m[1;31mupstream/main[m[33m, [m[1;31mupstream/develop[m[33m, [m[1;31mupstream/HEAD[m[33m)[m Merge branch 'develop'
+[32m|[m[33m\[m  
+[32m|[m *   [33mef4d7e1[m Merge branch 'feature/entities' into develop
+[32m|[m [34m|[m[35m\[m  
+[32m|[m [34m|[m * [33m440ef36[m feat: Entity DifficultyLevel
+[32m|[m [34m|[m * [33me4a58be[m feat: Entity Category
+* [34m|[m [35m|[m [33mf5f652a[m Merge pull request #6 from GalleX-Dev-Org-A-2026-EDW/develop
+[36m|[m[34m\[m[34m|[m [35m|[m 
+[36m|[m * [35m|[m   [33me93d738[m Merge pull request #4 from DanielTrujillo5/feature/sessionQuestion
+[36m|[m [1;32m|[m[1;33m\[m [35m\[m  
+[36m|[m * [1;33m\[m [35m\[m   [33m8a6e88f[m Merge pull request #2 from GalleX-Dev-Org-A-2026-EDW/feature/entities
+[36m|[m [1;34m|[m[35m\[m [1;33m\[m [35m\[m  
+[36m|[m [1;34m|[m [35m|[m [1;33m|[m[35m/[m  
+[36m|[m [1;34m|[m [35m|[m[35m/[m[1;33m|[m   
+[36m|[m [1;34m|[m * [1;33m|[m [33m19affc3[m feat: Entity Users Jwt and security
+[36m|[m [1;34m|[m[1;34m/[m [1;33m/[m  
