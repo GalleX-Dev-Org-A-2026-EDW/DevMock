@@ -1,6 +1,8 @@
 package com.devmock.backend.entity;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.devmock.backend.entity.en_enum.QuestionType;
@@ -12,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -45,14 +48,19 @@ public class InterviewType {
     @Column(nullable = false)
     private Boolean isActive;
 
+    @OneToMany(mappedBy = "interviewType")
+    private List<InterviewSession> sessions = new ArrayList<>();
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
-        if (isActive == null) isActive = true;
-        if (createdAt == null) createdAt = now;
+        if (isActive == null)
+            isActive = true;
+        if (createdAt == null)
+            createdAt = now;
     }
 
     public UUID getId() {
@@ -117,5 +125,13 @@ public class InterviewType {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public List<InterviewSession> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<InterviewSession> sessions) {
+        this.sessions = sessions;
     }
 }

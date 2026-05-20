@@ -42,8 +42,8 @@ public class InterviewSession {
     @ManyToOne
     private User user;
 
-    // @ManyToOne
-    // private InterviewType interviewType;
+    @ManyToOne
+    private InterviewType interviewType;
 
     // @ManyToOne
     // private DifficultyLevel difficulty;
@@ -92,6 +92,14 @@ public class InterviewSession {
 
     public void setStatus(SessionStatus status) {
         this.status = status;
+    }
+
+    public InterviewType getInterviewType() {
+        return interviewType;
+    }
+
+    public void setInterviewType(InterviewType interviewType) {
+        this.interviewType = interviewType;
     }
 
     public Instant getStartedAt() {
