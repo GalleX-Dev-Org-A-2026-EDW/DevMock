@@ -6,14 +6,11 @@ import java.util.UUID;
 public class UserAchievementResponse {
 
     private UUID id;
-
+    private UUID userId;
+    private UUID achievementId;
     private Instant unlockedAt;
-
     private Boolean isViewed;
-
     private Instant createdAt;
-
-    // Getters y Setters
 
     public UUID getId() {
         return id;
@@ -21,6 +18,22 @@ public class UserAchievementResponse {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getAchievementId() {
+        return achievementId;
+    }
+
+    public void setAchievementId(UUID achievementId) {
+        this.achievementId = achievementId;
     }
 
     public Instant getUnlockedAt() {

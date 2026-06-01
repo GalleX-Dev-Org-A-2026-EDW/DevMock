@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class CategoryResponse {
+    private UUID parentId;
 
     private UUID id;
     private String name;
@@ -85,5 +86,13 @@ public class CategoryResponse {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
     }
 }

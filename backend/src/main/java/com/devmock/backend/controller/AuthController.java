@@ -3,9 +3,12 @@ package com.devmock.backend.controller;
 import com.devmock.backend.dto.AuthResponse;
 import com.devmock.backend.dto.LoginRequest;
 import com.devmock.backend.dto.RegisterRequest;
+import com.devmock.backend.entity.DifficultyLevel;
 import com.devmock.backend.entity.User;
 import com.devmock.backend.entity.en_enum.UserRole;
 import com.devmock.backend.exception.EmailAlreadyExistsException;
+import com.devmock.backend.exception.ResourceNotFoundException;
+import com.devmock.backend.repository.DifficultyLevelRepository;
 import com.devmock.backend.repository.UserRepository;
 import com.devmock.backend.security.JwtService;
 import jakarta.validation.Valid;
@@ -23,15 +26,18 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
+    private final DifficultyLevelRepository difficultyLevelRepository;
 
     public AuthController(UserRepository userRepo,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authManager,
-            JwtService jwtService) {
+            JwtService jwtService,
+            DifficultyLevelRepository difficultyLevelRepository) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.authManager = authManager;
         this.jwtService = jwtService;
+        this.difficultyLevelRepository = difficultyLevelRepository;
     }
 
     @PostMapping("/register")
@@ -48,6 +54,12 @@ public class AuthController {
         user.setRole(req.getRole() != null ? req.getRole() : UserRole.STUDENT);
         user.setAvatarUrl(req.getAvatarUrl());
         user.setProfessionalExperienceYears(req.getProfessionalExperienceYears());
+        if (req.getCurrentLevelId() != null) {
+            DifficultyLevel level = difficultyLevelRepository.findById(req.getCurrentLevelId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "DifficultyLevel " + req.getCurrentLevelId() + " not found"));
+            user.setCurrentLevel(level);
+        }
         user.setIsActive(true);
         user.setIsVerified(false);
         userRepo.save(user);

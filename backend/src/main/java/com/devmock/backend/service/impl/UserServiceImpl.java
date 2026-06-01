@@ -3,9 +3,11 @@ package com.devmock.backend.service.impl;
 import com.devmock.backend.dto.CreateUserRequest;
 import com.devmock.backend.dto.UpdateUserRequest;
 import com.devmock.backend.dto.UserResponse;
+import com.devmock.backend.entity.DifficultyLevel;
 import com.devmock.backend.entity.User;
 import com.devmock.backend.exception.EmailAlreadyExistsException;
 import com.devmock.backend.exception.ResourceNotFoundException;
+import com.devmock.backend.repository.DifficultyLevelRepository;
 import com.devmock.backend.repository.UserRepository;
 import com.devmock.backend.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,10 +22,13 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final DifficultyLevelRepository difficultyLevelRepository;
 
-    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder,
+            DifficultyLevelRepository difficultyLevelRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.difficultyLevelRepository = difficultyLevelRepository;
     }
 
     @Override
@@ -39,6 +44,12 @@ public class UserServiceImpl implements UserService {
         user.setRole(request.getRole());
         user.setAvatarUrl(request.getAvatarUrl());
         user.setProfessionalExperienceYears(request.getProfessionalExperienceYears());
+        if (request.getCurrentLevelId() != null) {
+            DifficultyLevel level = difficultyLevelRepository.findById(request.getCurrentLevelId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "DifficultyLevel " + request.getCurrentLevelId() + " not found"));
+            user.setCurrentLevel(level);
+        }
         user.setIsActive(true);
         user.setIsVerified(false);
         return toResponse(repository.save(user));
@@ -90,6 +101,12 @@ public class UserServiceImpl implements UserService {
             user.setIsVerified(request.getIsVerified());
         if (request.getPassword() != null)
             user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        if (request.getCurrentLevelId() != null) {
+            DifficultyLevel level = difficultyLevelRepository.findById(request.getCurrentLevelId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "DifficultyLevel " + request.getCurrentLevelId() + " not found"));
+            user.setCurrentLevel(level);
+        }
         return toResponse(repository.save(user));
     }
 
@@ -117,6 +134,10 @@ public class UserServiceImpl implements UserService {
         res.setLastLoginAt(user.getLastLoginAt());
         res.setCreatedAt(user.getCreatedAt());
         res.setUpdatedAt(user.getUpdatedAt());
+        if (user.getCurrentLevel() != null) {
+            res.setCurrentLevelId(user.getCurrentLevel().getId());
+            res.setCurrentLevelName(user.getCurrentLevel().getName());
+        }
         return res;
     }
 }

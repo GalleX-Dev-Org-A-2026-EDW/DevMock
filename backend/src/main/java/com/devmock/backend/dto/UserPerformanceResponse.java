@@ -7,26 +7,18 @@ import java.util.UUID;
 public class UserPerformanceResponse {
 
     private UUID id;
-
     private Integer totalQuestionsAnswered;
-
     private Integer totalCorrect;
-
     private BigDecimal accuracyPercentage;
-
     private BigDecimal avgTimeSeconds;
-
     private BigDecimal avgScore;
-
     private String strengths;
-
     private String weaknesses;
-
     private Instant lastPracticedAt;
-
+    private UUID userId;
+    private UUID categoryId;
+    private UUID difficultyId;
     private Instant updatedAt;
-
-    // Getters y Setters
 
     public UUID getId() {
         return id;
@@ -98,6 +90,30 @@ public class UserPerformanceResponse {
 
     public void setLastPracticedAt(Instant lastPracticedAt) {
         this.lastPracticedAt = lastPracticedAt;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public UUID getDifficultyId() {
+        return difficultyId;
+    }
+
+    public void setDifficultyId(UUID difficultyId) {
+        this.difficultyId = difficultyId;
     }
 
     public Instant getUpdatedAt() {

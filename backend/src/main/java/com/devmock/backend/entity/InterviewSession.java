@@ -2,6 +2,8 @@ package com.devmock.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -39,20 +41,20 @@ public class InterviewSession {
 
     // Relaciones despues que tengamos todo
 
-    // @ManyToOne
-    // private User user;
+    @ManyToOne
+    private User user;
 
-    // @ManyToOne
-    // private InterviewType interviewType;
+    @ManyToOne
+    private InterviewType interviewType;
 
-    // @ManyToOne
-    // private DifficultyLevel difficulty;
+    @ManyToOne
+    private DifficultyLevel difficulty;
 
-    // @ManyToOne(optional = true)
-    // private Category category;
+    @ManyToOne
+    private Category category;
 
-    // @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
-    // private List<SessionQuestion> sessionQuestions;
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
+    private List<SessionQuestion> sessionQuestions = new ArrayList<>();
 
     // Métodos automáticos guiaa
 
@@ -78,12 +80,28 @@ public class InterviewSession {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public SessionStatus getStatus() {
         return status;
     }
 
     public void setStatus(SessionStatus status) {
         this.status = status;
+    }
+
+    public InterviewType getInterviewType() {
+        return interviewType;
+    }
+
+    public void setInterviewType(InterviewType interviewType) {
+        this.interviewType = interviewType;
     }
 
     public Instant getStartedAt() {
@@ -149,6 +167,30 @@ public class InterviewSession {
     public void setClarityScore(BigDecimal clarityScore) {
         this.clarityScore = clarityScore;
     }
+    public DifficultyLevel getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(DifficultyLevel difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public List<SessionQuestion> getSessionQuestions() {
+        return sessionQuestions;
+    }
+
+    public void setSessionQuestions(List<SessionQuestion> sessionQuestions) {
+        this.sessionQuestions = sessionQuestions;
+    }
+
 // se relacionan en servicio
     public Instant getCreatedAt() {
         return createdAt;

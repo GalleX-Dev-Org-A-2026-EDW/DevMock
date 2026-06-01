@@ -38,7 +38,8 @@ Authorization: Bearer <token>
   "fullName": "Test User",
   "role": "STUDENT",
   "avatarUrl": "https://example.com/avatar.jpg",
-  "professionalExperienceYears": 2
+  "professionalExperienceYears": 2,
+  "currentLevelId": "uuid-del-difficulty-level"
 }
 ```
 
@@ -74,7 +75,8 @@ Authorization: Bearer <token>
   "password": "password123",
   "fullName": "Dev User",
   "role": "PROFESSIONAL",
-  "professionalExperienceYears": 5
+  "professionalExperienceYears": 5,
+  "currentLevelId": "uuid-del-difficulty-level"
 }
 ```
 
@@ -111,7 +113,8 @@ Authorization: Bearer <token>
   "slug": "algorithms",
   "description": "Algorithm and data structure questions",
   "icon": "code-icon",
-  "displayOrder": 1
+  "displayOrder": 1,
+  "parentId": "uuid-de-la-categoria-padre"
 }
 ```
 
@@ -221,7 +224,10 @@ Authorization: Bearer <token>
   "estimatedTimeSeconds": 600,
   "basePoints": 100,
   "evaluationConfig": "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-  "tags": ["linked-list", "algorithms", "python"]
+  "tags": ["linked-list", "algorithms", "python"],
+  "difficultyId": "uuid-del-difficulty-level",
+  "categoryId": "uuid-de-la-categoria",
+  "createdById": "uuid-del-usuario-creador"
 }
 ```
 
@@ -252,6 +258,7 @@ Authorization: Bearer <token>
 
 ```json
 {
+  "questionId": "uuid-de-la-pregunta",
   "optionText": "O(n)",
   "isCorrect": true,
   "explanation": "Linear time complexity",
@@ -323,6 +330,8 @@ Authorization: Bearer <token>
 
 ```json
 {
+  "questionId": "uuid-de-la-pregunta",
+  "criterionId": "uuid-del-criterio",
   "weight": 40.00
 }
 ```
@@ -345,7 +354,11 @@ Authorization: Bearer <token>
 {
   "status": "IN_PROGRESS",
   "startedAt": "2026-05-20T10:00:00Z",
-  "totalTimeUsedSeconds": 0
+  "totalTimeUsedSeconds": 0,
+  "userId": "uuid-del-usuario",
+  "interviewTypeId": "uuid-del-tipo-de-entrevista",
+  "difficultyId": "uuid-del-difficulty-level",
+  "categoryId": "uuid-de-la-categoria"
 }
 ```
 
@@ -375,7 +388,9 @@ Authorization: Bearer <token>
   "logicScore": 85.00,
   "clarityScore": 85.00,
   "evaluationFeedback": "Good solution, but could be optimized.",
-  "answeredAt": "2026-05-20T10:07:30Z"
+  "answeredAt": "2026-05-20T10:07:30Z",
+  "questionId": "uuid-de-la-pregunta",
+  "selectedOptionId": "uuid-de-la-opcion-seleccionada"
 }
 ```
 
@@ -423,6 +438,8 @@ Authorization: Bearer <token>
 
 ```json
 {
+  "userId": "uuid-del-usuario",
+  "achievementId": "uuid-del-achievement",
   "unlockedAt": "2026-05-20T12:00:00Z",
   "isViewed": false
 }
@@ -451,7 +468,10 @@ Authorization: Bearer <token>
   "avgScore": 85.00,
   "strengths": "Algorithms, Data Structures",
   "weaknesses": "Dynamic Programming",
-  "lastPracticedAt": "2026-05-20T12:00:00Z"
+  "lastPracticedAt": "2026-05-20T12:00:00Z",
+  "userId": "uuid-del-usuario",
+  "categoryId": "uuid-de-la-categoria",
+  "difficultyId": "uuid-del-difficulty-level"
 }
 ```
 
@@ -477,7 +497,10 @@ Authorization: Bearer <token>
   "totalScore": 1500.00,
   "totalSessions": 5,
   "rankPosition": 1,
-  "calculatedAt": "2026-05-24T23:59:59Z"
+  "calculatedAt": "2026-05-24T23:59:59Z",
+  "userId": "uuid-del-usuario",
+  "categoryId": "uuid-de-la-categoria",
+  "difficultyId": "uuid-del-difficulty-level"
 }
 ```
 
@@ -505,7 +528,8 @@ Authorization: Bearer <token>
   "oldValues": null,
   "newValues": null,
   "ipAddress": "192.168.1.1",
-  "userAgent": "Postman"
+  "userAgent": "Postman",
+  "userId": "uuid-del-usuario"
 }
 ```
 

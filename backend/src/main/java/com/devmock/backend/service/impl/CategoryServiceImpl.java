@@ -38,6 +38,13 @@ public class CategoryServiceImpl implements CategoryService {
         c.setIcon(request.getIcon());
         c.setDisplayOrder(request.getDisplayOrder());
 
+        if (request.getParentId() != null) {
+            Category parent = repository.findById(request.getParentId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category " + request.getParentId() + " not found"));
+            c.setParent(parent);
+        }
+
         Category saved = repository.save(c);
         return toResponse(saved);
     }
@@ -95,6 +102,13 @@ public class CategoryServiceImpl implements CategoryService {
         if (request.getDisplayOrder() != null) c.setDisplayOrder(request.getDisplayOrder());
         if (request.getIsActive() != null) c.setIsActive(request.getIsActive());
 
+        if (request.getParentId() != null) {
+            Category parent = repository.findById(request.getParentId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category " + request.getParentId() + " not found"));
+            c.setParent(parent);
+        }
+
         return toResponse(repository.save(c));
     }
 
@@ -106,7 +120,6 @@ public class CategoryServiceImpl implements CategoryService {
         repository.deleteById(id);
     }
 
-    // Mapper
     private CategoryResponse toResponse(Category c) {
         CategoryResponse r = new CategoryResponse();
         r.setId(c.getId());
@@ -116,6 +129,9 @@ public class CategoryServiceImpl implements CategoryService {
         r.setIcon(c.getIcon());
         r.setDisplayOrder(c.getDisplayOrder());
         r.setIsActive(c.getIsActive());
+        if (c.getParent() != null) {
+            r.setParentId(c.getParent().getId());
+        }
         r.setCreatedAt(c.getCreatedAt());
         r.setUpdatedAt(c.getUpdatedAt());
         return r;

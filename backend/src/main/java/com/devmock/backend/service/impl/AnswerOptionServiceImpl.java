@@ -10,8 +10,10 @@ import com.devmock.backend.dto.AnswerOptionResponse;
 import com.devmock.backend.dto.CreateAnswerOptionRequest;
 import com.devmock.backend.dto.UpdateAnswerOptionRequest;
 import com.devmock.backend.entity.AnswerOption;
+import com.devmock.backend.entity.Question;
 import com.devmock.backend.exception.ResourceNotFoundException;
 import com.devmock.backend.repository.AnswerOptionRepository;
+import com.devmock.backend.repository.QuestionRepository;
 import com.devmock.backend.service.AnswerOptionService;
 
 @Service
@@ -19,14 +21,20 @@ import com.devmock.backend.service.AnswerOptionService;
 public class AnswerOptionServiceImpl implements AnswerOptionService {
 
     private final AnswerOptionRepository repository;
+    private final QuestionRepository questionRepository;
 
-    public AnswerOptionServiceImpl(AnswerOptionRepository repository) {
+    public AnswerOptionServiceImpl(AnswerOptionRepository repository, QuestionRepository questionRepository) {
         this.repository = repository;
+        this.questionRepository = questionRepository;
     }
 
     @Override
     public AnswerOptionResponse create(CreateAnswerOptionRequest request) {
+        Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Question " + request.getQuestionId() + " not found"));
         AnswerOption a = new AnswerOption();
+        a.setQuestion(question);
         a.setOptionText(request.getOptionText());
         a.setIsCorrect(request.getIsCorrect());
         a.setExplanation(request.getExplanation());
@@ -54,6 +62,12 @@ public class AnswerOptionServiceImpl implements AnswerOptionService {
     public AnswerOptionResponse update(UUID id, UpdateAnswerOptionRequest request) {
         AnswerOption a = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("AnswerOption " + id + " not found"));
+        if (request.getQuestionId() != null) {
+            Question question = questionRepository.findById(request.getQuestionId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Question " + request.getQuestionId() + " not found"));
+            a.setQuestion(question);
+        }
         if (request.getOptionText() != null) a.setOptionText(request.getOptionText());
         if (request.getIsCorrect() != null) a.setIsCorrect(request.getIsCorrect());
         if (request.getExplanation() != null) a.setExplanation(request.getExplanation());
@@ -72,6 +86,9 @@ public class AnswerOptionServiceImpl implements AnswerOptionService {
     private AnswerOptionResponse toResponse(AnswerOption a) {
         AnswerOptionResponse r = new AnswerOptionResponse();
         r.setId(a.getId());
+        if (a.getQuestion() != null) {
+            r.setQuestionId(a.getQuestion().getId());
+        }
         r.setOptionText(a.getOptionText());
         r.setIsCorrect(a.getIsCorrect());
         r.setExplanation(a.getExplanation());
