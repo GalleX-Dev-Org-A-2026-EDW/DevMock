@@ -9,9 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devmock.backend.dto.CreateQuestionCriterionRequest;
 import com.devmock.backend.dto.QuestionCriterionResponse;
 import com.devmock.backend.dto.UpdateQuestionCriterionRequest;
+import com.devmock.backend.entity.EvaluationCriterion;
+import com.devmock.backend.entity.Question;
 import com.devmock.backend.entity.QuestionCriterion;
 import com.devmock.backend.exception.ResourceNotFoundException;
+import com.devmock.backend.repository.EvaluationCriterionRepository;
 import com.devmock.backend.repository.QuestionCriterionRepository;
+import com.devmock.backend.repository.QuestionRepository;
 import com.devmock.backend.service.QuestionCriterionService;
 
 @Service
@@ -19,14 +23,28 @@ import com.devmock.backend.service.QuestionCriterionService;
 public class QuestionCriterionServiceImpl implements QuestionCriterionService {
 
     private final QuestionCriterionRepository repository;
+    private final QuestionRepository questionRepository;
+    private final EvaluationCriterionRepository evaluationCriterionRepository;
 
-    public QuestionCriterionServiceImpl(QuestionCriterionRepository repository) {
+    public QuestionCriterionServiceImpl(QuestionCriterionRepository repository,
+            QuestionRepository questionRepository,
+            EvaluationCriterionRepository evaluationCriterionRepository) {
         this.repository = repository;
+        this.questionRepository = questionRepository;
+        this.evaluationCriterionRepository = evaluationCriterionRepository;
     }
 
     @Override
     public QuestionCriterionResponse create(CreateQuestionCriterionRequest request) {
+        Question question = questionRepository.findById(request.getQuestionId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Question " + request.getQuestionId() + " not found"));
+        EvaluationCriterion criterion = evaluationCriterionRepository.findById(request.getCriterionId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "EvaluationCriterion " + request.getCriterionId() + " not found"));
         QuestionCriterion qc = new QuestionCriterion();
+        qc.setQuestion(question);
+        qc.setCriterion(criterion);
         qc.setWeight(request.getWeight());
         return toResponse(repository.save(qc));
     }
@@ -66,6 +84,12 @@ public class QuestionCriterionServiceImpl implements QuestionCriterionService {
     private QuestionCriterionResponse toResponse(QuestionCriterion qc) {
         QuestionCriterionResponse r = new QuestionCriterionResponse();
         r.setId(qc.getId());
+        if (qc.getQuestion() != null) {
+            r.setQuestionId(qc.getQuestion().getId());
+        }
+        if (qc.getCriterion() != null) {
+            r.setCriterionId(qc.getCriterion().getId());
+        }
         r.setWeight(qc.getWeight());
         return r;
     }

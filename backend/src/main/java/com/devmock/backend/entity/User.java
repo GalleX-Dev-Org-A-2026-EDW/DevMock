@@ -1,5 +1,7 @@
 package com.devmock.backend.entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.time.Instant;
 
@@ -49,6 +51,25 @@ public class User {
     private Instant updatedAt;
 
     private Instant deletedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "current_level_id")
+    private DifficultyLevel currentLevel;
+
+    @OneToMany(mappedBy = "user")
+    private List<InterviewSession> sessions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<UserPerformance> performances = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Ranking> rankings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<UserAchievement> achievements = new ArrayList<>();
+
+    @OneToMany(mappedBy = "createdBy")
+    private List<Question> createdQuestions = new ArrayList<>();
 
     @PrePersist
     void onCreate() {
@@ -162,5 +183,53 @@ public class User {
 
     public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public DifficultyLevel getCurrentLevel() {
+        return currentLevel;
+    }
+
+    public void setCurrentLevel(DifficultyLevel currentLevel) {
+        this.currentLevel = currentLevel;
+    }
+
+    public List<InterviewSession> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<InterviewSession> sessions) {
+        this.sessions = sessions;
+    }
+
+    public List<UserPerformance> getPerformances() {
+        return performances;
+    }
+
+    public void setPerformances(List<UserPerformance> performances) {
+        this.performances = performances;
+    }
+
+    public List<Ranking> getRankings() {
+        return rankings;
+    }
+
+    public void setRankings(List<Ranking> rankings) {
+        this.rankings = rankings;
+    }
+
+    public List<UserAchievement> getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(List<UserAchievement> achievements) {
+        this.achievements = achievements;
+    }
+
+    public List<Question> getCreatedQuestions() {
+        return createdQuestions;
+    }
+
+    public void setCreatedQuestions(List<Question> createdQuestions) {
+        this.createdQuestions = createdQuestions;
     }
 }

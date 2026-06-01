@@ -2,25 +2,25 @@ package com.devmock.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 import com.devmock.backend.entity.en_enum.SessionStatus;
 
 public class UpdateInterviewSessionRequest {
 
     private SessionStatus status;
-
     private Instant startedAt;
     private Instant finishedAt;
-
     private Integer totalTimeUsedSeconds;
-
     private BigDecimal finalScore;
     private BigDecimal correctnessScore;
     private BigDecimal efficiencyScore;
     private BigDecimal logicScore;
     private BigDecimal clarityScore;
-
-    // getters y setters
+    private UUID userId;
+    private UUID interviewTypeId;
+    private UUID difficultyId;
+    private UUID categoryId;
 
     public SessionStatus getStatus() {
         return status;
@@ -92,5 +92,37 @@ public class UpdateInterviewSessionRequest {
 
     public void setClarityScore(BigDecimal clarityScore) {
         this.clarityScore = clarityScore;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getInterviewTypeId() {
+        return interviewTypeId;
+    }
+
+    public void setInterviewTypeId(UUID interviewTypeId) {
+        this.interviewTypeId = interviewTypeId;
+    }
+
+    public UUID getDifficultyId() {
+        return difficultyId;
+    }
+
+    public void setDifficultyId(UUID difficultyId) {
+        this.difficultyId = difficultyId;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
     }
 }

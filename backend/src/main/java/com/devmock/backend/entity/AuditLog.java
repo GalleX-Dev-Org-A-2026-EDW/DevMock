@@ -34,10 +34,8 @@ public class AuditLog {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    // Relaciones después
-
-    //@ManyToOne(optional = true)
-    //private User user;
+    @ManyToOne(optional = true)
+    private User user;
 
     @PrePersist
     void onCreate() {
@@ -116,5 +114,13 @@ public class AuditLog {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

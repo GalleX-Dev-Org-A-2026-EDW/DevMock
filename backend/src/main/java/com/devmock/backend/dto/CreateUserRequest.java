@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 
 public class CreateUserRequest {
     @NotBlank(message = "email is required")
@@ -27,6 +28,8 @@ public class CreateUserRequest {
     
     @PositiveOrZero(message = "professionalExperienceYears must be zero or positive")
     private Integer professionalExperienceYears;
+
+    private UUID currentLevelId;
 
     public String getEmail() {
         return email;
@@ -74,5 +77,13 @@ public class CreateUserRequest {
 
     public void setProfessionalExperienceYears(Integer professionalExperienceYears) {
         this.professionalExperienceYears = professionalExperienceYears;
+    }
+
+    public UUID getCurrentLevelId() {
+        return currentLevelId;
+    }
+
+    public void setCurrentLevelId(UUID currentLevelId) {
+        this.currentLevelId = currentLevelId;
     }
 }

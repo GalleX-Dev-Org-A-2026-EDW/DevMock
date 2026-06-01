@@ -6,6 +6,7 @@ import java.util.UUID;
 public class AnswerOptionResponse {
 
     private UUID id;
+    private UUID questionId;
     private String optionText;
     private Boolean isCorrect;
     private String explanation;
@@ -18,6 +19,14 @@ public class AnswerOptionResponse {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public UUID getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(UUID questionId) {
+        this.questionId = questionId;
     }
 
     public String getOptionText() {

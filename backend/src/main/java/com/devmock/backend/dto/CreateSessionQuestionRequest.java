@@ -2,6 +2,7 @@ package com.devmock.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -25,7 +26,9 @@ public class CreateSessionQuestionRequest {
 
     private Instant answeredAt;
 
-    // Getters y Setters
+    private UUID sessionId;
+    private UUID questionId;
+    private UUID selectedOptionId;
 
     public Integer getQuestionOrder() {
         return questionOrder;
@@ -113,5 +116,29 @@ public class CreateSessionQuestionRequest {
 
     public void setAnsweredAt(Instant answeredAt) {
         this.answeredAt = answeredAt;
+    }
+
+    public UUID getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public UUID getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(UUID questionId) {
+        this.questionId = questionId;
+    }
+
+    public UUID getSelectedOptionId() {
+        return selectedOptionId;
+    }
+
+    public void setSelectedOptionId(UUID selectedOptionId) {
+        this.selectedOptionId = selectedOptionId;
     }
 }

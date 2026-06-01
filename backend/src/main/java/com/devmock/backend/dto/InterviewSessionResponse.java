@@ -9,24 +9,21 @@ import com.devmock.backend.entity.en_enum.SessionStatus;
 public class InterviewSessionResponse {
 
     private UUID id;
-
     private SessionStatus status;
-
     private Instant startedAt;
     private Instant finishedAt;
-
     private Integer totalTimeUsedSeconds;
-
     private BigDecimal finalScore;
     private BigDecimal correctnessScore;
     private BigDecimal efficiencyScore;
     private BigDecimal logicScore;
     private BigDecimal clarityScore;
-
+    private UUID userId;
+    private UUID interviewTypeId;
+    private UUID difficultyId;
+    private UUID categoryId;
     private Instant createdAt;
     private Instant updatedAt;
-
-    // getters y setters
 
     public UUID getId() {
         return id;
@@ -108,20 +105,51 @@ public class InterviewSessionResponse {
         this.clarityScore = clarityScore;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getInterviewTypeId() {
+        return interviewTypeId;
+    }
+
+    public void setInterviewTypeId(UUID interviewTypeId) {
+        this.interviewTypeId = interviewTypeId;
+    }
+
+    public UUID getDifficultyId() {
+        return difficultyId;
+    }
+
+    public void setDifficultyId(UUID difficultyId) {
+        this.difficultyId = difficultyId;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
-
 }

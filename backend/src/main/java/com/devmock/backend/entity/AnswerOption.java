@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -29,6 +30,9 @@ public class AnswerOption {
     private String explanation;
 
     private Integer displayOrder;
+
+    @ManyToOne
+    private Question question;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -72,6 +76,14 @@ public class AnswerOption {
 
     public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 
     public Instant getCreatedAt() {

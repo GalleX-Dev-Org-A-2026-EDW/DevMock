@@ -2,6 +2,7 @@ package com.devmock.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -24,7 +25,11 @@ public class CreateUserPerformanceRequest {
 
     private Instant lastPracticedAt;
 
-    // Getters y Setters
+    private UUID userId;
+
+    private UUID categoryId;
+
+    private UUID difficultyId;
 
     public Integer getTotalQuestionsAnswered() {
         return totalQuestionsAnswered;
@@ -88,5 +93,29 @@ public class CreateUserPerformanceRequest {
 
     public void setLastPracticedAt(Instant lastPracticedAt) {
         this.lastPracticedAt = lastPracticedAt;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public UUID getDifficultyId() {
+        return difficultyId;
+    }
+
+    public void setDifficultyId(UUID difficultyId) {
+        this.difficultyId = difficultyId;
     }
 }

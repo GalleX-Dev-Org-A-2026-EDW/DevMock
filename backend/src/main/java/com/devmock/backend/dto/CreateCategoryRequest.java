@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 
 public class CreateCategoryRequest {
 
@@ -22,6 +23,8 @@ public class CreateCategoryRequest {
 
     @PositiveOrZero(message = "displayOrder must be zero or positive")
     private Integer displayOrder;
+
+    private UUID parentId;
 
     public String getName() {
         return name;
@@ -61,5 +64,13 @@ public class CreateCategoryRequest {
 
     public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
     }
 }

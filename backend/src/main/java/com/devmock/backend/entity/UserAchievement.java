@@ -19,11 +19,11 @@ public class UserAchievement {
 
     // Relaciones después
 
-    //@ManyToOne
-    //private User user;
+    @ManyToOne
+    private User user;
 
-    //@ManyToOne
-    //private Achievement achievement;
+    @ManyToOne
+    private Achievement achievement;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -43,6 +43,14 @@ public class UserAchievement {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Instant getUnlockedAt() {
         return unlockedAt;
     }
@@ -57,6 +65,14 @@ public class UserAchievement {
 
     public void setIsViewed(Boolean isViewed) {
         this.isViewed = isViewed;
+    }
+
+    public Achievement getAchievement() {
+        return achievement;
+    }
+
+    public void setAchievement(Achievement achievement) {
+        this.achievement = achievement;
     }
 
     public Instant getCreatedAt() {

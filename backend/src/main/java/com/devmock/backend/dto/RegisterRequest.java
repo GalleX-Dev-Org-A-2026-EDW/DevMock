@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 
 public class RegisterRequest {
     @NotBlank(message = "email is required")
@@ -22,6 +23,8 @@ public class RegisterRequest {
     private String avatarUrl;
     @PositiveOrZero(message = "professionalExperienceYears must be zero or positive")
     private Integer professionalExperienceYears;
+
+    private UUID currentLevelId;
 
     public String getEmail() {
         return email;
@@ -69,5 +72,13 @@ public class RegisterRequest {
 
     public void setProfessionalExperienceYears(Integer professionalExperienceYears) {
         this.professionalExperienceYears = professionalExperienceYears;
+    }
+
+    public UUID getCurrentLevelId() {
+        return currentLevelId;
+    }
+
+    public void setCurrentLevelId(UUID currentLevelId) {
+        this.currentLevelId = currentLevelId;
     }
 }

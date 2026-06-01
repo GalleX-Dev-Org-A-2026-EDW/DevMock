@@ -1,14 +1,22 @@
 package com.devmock.backend.dto;
 
+import java.util.UUID;
+
 public class UpdateAnswerOptionRequest {
 
+    private UUID questionId;
     private String optionText;
-
     private Boolean isCorrect;
-
     private String explanation;
-
     private Integer displayOrder;
+
+    public UUID getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(UUID questionId) {
+        this.questionId = questionId;
+    }
 
     public String getOptionText() {
         return optionText;

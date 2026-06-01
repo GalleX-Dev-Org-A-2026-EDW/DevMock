@@ -3,6 +3,7 @@ package com.devmock.backend.dto;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 
 public class UpdateCategoryRequest {
 
@@ -21,6 +22,8 @@ public class UpdateCategoryRequest {
     private Integer displayOrder;
 
     private Boolean isActive;
+
+    private UUID parentId;
 
     public String getName() {
         return name;
@@ -68,5 +71,13 @@ public class UpdateCategoryRequest {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
     }
 }

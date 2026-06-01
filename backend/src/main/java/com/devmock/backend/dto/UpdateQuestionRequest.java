@@ -1,6 +1,7 @@
 package com.devmock.backend.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.devmock.backend.entity.en_enum.AnswerFormat;
 import com.devmock.backend.entity.en_enum.QuestionType;
@@ -8,24 +9,18 @@ import com.devmock.backend.entity.en_enum.QuestionType;
 public class UpdateQuestionRequest {
 
     private QuestionType questionType;
-
     private AnswerFormat answerFormat;
-
     private String statement;
-
     private String expectedAnswer;
-
     private String explanation;
-
     private Integer estimatedTimeSeconds;
-
     private Integer basePoints;
-
     private String evaluationConfig;
-
     private List<String> tags;
-
     private Boolean isActive;
+    private UUID createdById;
+    private UUID categoryId;
+    private UUID difficultyId;
 
     public QuestionType getQuestionType() {
         return questionType;
@@ -105,5 +100,29 @@ public class UpdateQuestionRequest {
 
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public UUID getCreatedById() {
+        return createdById;
+    }
+
+    public void setCreatedById(UUID createdById) {
+        this.createdById = createdById;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public UUID getDifficultyId() {
+        return difficultyId;
+    }
+
+    public void setDifficultyId(UUID difficultyId) {
+        this.difficultyId = difficultyId;
     }
 }

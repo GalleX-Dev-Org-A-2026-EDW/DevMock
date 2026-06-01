@@ -2,27 +2,24 @@ package com.devmock.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 public class UpdateSessionQuestionRequest {
 
     private Integer questionOrder;
-
     private Integer assignedTimeSeconds;
     private Integer timeUsedSeconds;
-
     private String userAnswer;
-
     private BigDecimal obtainedPoints;
     private BigDecimal correctnessScore;
     private BigDecimal efficiencyScore;
     private BigDecimal logicScore;
     private BigDecimal clarityScore;
-
     private String evaluationFeedback;
-
     private Instant answeredAt;
-
-    // Getters y Setters
+    private UUID sessionId;
+    private UUID questionId;
+    private UUID selectedOptionId;
 
     public Integer getQuestionOrder() {
         return questionOrder;
@@ -110,5 +107,29 @@ public class UpdateSessionQuestionRequest {
 
     public void setAnsweredAt(Instant answeredAt) {
         this.answeredAt = answeredAt;
+    }
+
+    public UUID getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public UUID getQuestionId() {
+        return questionId;
+    }
+
+    public void setQuestionId(UUID questionId) {
+        this.questionId = questionId;
+    }
+
+    public UUID getSelectedOptionId() {
+        return selectedOptionId;
+    }
+
+    public void setSelectedOptionId(UUID selectedOptionId) {
+        this.selectedOptionId = selectedOptionId;
     }
 }
