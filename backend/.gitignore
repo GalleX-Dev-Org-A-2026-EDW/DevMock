@@ -34,3 +34,14 @@ build/
 
 ### Dotenv ###
 .env
+
+### OS ###
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+### Logs ###
+*.log
