@@ -1,19 +1,9 @@
 import { useAuth } from "@/context/AuthContext"
 import { useNavigate } from "react-router-dom"
+import { LogOut } from "lucide-react"
+import devMockIcon from "@/assets/DevMockIcono.png"
 
-type Props = {
-  current: string;
-  onChange: (page: string) => void;
-};
-
-const items = [
-  { key: "default", label: "Inicio" },
-  { key: "questions", label: "Preguntas" },
-  { key: "sessions", label: "Sesiones" },
-  { key: "ranking", label: "Ranking" },
-] as const;
-
-export default function SidebarMenu({ current, onChange }: Props) {
+export default function SidebarMenu() {
   const { logout } = useAuth()
   const navigate = useNavigate()
 
@@ -24,28 +14,18 @@ export default function SidebarMenu({ current, onChange }: Props) {
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="text-xl font-bold mb-6">DevMock</h2>
+      <div className="flex items-center gap-3 mb-10">
+        <img src={devMockIcon} alt="DevMock" className="h-9 w-9 brightness-0 invert" />
+        <span className="font-['Work_Sans'] font-bold text-lg text-white">DevMock</span>
+      </div>
 
-      <nav className="flex flex-col gap-1 flex-1">
-        {items.map(({ key, label }) => (
-          <button
-            key={key}
-            className={`text-left rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              current === key
-                ? "bg-neutral-900 text-white"
-                : "text-neutral-700 hover:bg-neutral-100"
-            }`}
-            onClick={() => onChange(key)}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
+      <div className="flex-1" />
 
       <button
         onClick={handleLogout}
-        className="text-left rounded-md px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+        className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-all"
       >
+        <LogOut className="h-4 w-4" />
         Cerrar sesión
       </button>
     </div>
