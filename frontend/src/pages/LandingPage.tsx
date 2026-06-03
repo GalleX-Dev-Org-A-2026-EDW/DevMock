@@ -1,5 +1,6 @@
 import { Code2, Trophy, TrendingUp, Target, ChevronRight, Play, CheckCircle2, Award, BarChart3, Users } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import devMockIcon from "@/assets/DevMockIcono.png";
 
 export default function LandingPage() {
@@ -24,12 +25,12 @@ export default function LandingPage() {
             <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Planes
             </a>
-            <button className="text-sm font-medium text-foreground hover:text-primary/80 transition-colors">
+            <Link to="/login" className="text-sm font-medium text-foreground hover:text-primary/80 transition-colors">
               Iniciar sesión
-            </button>
-            <button className="px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm">
+            </Link>
+            <Link to="/register" className="px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm">
               Registrarse gratis
-            </button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -52,10 +53,10 @@ export default function LandingPage() {
                 La plataforma definitiva para preparar tu próxima entrevista técnica.
               </p>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <button className="px-8 py-4 bg-emerald-500 text-white rounded-xl font-semibold hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center gap-2 text-base">
+                <Link to="/register" className="px-8 py-4 bg-emerald-500 text-white rounded-xl font-semibold hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center gap-2 text-base">
                   Comenzar ahora
                   <ChevronRight className="h-5 w-5" />
-                </button>
+                </Link>
                 <button className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-semibold hover:bg-white/20 transition-all border border-white/20 flex items-center gap-2 text-base">
                   <Play className="h-5 w-5" />
                   Ver demo
@@ -320,9 +321,9 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <button className="w-full px-6 py-3.5 bg-white text-gray-900 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all">
+              <Link to="/register" className="block w-full px-6 py-3.5 bg-white text-gray-900 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all text-center">
                 Comenzar gratis
-              </button>
+              </Link>
             </div>
 
             <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] rounded-2xl p-8 border border-gray-200/20 relative overflow-hidden shadow-xl">
@@ -388,10 +389,10 @@ export default function LandingPage() {
             Únete a miles de desarrolladores que están mejorando sus habilidades y consiguiendo mejores oportunidades
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="px-8 py-4 bg-emerald-500 text-white rounded-xl font-semibold hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center gap-2 text-lg">
+            <Link to="/register" className="px-8 py-4 bg-emerald-500 text-white rounded-xl font-semibold hover:bg-emerald-600 transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center gap-2 text-lg">
               Crear cuenta gratis
               <ChevronRight className="h-5 w-5" />
-            </button>
+            </Link>
             <button className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-xl font-semibold hover:bg-white/20 transition-all border border-white/20 flex items-center gap-2 text-lg">
               <Users className="h-5 w-5" />
               Hablar con ventas
