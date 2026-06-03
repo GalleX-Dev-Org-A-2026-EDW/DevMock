@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 
 export interface Category {
   id: string
@@ -46,17 +46,17 @@ export const categoriesApi = {
     http<Category>(`/api/categories/by-slug/${encodeURIComponent(slug)}`),
 
   create: (dto: CreateCategoryDto) =>
-    http<Category>("/api/categories", {
+    httpRequired<Category>("/api/categories", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateCategoryDto) =>
-    http<Category>(`/api/categories/${id}`, {
+    httpRequired<Category>(`/api/categories/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/categories/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/categories/${id}`, { method: "DELETE" }),
 }

@@ -36,6 +36,25 @@ export async function http<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T | undefined> {
+  return rawFetch<T>(path, options)
+}
+
+/**
+ * Like `http<T>` but asserts the response is never 204, returning `Promise<T>`
+ * instead of `Promise<T | undefined>`. Use for POST/PUT/PATCH/DELETE endpoints
+ * that always return a body, or when the caller knows a 204 won't occur.
+ */
+export async function httpRequired<T>(
+  path: string,
+  options?: RequestInit,
+): Promise<T> {
+  return (await rawFetch<T>(path, options))!
+}
+
+async function rawFetch<T>(
+  path: string,
+  options?: RequestInit,
+): Promise<T | undefined> {
   const url = `${API_URL.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`
 
   const headers: Record<string, string> = {

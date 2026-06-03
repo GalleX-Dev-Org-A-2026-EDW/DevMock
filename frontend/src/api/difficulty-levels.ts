@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 
 export interface DifficultyLevel {
   id: string
@@ -38,17 +38,17 @@ export const difficultyLevelsApi = {
     ),
 
   create: (dto: CreateDifficultyLevelDto) =>
-    http<DifficultyLevel>("/api/difficulty-levels", {
+    httpRequired<DifficultyLevel>("/api/difficulty-levels", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateDifficultyLevelDto) =>
-    http<DifficultyLevel>(`/api/difficulty-levels/${id}`, {
+    httpRequired<DifficultyLevel>(`/api/difficulty-levels/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/difficulty-levels/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/difficulty-levels/${id}`, { method: "DELETE" }),
 }

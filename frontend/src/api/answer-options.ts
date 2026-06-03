@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 
 export interface AnswerOption {
   id: string
@@ -32,17 +32,17 @@ export const answerOptionsApi = {
   getById: (id: string) => http<AnswerOption>(`/api/answer-options/${id}`),
 
   create: (dto: CreateAnswerOptionDto) =>
-    http<AnswerOption>("/api/answer-options", {
+    httpRequired<AnswerOption>("/api/answer-options", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateAnswerOptionDto) =>
-    http<AnswerOption>(`/api/answer-options/${id}`, {
+    httpRequired<AnswerOption>(`/api/answer-options/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/answer-options/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/answer-options/${id}`, { method: "DELETE" }),
 }

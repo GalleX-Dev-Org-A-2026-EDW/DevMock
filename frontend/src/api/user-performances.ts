@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 
 export interface UserPerformance {
   id: string
@@ -51,17 +51,17 @@ export const userPerformancesApi = {
     http<UserPerformance>(`/api/user-performances/${id}`),
 
   create: (dto: CreateUserPerformanceDto) =>
-    http<UserPerformance>("/api/user-performances", {
+    httpRequired<UserPerformance>("/api/user-performances", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateUserPerformanceDto) =>
-    http<UserPerformance>(`/api/user-performances/${id}`, {
+    httpRequired<UserPerformance>(`/api/user-performances/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/user-performances/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/user-performances/${id}`, { method: "DELETE" }),
 }

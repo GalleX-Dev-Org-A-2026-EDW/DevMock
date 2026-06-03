@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 import type { AuditAction } from "./enums"
 
 export interface AuditLog {
@@ -42,17 +42,17 @@ export const auditLogsApi = {
   getById: (id: string) => http<AuditLog>(`/api/audit-logs/${id}`),
 
   create: (dto: CreateAuditLogDto) =>
-    http<AuditLog>("/api/audit-logs", {
+    httpRequired<AuditLog>("/api/audit-logs", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateAuditLogDto) =>
-    http<AuditLog>(`/api/audit-logs/${id}`, {
+    httpRequired<AuditLog>(`/api/audit-logs/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/audit-logs/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/audit-logs/${id}`, { method: "DELETE" }),
 }

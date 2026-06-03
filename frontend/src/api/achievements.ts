@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 
 export interface Achievement {
   id: string
@@ -38,17 +38,17 @@ export const achievementsApi = {
   getById: (id: string) => http<Achievement>(`/api/achievements/${id}`),
 
   create: (dto: CreateAchievementDto) =>
-    http<Achievement>("/api/achievements", {
+    httpRequired<Achievement>("/api/achievements", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateAchievementDto) =>
-    http<Achievement>(`/api/achievements/${id}`, {
+    httpRequired<Achievement>(`/api/achievements/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/achievements/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/achievements/${id}`, { method: "DELETE" }),
 }

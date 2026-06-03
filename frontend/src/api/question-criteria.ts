@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 
 export interface QuestionCriterion {
   id: string
@@ -24,17 +24,17 @@ export const questionCriteriaApi = {
     http<QuestionCriterion>(`/api/question-criteria/${id}`),
 
   create: (dto: CreateQuestionCriterionDto) =>
-    http<QuestionCriterion>("/api/question-criteria", {
+    httpRequired<QuestionCriterion>("/api/question-criteria", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateQuestionCriterionDto) =>
-    http<QuestionCriterion>(`/api/question-criteria/${id}`, {
+    httpRequired<QuestionCriterion>(`/api/question-criteria/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/question-criteria/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/question-criteria/${id}`, { method: "DELETE" }),
 }

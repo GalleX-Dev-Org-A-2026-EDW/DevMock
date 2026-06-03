@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 
 export interface SessionQuestion {
   id: string
@@ -61,17 +61,17 @@ export const sessionQuestionsApi = {
     http<SessionQuestion>(`/api/session-questions/${id}`),
 
   create: (dto: CreateSessionQuestionDto) =>
-    http<SessionQuestion>("/api/session-questions", {
+    httpRequired<SessionQuestion>("/api/session-questions", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateSessionQuestionDto) =>
-    http<SessionQuestion>(`/api/session-questions/${id}`, {
+    httpRequired<SessionQuestion>(`/api/session-questions/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/session-questions/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/session-questions/${id}`, { method: "DELETE" }),
 }

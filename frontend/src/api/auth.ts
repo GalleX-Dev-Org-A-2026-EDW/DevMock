@@ -1,4 +1,4 @@
-import { http, setToken } from "./http"
+import { httpRequired, setToken } from "./http"
 
 export type UserRole = "STUDENT" | "PROFESSIONAL" | "ADMIN"
 
@@ -25,20 +25,20 @@ export interface AuthResponse {
 
 export const authApi = {
   login: async (dto: LoginRequest) => {
-    const res = await http<AuthResponse>("/api/auth/login", {
+    const res = await httpRequired<AuthResponse>("/api/auth/login", {
       method: "POST",
       body: JSON.stringify(dto),
     })
-    if (res) setToken(res.token)
-    return res!
+    setToken(res.token)
+    return res
   },
 
   register: async (dto: RegisterRequest) => {
-    const res = await http<AuthResponse>("/api/auth/register", {
+    const res = await httpRequired<AuthResponse>("/api/auth/register", {
       method: "POST",
       body: JSON.stringify(dto),
     })
-    if (res) setToken(res.token)
-    return res!
+    setToken(res.token)
+    return res
   },
 }

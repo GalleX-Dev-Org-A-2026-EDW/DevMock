@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 import type { QuestionType, AnswerFormat } from "./enums"
 
 export interface Question {
@@ -57,17 +57,17 @@ export const questionsApi = {
   getById: (id: string) => http<Question>(`/api/questions/${id}`),
 
   create: (dto: CreateQuestionDto) =>
-    http<Question>("/api/questions", {
+    httpRequired<Question>("/api/questions", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateQuestionDto) =>
-    http<Question>(`/api/questions/${id}`, {
+    httpRequired<Question>(`/api/questions/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/questions/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/questions/${id}`, { method: "DELETE" }),
 }

@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 import type { QuestionType } from "./enums"
 
 export interface InterviewType {
@@ -49,17 +49,17 @@ export const interviewTypesApi = {
     ),
 
   create: (dto: CreateInterviewTypeDto) =>
-    http<InterviewType>("/api/interview-types", {
+    httpRequired<InterviewType>("/api/interview-types", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateInterviewTypeDto) =>
-    http<InterviewType>(`/api/interview-types/${id}`, {
+    httpRequired<InterviewType>(`/api/interview-types/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/interview-types/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/interview-types/${id}`, { method: "DELETE" }),
 }

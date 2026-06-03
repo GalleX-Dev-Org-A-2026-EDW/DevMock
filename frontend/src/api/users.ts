@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 import type { UserRole } from "./enums"
 
 export interface User {
@@ -48,17 +48,17 @@ export const usersApi = {
     http<User>(`/api/users/by-email?email=${encodeURIComponent(email)}`),
 
   create: (dto: CreateUserDto) =>
-    http<User>("/api/users", {
+    httpRequired<User>("/api/users", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateUserDto) =>
-    http<User>(`/api/users/${id}`, {
+    httpRequired<User>(`/api/users/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/users/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/users/${id}`, { method: "DELETE" }),
 }

@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 import type { RankingPeriod } from "./enums"
 
 export interface Ranking {
@@ -47,17 +47,17 @@ export const rankingsApi = {
   getById: (id: string) => http<Ranking>(`/api/rankings/${id}`),
 
   create: (dto: CreateRankingDto) =>
-    http<Ranking>("/api/rankings", {
+    httpRequired<Ranking>("/api/rankings", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateRankingDto) =>
-    http<Ranking>(`/api/rankings/${id}`, {
+    httpRequired<Ranking>(`/api/rankings/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/rankings/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/rankings/${id}`, { method: "DELETE" }),
 }

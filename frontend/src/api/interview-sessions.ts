@@ -1,4 +1,4 @@
-import { http } from "./http"
+import { http, httpRequired } from "./http"
 import type { SessionStatus } from "./enums"
 
 export interface InterviewSession {
@@ -59,17 +59,17 @@ export const interviewSessionsApi = {
     http<InterviewSession>(`/api/interview-sessions/${id}`),
 
   create: (dto: CreateInterviewSessionDto) =>
-    http<InterviewSession>("/api/interview-sessions", {
+    httpRequired<InterviewSession>("/api/interview-sessions", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: string, dto: UpdateInterviewSessionDto) =>
-    http<InterviewSession>(`/api/interview-sessions/${id}`, {
+    httpRequired<InterviewSession>(`/api/interview-sessions/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: string) =>
-    http<void>(`/api/interview-sessions/${id}`, { method: "DELETE" }),
+    httpRequired<void>(`/api/interview-sessions/${id}`, { method: "DELETE" }),
 }
