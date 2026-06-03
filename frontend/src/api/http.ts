@@ -1,4 +1,5 @@
-const TOKEN_KEY = "auth_token"
+const TOKEN_KEY = "token"
+const USERNAME_KEY = "username"
 
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080"
 
@@ -14,8 +15,21 @@ export function removeToken(): void {
   localStorage.removeItem(TOKEN_KEY)
 }
 
+export function getUsername(): string | null {
+  return localStorage.getItem(USERNAME_KEY)
+}
+
+export function setUsername(username: string): void {
+  localStorage.setItem(USERNAME_KEY, username)
+}
+
+export function removeUsername(): void {
+  localStorage.removeItem(USERNAME_KEY)
+}
+
 export function clearAuth(): void {
   removeToken()
+  removeUsername()
 }
 
 export class ApiError extends Error {
@@ -68,6 +82,12 @@ async function rawFetch<T>(
   }
 
   const res = await fetch(url, { ...options, headers })
+
+  if (res.status === 401) {
+    clearAuth()
+    window.location.href = "/login"
+    throw new Error("Sesión expirada")
+  }
 
   if (!res.ok) {
     const body = await res.text().catch(() => null)

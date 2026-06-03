@@ -1,4 +1,4 @@
-export { http, httpRequired, ApiError, getToken, setToken, removeToken, clearAuth } from "./http"
+export { http, httpRequired, ApiError, getToken, setToken, removeToken, getUsername, setUsername, removeUsername, clearAuth } from "./http"
 export type { ApiError as ApiErrorType } from "./http"
 
 export type {
