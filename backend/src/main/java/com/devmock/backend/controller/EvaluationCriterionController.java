@@ -21,6 +21,7 @@ import com.devmock.backend.dto.UpdateEvaluationCriterionRequest;
 import com.devmock.backend.service.EvaluationCriterionService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/evaluation-criteria")
@@ -34,27 +35,32 @@ public class EvaluationCriterionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public EvaluationCriterionResponse create(@Valid @RequestBody CreateEvaluationCriterionRequest request) {
         return service.create(request);
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<EvaluationCriterionResponse> list(
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") boolean activeOnly) {
         return activeOnly ? service.listActive() : service.list();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public EvaluationCriterionResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @GetMapping("/by-slug/{slug}")
+    @PreAuthorize("isAuthenticated()")
     public EvaluationCriterionResponse getBySlug(@PathVariable String slug) {
         return service.getBySlug(slug);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public EvaluationCriterionResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateEvaluationCriterionRequest request) {
@@ -63,6 +69,7 @@ public class EvaluationCriterionController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }

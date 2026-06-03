@@ -6,6 +6,7 @@ import com.devmock.backend.dto.UpdateAchievementRequest;
 import com.devmock.backend.service.AchievementService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class AchievementController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public AchievementResponse create(
             @Valid @RequestBody CreateAchievementRequest request) {
 
@@ -32,16 +34,19 @@ public class AchievementController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<AchievementResponse> list() {
         return service.list();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public AchievementResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public AchievementResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateAchievementRequest request) {
@@ -51,6 +56,7 @@ public class AchievementController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }

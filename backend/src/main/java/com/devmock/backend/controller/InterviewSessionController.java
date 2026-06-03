@@ -6,6 +6,7 @@ import com.devmock.backend.dto.InterviewSessionResponse;
 import com.devmock.backend.service.InterviewSessionService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/interview-sessions")
+@PreAuthorize("isAuthenticated()")
 public class InterviewSessionController {
 
     private final InterviewSessionService service;

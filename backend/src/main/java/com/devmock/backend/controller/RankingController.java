@@ -6,6 +6,7 @@ import com.devmock.backend.dto.RankingResponse;
 import com.devmock.backend.service.RankingService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/rankings")
+@PreAuthorize("isAuthenticated()")
 public class RankingController {
 
     private final RankingService service;

@@ -21,6 +21,7 @@ import com.devmock.backend.dto.UpdateInterviewTypeRequest;
 import com.devmock.backend.service.InterviewTypeService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/interview-types")
@@ -34,27 +35,32 @@ public class InterviewTypeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public InterviewTypeResponse create(@Valid @RequestBody CreateInterviewTypeRequest request) {
         return service.create(request);
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<InterviewTypeResponse> list(
             @RequestParam(name = "activeOnly", required = false, defaultValue = "false") boolean activeOnly) {
         return activeOnly ? service.listActive() : service.list();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public InterviewTypeResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @GetMapping("/by-slug/{slug}")
+    @PreAuthorize("isAuthenticated()")
     public InterviewTypeResponse getBySlug(@PathVariable String slug) {
         return service.getBySlug(slug);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public InterviewTypeResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateInterviewTypeRequest request) {
@@ -63,6 +69,7 @@ public class InterviewTypeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
