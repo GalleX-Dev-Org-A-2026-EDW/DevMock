@@ -1,4 +1,4 @@
-import { httpRequired, setToken } from "./http"
+import { API_URL, ApiError, setToken, clearAuth } from "./http"
 
 export type UserRole = "STUDENT" | "PROFESSIONAL" | "ADMIN"
 
@@ -23,9 +23,36 @@ export interface AuthResponse {
   fullName: string
 }
 
+async function authFetch<T>(path: string, options: RequestInit): Promise<T> {
+  const url = `${API_URL.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers as Record<string, string> | undefined),
+    },
+  })
+  if (!res.ok) {
+    const body = await res.text().catch(() => null)
+    const parsed = body ? tryParse(body) : null
+    throw new ApiError(
+      res.status,
+      parsed?.code ?? null,
+      parsed?.message ?? body ?? `HTTP ${res.status}`,
+      parsed?.fields as Record<string, string> | undefined,
+    )
+  }
+  return res.json() as Promise<T>
+}
+
+function tryParse(text: string): { code?: string; message?: string; fields?: Record<string, string> } | null {
+  try { return JSON.parse(text) } catch { return null }
+}
+
 export const authApi = {
   login: async (dto: LoginRequest) => {
-    const res = await httpRequired<AuthResponse>("/api/auth/login", {
+    clearAuth()
+    const res = await authFetch<AuthResponse>("/api/auth/login", {
       method: "POST",
       body: JSON.stringify(dto),
     })
@@ -34,7 +61,8 @@ export const authApi = {
   },
 
   register: async (dto: RegisterRequest) => {
-    const res = await httpRequired<AuthResponse>("/api/auth/register", {
+    clearAuth()
+    const res = await authFetch<AuthResponse>("/api/auth/register", {
       method: "POST",
       body: JSON.stringify(dto),
     })

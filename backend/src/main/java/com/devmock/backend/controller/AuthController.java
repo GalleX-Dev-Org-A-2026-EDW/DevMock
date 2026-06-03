@@ -14,6 +14,7 @@ import com.devmock.backend.security.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -69,11 +70,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest req) {
-        Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        req.getEmail(), req.getPassword()));
-        User user = userRepo.findByEmail(auth.getName())
-                .orElseThrow();
+        User user = userRepo.findByEmail(req.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No existe una cuenta con el email " + req.getEmail()));
+        try {
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            req.getEmail(), req.getPassword()));
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Contraseña incorrecta");
+        }
         String token = jwtService.generateToken(user.getEmail());
         return new AuthResponse(token, user.getEmail(), user.getFullName());
     }

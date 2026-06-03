@@ -1,37 +1,84 @@
 import { useState, type FormEvent } from "react"
-import { Link } from "react-router-dom"
-import { ChevronLeft, Mail, Lock, AlertCircle } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { ChevronLeft, Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react"
 import { authApi } from "@/api/auth"
 import { useAuth } from "@/context/AuthContext"
+import { ApiError } from "@/api/http"
 import devMockIcon from "@/assets/DevMockIcono.png"
 
-interface Props {
-  onSuccess?: () => void
+interface FieldErrors {
+  email?: string
+  password?: string
 }
 
-export default function LoginPage({ onSuccess }: Props) {
+function extractFieldErrors(err: unknown): FieldErrors {
+  if (err instanceof ApiError && err.fields) {
+    const map: Record<string, string> = {
+      email: err.fields.email,
+      password: err.fields.password,
+    }
+    return Object.fromEntries(Object.entries(map).filter(([, v]) => v))
+  }
+  return {}
+}
+
+function errorMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.status === 401) return err.message
+    if (err.status === 404) return err.message
+    if (err.status === 403) return "Acceso denegado. Intenta de nuevo."
+    if (err.code === "VALIDATION_ERROR") return "Corrige los errores en el formulario."
+    return err.message
+  }
+  if (err instanceof TypeError && err.message === "Failed to fetch") {
+    return "No se pudo conectar con el servidor. Verifica tu conexión."
+  }
+  return err instanceof Error ? err.message : "Error inesperado. Intenta de nuevo."
+}
+
+export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [loading, setLoading] = useState(false)
 
   const { login } = useAuth()
+  const navigate = useNavigate()
+
+  const validate = (): boolean => {
+    const fields: FieldErrors = {}
+    if (!email.trim()) fields.email = "El email es requerido."
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fields.email = "Email inválido"
+    if (!password) fields.password = "La contraseña es requerida."
+    setFieldErrors(fields)
+    return Object.keys(fields).length === 0
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError("")
+    if (!validate()) return
     setLoading(true)
     try {
       const res = await authApi.login({ email, password })
       login(res.token, res.fullName)
-      onSuccess?.()
+      navigate("/dashboard")
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Error inesperado"
-      setError(message)
+      setError(errorMessage(err))
+      setFieldErrors(extractFieldErrors(err))
     } finally {
       setLoading(false)
     }
   }
+
+  const inputClass = (hasError: boolean) =>
+    `w-full pl-10 pr-10 py-2.5 rounded-lg border bg-white text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:border-transparent transition-all ${
+      hasError
+        ? "border-red-400 focus:ring-red-400"
+        : "border-border focus:ring-primary"
+    }`
 
   return (
     <div className="min-h-screen bg-slate-100 font-['Manrope'] flex items-center justify-center p-6">
@@ -58,8 +105,8 @@ export default function LoginPage({ onSuccess }: Props) {
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-border">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+            {error && !Object.keys(fieldErrors).length && (
               <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
                 <p className="text-sm">{error}</p>
@@ -76,12 +123,16 @@ export default function LoginPage({ onSuccess }: Props) {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => ({ ...p, email: undefined })) }}
                   placeholder="tu@email.com"
                   required
-                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  className={inputClass(!!fieldErrors.email)}
+                  autoComplete="email"
                 />
               </div>
+              {fieldErrors.email && (
+                <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -97,25 +148,26 @@ export default function LoginPage({ onSuccess }: Props) {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => ({ ...p, password: undefined })) }}
                   placeholder="••••••••"
                   required
-                  className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  className={inputClass(!!fieldErrors.password)}
+                  autoComplete="current-password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                id="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary focus:ring-offset-0"
-              />
-              <label htmlFor="remember" className="text-sm text-muted-foreground select-none cursor-pointer">
-                Mantener sesión iniciada
-              </label>
+              {fieldErrors.password && (
+                <p className="text-xs text-red-500 mt-1">{fieldErrors.password}</p>
+              )}
             </div>
 
             <button
@@ -125,6 +177,10 @@ export default function LoginPage({ onSuccess }: Props) {
             >
               {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
+
+            {error && !!Object.keys(fieldErrors).length && (
+              <p className="text-xs text-red-500 text-center">{error}</p>
+            )}
           </form>
 
           <div className="relative my-6">
@@ -139,7 +195,8 @@ export default function LoginPage({ onSuccess }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-border rounded-lg text-sm font-medium text-foreground hover:bg-secondary transition-all"
+              disabled
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-border rounded-lg text-sm font-medium text-muted-foreground cursor-not-allowed opacity-60"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -151,7 +208,8 @@ export default function LoginPage({ onSuccess }: Props) {
             </button>
             <button
               type="button"
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-border rounded-lg text-sm font-medium text-foreground hover:bg-secondary transition-all"
+              disabled
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-border rounded-lg text-sm font-medium text-muted-foreground cursor-not-allowed opacity-60"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -163,16 +221,10 @@ export default function LoginPage({ onSuccess }: Props) {
 
         <p className="text-center text-sm text-muted-foreground mt-6">
           ¿No tienes una cuenta?{" "}
-          <Link to="/" className="font-medium text-primary hover:text-primary/80 transition-colors">
+          <Link to="/register" className="font-medium text-primary hover:text-primary/80 transition-colors">
             Regístrate gratis
           </Link>
         </p>
-
-        <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-          <p className="text-xs font-['JetBrains_Mono'] text-emerald-700 text-center">
-            Demo: demo@devmock.com / demo123
-          </p>
-        </div>
       </div>
     </div>
   )
