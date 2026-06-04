@@ -13,4 +13,6 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     List<Question> findByIsActiveTrue();
 
     List<Question> findByQuestionType(QuestionType questionType);
+
+    long countByIsActiveTrue();
 }

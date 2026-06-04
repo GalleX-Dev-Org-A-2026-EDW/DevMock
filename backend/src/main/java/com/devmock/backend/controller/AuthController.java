@@ -65,7 +65,7 @@ public class AuthController {
         user.setIsVerified(false);
         userRepo.save(user);
         String token = jwtService.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getEmail(), user.getFullName());
+        return new AuthResponse(token, user.getEmail(), user.getFullName(), user.getRole());
     }
 
     @PostMapping("/login")
@@ -81,6 +81,6 @@ public class AuthController {
             throw new BadCredentialsException("Contraseña incorrecta");
         }
         String token = jwtService.generateToken(user.getEmail());
-        return new AuthResponse(token, user.getEmail(), user.getFullName());
+        return new AuthResponse(token, user.getEmail(), user.getFullName(), user.getRole());
     }
 }

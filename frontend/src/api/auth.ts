@@ -1,4 +1,4 @@
-import { API_URL, ApiError, setToken, clearAuth } from "./http"
+import { API_URL, ApiError, setToken, setRole, clearAuth } from "./http"
 
 export type UserRole = "STUDENT" | "PROFESSIONAL" | "ADMIN"
 
@@ -21,6 +21,7 @@ export interface AuthResponse {
   token: string
   email: string
   fullName: string
+  role: UserRole
 }
 
 async function authFetch<T>(path: string, options: RequestInit): Promise<T> {
@@ -57,6 +58,7 @@ export const authApi = {
       body: JSON.stringify(dto),
     })
     setToken(res.token)
+    setRole(res.role)
     return res
   },
 
@@ -67,6 +69,7 @@ export const authApi = {
       body: JSON.stringify(dto),
     })
     setToken(res.token)
+    setRole(res.role)
     return res
   },
 }

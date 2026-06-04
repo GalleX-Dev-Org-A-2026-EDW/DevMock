@@ -1,5 +1,6 @@
 const TOKEN_KEY = "token"
 const USERNAME_KEY = "username"
+const ROLE_KEY = "role"
 
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080"
 
@@ -27,9 +28,22 @@ export function removeUsername(): void {
   localStorage.removeItem(USERNAME_KEY)
 }
 
+export function getRole(): string | null {
+  return localStorage.getItem(ROLE_KEY)
+}
+
+export function setRole(role: string): void {
+  localStorage.setItem(ROLE_KEY, role)
+}
+
+export function removeRole(): void {
+  localStorage.removeItem(ROLE_KEY)
+}
+
 export function clearAuth(): void {
   removeToken()
   removeUsername()
+  removeRole()
 }
 
 export class ApiError extends Error {

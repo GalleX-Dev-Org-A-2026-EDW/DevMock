@@ -4,6 +4,7 @@ import { ChevronLeft, Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react"
 import { authApi } from "@/api/auth"
 import { useAuth } from "@/context/AuthContext"
 import { ApiError } from "@/api/http"
+import type { UserRole } from "@/api/auth"
 import devMockIcon from "@/assets/DevMockIcono.png"
 
 interface FieldErrors {
@@ -63,8 +64,8 @@ export default function LoginPage() {
     setLoading(true)
     try {
       const res = await authApi.login({ email, password })
-      login(res.token, res.fullName)
-      navigate("/dashboard")
+      login(res.token, res.fullName, res.role as UserRole)
+      navigate(res.role === "ADMIN" ? "/admin" : "/dashboard")
     } catch (err) {
       setError(errorMessage(err))
       setFieldErrors(extractFieldErrors(err))

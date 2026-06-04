@@ -4,6 +4,7 @@ import { ChevronLeft, Mail, Lock, User, AlertCircle, CheckCircle2, Eye, EyeOff }
 import { authApi } from "@/api/auth"
 import { useAuth } from "@/context/AuthContext"
 import { ApiError } from "@/api/http"
+import type { UserRole } from "@/api/auth"
 import devMockIcon from "@/assets/DevMockIcono.png"
 
 interface FieldErrors {
@@ -96,7 +97,7 @@ export default function RegisterPage() {
         password,
         role,
       })
-      login(res.token, res.fullName)
+      login(res.token, res.fullName, res.role as UserRole)
       navigate("/dashboard")
     } catch (err) {
       setError(errorMessage(err))

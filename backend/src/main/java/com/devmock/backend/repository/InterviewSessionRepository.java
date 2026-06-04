@@ -1,10 +1,14 @@
 package com.devmock.backend.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.time.Instant;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.devmock.backend.entity.InterviewSession;
+import com.devmock.backend.entity.en_enum.SessionStatus;
 
 public interface InterviewSessionRepository extends JpaRepository<InterviewSession, UUID> {
-    
+    long countByStatus(SessionStatus status);
+    long countByCreatedAtAfter(Instant after);
 }
