@@ -6,6 +6,20 @@ import type { Question, CreateQuestionDto, UpdateQuestionDto, AnswerOptionDto } 
 import type { QuestionType, AnswerFormat } from "@/api/enums"
 import { Plus, Edit2, Trash2, Eye, EyeOff, Circle, CircleCheck, CheckSquare, Square } from "lucide-react"
 
+function getPageRange(current: number, total: number): (number | "...")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const pages: (number | "...")[] = [1]
+  if (current > 3) pages.push("...")
+  const start = Math.max(2, current - 1)
+  const end = Math.min(total - 1, current + 1)
+  for (let i = start; i <= end; i++) pages.push(i)
+  if (current < total - 2) pages.push("...")
+  if (total > 1) pages.push(total)
+  return pages
+}
+
+const PAGE_SIZE = 5
+
 export default function AdminQuestions() {
   const { data: questions, isLoading, isError } = useQuestions()
   const { data: categories } = useCategories()
@@ -13,6 +27,12 @@ export default function AdminQuestions() {
   const createQuestion = useCreateQuestion()
   const updateQuestion = useUpdateQuestion()
   const deleteQuestion = useDeleteQuestion()
+
+  const [page, setPage] = useState(1)
+
+  const totalPages = questions ? Math.max(1, Math.ceil(questions.length / PAGE_SIZE)) : 1
+  const currentPage = Math.min(page, totalPages)
+  const paginatedQuestions = questions?.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const [showModal, setShowModal] = useState(false)
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null)
@@ -195,8 +215,8 @@ export default function AdminQuestions() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="h-8 w-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <div className="h-8 w-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -207,76 +227,79 @@ export default function AdminQuestions() {
 
   return (
     <div>
-      <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
+      <div className="flex items-center flex-wrap gap-3 mb-6">
+        <div className="h-7 w-1 rounded-full bg-gradient-to-b from-violet-400 to-violet-600" />
         <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white">Preguntas</h1>
-        <button
-          onClick={openCreate}
-          className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" /> Nueva pregunta
-        </button>
+        <div className="ml-auto">
+          <button
+            onClick={openCreate}
+            className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" /> Nueva pregunta
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white/[0.04] backdrop-blur-sm rounded-xl border border-white/[0.06] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="text-left px-4 py-3 font-semibold text-gray-600">Enunciado</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-600">Tipo</th>
-                <th className="text-left px-4 py-3 font-semibold text-gray-600">Formato</th>
-                <th className="text-center px-4 py-3 font-semibold text-gray-600">Puntos</th>
-                <th className="text-center px-4 py-3 font-semibold text-gray-600">Activa</th>
-                <th className="text-right px-4 py-3 font-semibold text-gray-600">Acciones</th>
+              <tr className="border-b border-white/[0.06] bg-white/[0.03]">
+                <th className="text-left px-4 py-3 font-semibold text-white/50">Enunciado</th>
+                <th className="text-left px-4 py-3 font-semibold text-white/50">Tipo</th>
+                <th className="text-left px-4 py-3 font-semibold text-white/50">Formato</th>
+                <th className="text-center px-4 py-3 font-semibold text-white/50">Puntos</th>
+                <th className="text-center px-4 py-3 font-semibold text-white/50">Activa</th>
+                <th className="text-right px-4 py-3 font-semibold text-white/50">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {questions?.map((q) => (
-                <tr key={q.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+              {paginatedQuestions?.map((q) => (
+                <tr key={q.id} className="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors">
                   <td className="px-4 py-3 max-w-xs">
                     <button
                       onClick={() => setExpandedId(expandedId === q.id ? null : q.id)}
                       className="text-left"
                     >
-                      <span className="text-gray-900 font-medium line-clamp-2">{q.statement}</span>
+                      <span className="text-white/90 font-medium line-clamp-2">{q.statement}</span>
                     </button>
                     {expandedId === q.id && q.expectedAnswer && (
-                      <div className="mt-2 p-3 bg-gray-50 rounded-lg text-xs text-gray-600 font-['JetBrains_Mono']">
-                        <span className="font-semibold text-gray-700">Respuesta:</span> {q.expectedAnswer}
+                      <div className="mt-2 p-3 bg-white/[0.05] rounded-lg text-xs text-white/60 font-['JetBrains_Mono']">
+                        <span className="font-semibold text-white/80">Respuesta:</span> {q.expectedAnswer}
                       </div>
                     )}
                     {q.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {q.tags.map((tag) => (
-                          <span key={tag} className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded">{tag}</span>
+                          <span key={tag} className="text-xs px-1.5 py-0.5 bg-white/[0.06] text-white/50 rounded">{tag}</span>
                         ))}
                       </div>
                     )}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      q.questionType === "PRACTICAL" ? "bg-blue-50 text-blue-700" :
-                      q.questionType === "MIXED" ? "bg-violet-50 text-violet-700" :
-                      "bg-amber-50 text-amber-700"
+                      q.questionType === "PRACTICAL" ? "bg-blue-500/10 text-blue-300 ring-1 ring-inset ring-blue-500/20" :
+                      q.questionType === "MIXED" ? "bg-violet-500/10 text-violet-300 ring-1 ring-inset ring-violet-500/20" :
+                      "bg-amber-500/10 text-amber-300 ring-1 ring-inset ring-amber-500/20"
                     }`}>
                       {q.questionType === "THEORETICAL" ? "Teórica" : q.questionType === "PRACTICAL" ? "Práctica" : "Mixta"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-white/50">
                     {q.answerFormat === "FREE_TEXT" ? "Texto libre" :
                      q.answerFormat === "CODE" ? "Código" :
                      q.answerFormat === "MULTIPLE_CHOICE" ? "Opción múltiple" : "Opción única"}
                   </td>
-                  <td className="px-4 py-3 text-center font-medium text-gray-900">{q.basePoints}</td>
+                  <td className="px-4 py-3 text-center font-medium text-white/90">{q.basePoints}</td>
                   <td className="px-4 py-3 text-center">
-                    {q.isActive ? <Eye className="h-4 w-4 text-emerald-500 mx-auto" /> : <EyeOff className="h-4 w-4 text-gray-300 mx-auto" />}
+                    {q.isActive ? <Eye className="h-4 w-4 text-emerald-400 mx-auto" /> : <EyeOff className="h-4 w-4 text-white/20 mx-auto" />}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => openEdit(q)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-                        <Edit2 className="h-4 w-4 text-gray-400" />
+                      <button onClick={() => openEdit(q)} className="p-1.5 rounded-lg hover:bg-white/[0.08] transition-colors">
+                        <Edit2 className="h-4 w-4 text-white/40" />
                       </button>
-                      <button onClick={() => setConfirmDelete(q.id)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                      <button onClick={() => setConfirmDelete(q.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 transition-colors">
                         <Trash2 className="h-4 w-4 text-red-400" />
                       </button>
                     </div>
@@ -285,7 +308,7 @@ export default function AdminQuestions() {
               ))}
               {(!questions || questions.length === 0) && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-400">No hay preguntas registradas</td>
+                  <td colSpan={6} className="px-4 py-8 text-center text-white/40">No hay preguntas registradas</td>
                 </tr>
               )}
             </tbody>
@@ -293,20 +316,63 @@ export default function AdminQuestions() {
         </div>
       </div>
 
+      {questions && questions.length > PAGE_SIZE && (
+        <div className="flex items-center justify-between mt-4 px-1">
+          <p className="text-sm text-white/40">
+            {questions.length} preguntas — Página {currentPage} de {totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage <= 1}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium bg-white/[0.04] text-white/60 hover:bg-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-white/[0.06]"
+            >
+              Anterior
+            </button>
+            {getPageRange(currentPage, totalPages).map((p, i) =>
+              p === "..." ? (
+                <span key={`e${i}`} className="h-8 w-8 flex items-center justify-center text-white/30 text-xs select-none">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`h-8 w-8 rounded-lg text-sm font-medium transition-all ${
+                    p === currentPage
+                      ? "bg-white/[0.1] text-white border border-white/[0.1]"
+                      : "text-white/40 hover:text-white/70 hover:bg-white/[0.04] border border-transparent"
+                  }`}
+                >
+                  {p}
+                </button>
+              )
+            )}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage >= totalPages}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium bg-white/[0.04] text-white/60 hover:bg-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition-all border border-white/[0.06]"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      )}
+
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6" onClick={closeModal}>
-          <div className="bg-white rounded-2xl p-8 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <h2 className="font-['Work_Sans'] font-bold text-xl text-gray-900 mb-6">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={closeModal}>
+          <div className="bg-[#1e293b] rounded-2xl p-6 sm:p-8 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto border border-white/[0.08]" onClick={(e) => e.stopPropagation()}>
+            <h2 className="font-['Work_Sans'] font-bold text-xl text-white mb-6">
               {editingQuestion ? "Editar pregunta" : "Nueva pregunta"}
             </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Tipo</label>
                   <select
                     value={form.questionType}
                     onChange={(e) => setForm({ ...form, questionType: e.target.value as QuestionType })}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2.5 rounded-lg border border-white/[0.1] bg-white/[0.05] text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="THEORETICAL">Teórica</option>
                     <option value="PRACTICAL">Práctica</option>
@@ -314,11 +380,11 @@ export default function AdminQuestions() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Formato respuesta</label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Formato respuesta</label>
                   <select
                     value={form.answerFormat}
                     onChange={(e) => setForm({ ...form, answerFormat: e.target.value as AnswerFormat })}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2.5 rounded-lg border border-white/[0.1] bg-white/[0.05] text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="FREE_TEXT">Texto libre</option>
                     <option value="CODE">Código</option>
@@ -329,30 +395,30 @@ export default function AdminQuestions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Enunciado <span className="text-red-400">*</span></label>
+                <label className="block text-sm font-medium text-white/80 mb-1">Enunciado <span className="text-red-400">*</span></label>
                 <textarea
                   value={form.statement}
                   onChange={(e) => { setForm({ ...form, statement: e.target.value }); clearError("statement") }}
                   rows={4}
-                  className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.statement ? "border-red-400" : "border-gray-200"}`}
+                   className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/[0.05] text-white placeholder:text-white/30 ${errors.statement ? "border-red-400" : "border-white/[0.1]"}`}
                 />
-                {errors.statement && <p className="text-red-500 text-xs mt-1">{errors.statement}</p>}
+                {errors.statement && <p className="text-red-400 text-xs mt-1">{errors.statement}</p>}
               </div>
 
               {form.answerFormat === "FREE_TEXT" || form.answerFormat === "CODE" ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Respuesta esperada <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Respuesta esperada <span className="text-red-400">*</span></label>
                   <textarea
                     value={form.expectedAnswer || ""}
                     onChange={(e) => { setForm({ ...form, expectedAnswer: e.target.value }); clearError("expectedAnswer") }}
                     rows={3}
-                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${form.answerFormat === "CODE" ? "font-['JetBrains_Mono']" : ""} ${errors.expectedAnswer ? "border-red-400" : "border-gray-200"}`}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/[0.05] text-white placeholder:text-white/30 ${form.answerFormat === "CODE" ? "font-['JetBrains_Mono']" : ""} ${errors.expectedAnswer ? "border-red-400" : "border-white/[0.1]"}`}
                   />
-                  {errors.expectedAnswer && <p className="text-red-500 text-xs mt-1">{errors.expectedAnswer}</p>}
+                  {errors.expectedAnswer && <p className="text-red-400 text-xs mt-1">{errors.expectedAnswer}</p>}
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Opciones de respuesta <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-white/80 mb-2">Opciones de respuesta <span className="text-red-400">*</span></label>
                   <div className="space-y-2">
                     {form.answerOptions?.map((opt, i) => (
                       <div key={i} className="flex items-center gap-2">
@@ -362,9 +428,9 @@ export default function AdminQuestions() {
                           className="flex-shrink-0"
                         >
                           {form.answerFormat === "SINGLE_CHOICE" ? (
-                            opt.isCorrect ? <CircleCheck className="h-5 w-5 text-emerald-500" /> : <Circle className="h-5 w-5 text-gray-300" />
+                            opt.isCorrect ? <CircleCheck className="h-5 w-5 text-emerald-400" /> : <Circle className="h-5 w-5 text-white/20" />
                           ) : (
-                            opt.isCorrect ? <CheckSquare className="h-5 w-5 text-emerald-500" /> : <Square className="h-5 w-5 text-gray-300" />
+                            opt.isCorrect ? <CheckSquare className="h-5 w-5 text-emerald-400" /> : <Square className="h-5 w-5 text-white/20" />
                           )}
                         </button>
                         <input
@@ -372,12 +438,12 @@ export default function AdminQuestions() {
                           value={opt.optionText}
                           onChange={(e) => { clearError("options"); updateOption(i, "optionText", e.target.value) }}
                           placeholder={`Opción ${i + 1}`}
-                          className={`flex-1 px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.options && !opt.optionText.trim() ? "border-red-400" : "border-gray-200"}`}
+                          className={`flex-1 px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/[0.05] text-white placeholder:text-white/30 ${errors.options && !opt.optionText.trim() ? "border-red-400" : "border-white/[0.1]"}`}
                         />
                         <button
                           type="button"
                           onClick={() => removeOption(i)}
-                          className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                          className="p-1 text-white/40 hover:text-red-400 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -386,82 +452,82 @@ export default function AdminQuestions() {
                     <button
                       type="button"
                       onClick={() => { clearError("options"); addOption() }}
-                      className="flex items-center gap-1 px-3 py-2 text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
+                      className="flex items-center gap-1 px-3 py-2 text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
                     >
                       <Plus className="h-4 w-4" /> Agregar opción
                     </button>
                   </div>
-                  {errors.options && <p className="text-red-500 text-xs mt-1">{errors.options}</p>}
-                  {errors.correctOption && <p className="text-red-500 text-xs mt-1">{errors.correctOption}</p>}
+                  {errors.options && <p className="text-red-400 text-xs mt-1">{errors.options}</p>}
+                  {errors.correctOption && <p className="text-red-400 text-xs mt-1">{errors.correctOption}</p>}
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Explicación</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">Explicación</label>
                 <textarea
                   value={form.explanation || ""}
                   onChange={(e) => setForm({ ...form, explanation: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-3 py-2.5 rounded-lg border border-white/[0.1] bg-white/[0.05] text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Puntos base <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Puntos base <span className="text-red-400">*</span></label>
                   <input
                     type="number"
                     value={form.basePoints}
                     onChange={(e) => { setForm({ ...form, basePoints: parseInt(e.target.value) || 0 }); clearError("basePoints") }}
-                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.basePoints ? "border-red-400" : "border-gray-200"}`}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/[0.05] text-white placeholder:text-white/30 ${errors.basePoints ? "border-red-400" : "border-white/[0.1]"}`}
                   />
-                  {errors.basePoints && <p className="text-red-500 text-xs mt-1">{errors.basePoints}</p>}
+                  {errors.basePoints && <p className="text-red-400 text-xs mt-1">{errors.basePoints}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tiempo estimado (seg)</label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Tiempo estimado (seg)</label>
                   <input
                     type="number"
                     value={form.estimatedTimeSeconds ?? ""}
                     onChange={(e) => { setForm({ ...form, estimatedTimeSeconds: e.target.value ? parseInt(e.target.value) : undefined }); clearError("estimatedTimeSeconds") }}
-                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.estimatedTimeSeconds ? "border-red-400" : "border-gray-200"}`}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/[0.05] text-white placeholder:text-white/30 ${errors.estimatedTimeSeconds ? "border-red-400" : "border-white/[0.1]"}`}
                   />
-                  {errors.estimatedTimeSeconds && <p className="text-red-500 text-xs mt-1">{errors.estimatedTimeSeconds}</p>}
+                  {errors.estimatedTimeSeconds && <p className="text-red-400 text-xs mt-1">{errors.estimatedTimeSeconds}</p>}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Categoría <span className="text-red-400">*</span></label>
                   <select
                     value={form.categoryId || ""}
                     onChange={(e) => { setForm({ ...form, categoryId: e.target.value || undefined }); clearError("categoryId") }}
-                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.categoryId ? "border-red-400" : "border-gray-200"}`}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/[0.05] text-white ${errors.categoryId ? "border-red-400" : "border-white/[0.1]"}`}
                   >
                     <option value="">Selecciona una categoría</option>
                     {categories?.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
-                  {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>}
+                  {errors.categoryId && <p className="text-red-400 text-xs mt-1">{errors.categoryId}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Dificultad <span className="text-red-400">*</span></label>
+                  <label className="block text-sm font-medium text-white/80 mb-1">Dificultad <span className="text-red-400">*</span></label>
                   <select
                     value={form.difficultyId || ""}
                     onChange={(e) => { setForm({ ...form, difficultyId: e.target.value || undefined }); clearError("difficultyId") }}
-                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.difficultyId ? "border-red-400" : "border-gray-200"}`}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white/[0.05] text-white ${errors.difficultyId ? "border-red-400" : "border-white/[0.1]"}`}
                   >
                     <option value="">Selecciona una dificultad</option>
                     {difficultyLevels?.map((dl) => (
                       <option key={dl.id} value={dl.id}>{dl.name}</option>
                     ))}
                   </select>
-                  {errors.difficultyId && <p className="text-red-500 text-xs mt-1">{errors.difficultyId}</p>}
+                  {errors.difficultyId && <p className="text-red-400 text-xs mt-1">{errors.difficultyId}</p>}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                <label className="block text-sm font-medium text-white/80 mb-1">Tags</label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -469,18 +535,18 @@ export default function AdminQuestions() {
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                     placeholder="Agregar tag..."
-                    className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="flex-1 px-3 py-2 rounded-lg border border-white/[0.1] bg-white/[0.05] text-white placeholder:text-white/30 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   />
-                  <button onClick={addTag} className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                  <button onClick={addTag} className="px-3 py-2 bg-white/[0.08] text-white/70 rounded-lg text-sm hover:bg-white/[0.12] transition-colors">
                     Agregar
                   </button>
                 </div>
                 {form.tags && form.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
                     {form.tags.map((tag) => (
-                      <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-xs">
+                      <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-white/[0.06] text-white/60 rounded-md text-xs">
                         {tag}
-                        <button onClick={() => removeTag(tag)} className="hover:text-red-500">&times;</button>
+                        <button onClick={() => removeTag(tag)} className="hover:text-red-400">&times;</button>
                       </span>
                     ))}
                   </div>
@@ -490,7 +556,7 @@ export default function AdminQuestions() {
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={closeModal}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+                  className="flex-1 px-4 py-2.5 border border-white/[0.1] rounded-lg text-sm font-medium text-white/70 hover:bg-white/[0.08] transition-all"
                 >
                   Cancelar
                 </button>
@@ -508,14 +574,14 @@ export default function AdminQuestions() {
       )}
 
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6" onClick={() => setConfirmDelete(null)}>
-          <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <h2 className="font-['Work_Sans'] font-bold text-xl text-gray-900 mb-2">¿Eliminar pregunta?</h2>
-            <p className="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer.</p>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setConfirmDelete(null)}>
+          <div className="bg-[#1e293b] rounded-2xl p-6 sm:p-8 w-full max-w-sm shadow-2xl border border-white/[0.08]" onClick={(e) => e.stopPropagation()}>
+            <h2 className="font-['Work_Sans'] font-bold text-xl text-white mb-2">¿Eliminar pregunta?</h2>
+            <p className="text-sm text-white/50 mb-6">Esta acción no se puede deshacer.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+                className="flex-1 px-4 py-2.5 border border-white/[0.1] rounded-lg text-sm font-medium text-white/70 hover:bg-white/[0.08] transition-all"
               >
                 Cancelar
               </button>
