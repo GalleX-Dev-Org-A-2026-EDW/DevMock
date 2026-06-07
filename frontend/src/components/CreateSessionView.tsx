@@ -26,12 +26,27 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | null>(null)
   const [step, setStep] = useState(0)
+  const [error, setError] = useState<string | null>(null)
 
   const createSession = useCreateInterviewSession()
   const createSQ = useCreateSessionQuestion()
 
   const handleCreate = async () => {
     if (!selectedType || !selectedCategory || !selectedDifficulty) return
+
+    const filtered = (allQuestions ?? []).filter(
+      (q) =>
+        q.categoryId === selectedCategory.id &&
+        q.difficultyId === selectedDifficulty.id &&
+        q.isActive
+    )
+
+    if (filtered.length === 0) {
+      setError("No hay preguntas disponibles para esta combinación de categoría y dificultad. Intenta con otra combinación.")
+      return
+    }
+
+    setError(null)
 
     const res = await createSession.mutateAsync({
       status: "IN_PROGRESS",
@@ -42,13 +57,6 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
     })
 
     const sessionId = res.id
-
-    const filtered = (allQuestions ?? []).filter(
-      (q) =>
-        q.categoryId === selectedCategory.id &&
-        q.difficultyId === selectedDifficulty.id &&
-        q.isActive
-    )
 
     const selected = filtered
       .sort(() => Math.random() - 0.5)
@@ -95,7 +103,7 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
                 className={`cursor-pointer transition-all hover:border-neutral-400 ${
                   selectedType?.id === t.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
                 }`}
-                onClick={() => { setSelectedType(t); setStep(1) }}
+                onClick={() => { setSelectedType(t); setError(null); setStep(1) }}
               >
                 <CardContent className="pt-6">
                   <p className="font-semibold">{t.name}</p>
@@ -120,7 +128,7 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
                 className={`cursor-pointer transition-all hover:border-neutral-400 ${
                   selectedCategory?.id === c.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
                 }`}
-                onClick={() => { setSelectedCategory(c); setStep(2) }}
+                onClick={() => { setSelectedCategory(c); setError(null); setStep(2) }}
               >
                 <CardContent className="pt-6">
                   <p className="font-semibold">{c.name}</p>
@@ -145,7 +153,7 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
                 className={`cursor-pointer transition-all hover:border-neutral-400 ${
                   selectedDifficulty?.id === d.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
                 }`}
-                onClick={() => setSelectedDifficulty(d)}
+                onClick={() => { setSelectedDifficulty(d); setError(null) }}
               >
                 <CardContent className="pt-6">
                   <p className="font-semibold">{d.name}</p>
@@ -154,6 +162,9 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
               </Card>
             ))}
           </div>
+          {error && (
+            <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/30 px-3 py-2 rounded-md">{error}</p>
+          )}
           <div className="flex items-center justify-between pt-4">
             <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               ← Volver
