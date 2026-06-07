@@ -70,76 +70,76 @@ public class DataInitializer implements CommandLineRunner {
 
         log.info("Seeding initial data...");
 
-        var easy = createDifficultyLevel("Easy", "easy", 1, BigDecimal.valueOf(1.00), "Basic questions");
-        var medium = createDifficultyLevel("Medium", "medium", 2, BigDecimal.valueOf(1.50), "Intermediate questions");
-        var hard = createDifficultyLevel("Hard", "hard", 3, BigDecimal.valueOf(2.00), "Advanced questions");
+        var facil = createDifficultyLevel("Fácil", "facil", 1, BigDecimal.valueOf(1.00), "Preguntas básicas");
+        var intermedio = createDifficultyLevel("Intermedio", "intermedio", 2, BigDecimal.valueOf(1.50), "Preguntas intermedias");
+        var avanzado = createDifficultyLevel("Avanzado", "avanzado", 3, BigDecimal.valueOf(2.00), "Preguntas avanzadas");
 
-        var algorithms = createCategory("Algorithms", "algorithms", "Algorithm and data structure questions", "code-icon", 1);
-        var dataStructures = createCategory("Data Structures", "data-structures", "Data structure implementation questions", "database-icon", 2);
-        var webDev = createCategory("Web Development", "web-development", "Web development and API questions", "globe-icon", 3);
-        var databases = createCategory("Databases", "databases", "Database and SQL questions", "server-icon", 4);
-        var systemDesign = createCategory("System Design", "system-design", "System design and architecture questions", "layers-icon", 5);
+        var algoritmos = createCategory("Algoritmos", "algoritmos", "Preguntas sobre algoritmos y estructuras de datos", "code-icon", 1);
+        var estructurasDatos = createCategory("Estructuras de Datos", "estructuras-de-datos", "Preguntas de implementación de estructuras de datos", "database-icon", 2);
+        var desarrolloWeb = createCategory("Desarrollo Web", "desarrollo-web", "Preguntas sobre desarrollo web y APIs", "globe-icon", 3);
+        var basesDatos = createCategory("Bases de Datos", "bases-de-datos", "Preguntas sobre bases de datos y SQL", "server-icon", 4);
+        var disenoSistemas = createCategory("Diseño de Sistemas", "diseno-de-sistemas", "Preguntas sobre diseño de sistemas y arquitectura", "layers-icon", 5);
 
-        createInterviewType("Technical Interview", "technical-interview", QuestionType.MIXED, 5, 3600,
-                "Standard technical interview with mixed question types");
-        createInterviewType("Coding Challenge", "coding-challenge", QuestionType.PRACTICAL, 3, 1800,
-                "Focused coding challenge with practical exercises");
+        createInterviewType("Entrevista Técnica", "entrevista-tecnica", QuestionType.MIXED, 5, 3600,
+                "Entrevista técnica estándar con tipos de preguntas mixtas");
+        createInterviewType("Desafío de Código", "desafio-de-codigo", QuestionType.PRACTICAL, 3, 1800,
+                "Desafío de código enfocado en ejercicios prácticos");
 
-        createEvaluationCriterion("Correctness", "correctness", "How correct is the solution", BigDecimal.valueOf(40.00));
-        createEvaluationCriterion("Efficiency", "efficiency", "How efficient is the solution", BigDecimal.valueOf(25.00));
-        createEvaluationCriterion("Clarity", "clarity", "How clear and readable is the code", BigDecimal.valueOf(20.00));
-        createEvaluationCriterion("Logic", "logic", "How logical is the approach", BigDecimal.valueOf(15.00));
+        createEvaluationCriterion("Corrección", "correccion", "Qué tan correcta es la solución", BigDecimal.valueOf(40.00));
+        createEvaluationCriterion("Eficiencia", "eficiencia", "Qué tan eficiente es la solución", BigDecimal.valueOf(25.00));
+        createEvaluationCriterion("Claridad", "claridad", "Qué tan claro y legible es el código", BigDecimal.valueOf(20.00));
+        createEvaluationCriterion("Lógica", "logica", "Qué tan lógico es el enfoque", BigDecimal.valueOf(15.00));
 
-        var admin = createAdminUser(easy);
+        var admin = createAdminUser(facil);
 
-        createAchievement("First Session", "first-session", "Complete your first interview session",
-                "complete 1 session", 50);
-        createAchievement("Perfect Score", "perfect-score", "Get a perfect score on any question",
-                "score 100 on any question", 100);
-        createAchievement("Speed Demon", "speed-demon", "Complete a question in half the allotted time",
-                "finish a question in under 50% of estimated time", 75);
-        createAchievement("Marathon", "marathon", "Complete 10 interview sessions",
-                "complete 10 sessions", 200);
+        createAchievement("Primera Sesión", "primera-sesion", "Completa tu primera sesión de entrevista",
+                "completar 1 sesión", 50);
+        createAchievement("Puntuación Perfecta", "puntuacion-perfecta", "Obtén una puntuación perfecta en cualquier pregunta",
+                "puntuar 100 en cualquier pregunta", 100);
+        createAchievement("Rápido como un Rayo", "rapido-como-un-rayo", "Completa una pregunta en la mitad del tiempo asignado",
+                "terminar una pregunta en menos del 50% del tiempo estimado", 75);
+        createAchievement("Maratón", "maraton", "Completa 10 sesiones de entrevista",
+                "completar 10 sesiones", 200);
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Write a function that checks if a given string is a palindrome. The function should ignore case, spaces, and punctuation.",
+                "Escribe una función que verifique si una cadena dada es un palíndromo. La función debe ignorar mayúsculas, espacios y signos de puntuación.",
                 "def is_palindrome(s):\\n    cleaned = ''.join(c.lower() for c in s if c.isalnum())\\n    return cleaned == cleaned[::-1]",
-                "Clean the string by keeping only alphanumeric characters, convert to lowercase, then compare with its reverse.",
+                "Limpia la cadena conservando solo caracteres alfanuméricos, convierte a minúsculas, luego compara con su reverso.",
                 600, 50, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("palindrome", "strings", "easy"),
-                algorithms, easy, admin);
+                List.of("palindromo", "cadenas", "facil"),
+                algoritmos, facil, admin);
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Implement a binary search tree (BST) with insert and search operations.",
+                "Implementa un árbol binario de búsqueda (BST) con operaciones de inserción y búsqueda.",
                 "class Node { int value; Node left, right; Node(int v) { value = v; } } class BST { Node insert(Node root, int v) { if (root == null) return new Node(v); if (v < root.value) root.left = insert(root.left, v); else root.right = insert(root.right, v); return root; } boolean search(Node root, int v) { if (root == null) return false; if (root.value == v) return true; return v < root.value ? search(root.left, v) : search(root.right, v); } }",
-                "Each node has a value, left child, and right child. Insert recursively finds the correct position. Search recursively traverses left or right based on value comparison.",
+                "Cada nodo tiene un valor, un hijo izquierdo y un hijo derecho. Insertar busca recursivamente la posición correcta. Buscar recorre recursivamente izquierda o derecha según la comparación de valores.",
                 900, 100, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("bst", "trees", "data-structures"),
-                dataStructures, medium, admin);
+                List.of("bst", "arboles", "estructuras-de-datos"),
+                estructurasDatos, intermedio, admin);
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explain the key differences between REST and GraphQL APIs. When would you choose one over the other?",
+                "Explica las diferencias clave entre las APIs REST y GraphQL. ¿Cuándo elegirías una sobre la otra?",
                 null,
-                "REST uses fixed endpoints for resources, while GraphQL uses a single endpoint with a flexible query language. REST is simpler for basic CRUD, while GraphQL excels when clients need different data shapes.",
+                "REST usa endpoints fijos para los recursos, mientras que GraphQL usa un solo endpoint con un lenguaje de consulta flexible. REST es más simple para CRUD básico, mientras que GraphQL destaca cuando los clientes necesitan diferentes formas de datos.",
                 600, 80, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("rest", "graphql", "api", "web"),
-                webDev, medium, admin);
+                desarrolloWeb, intermedio, admin);
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Write a SQL query to find duplicate email addresses in a users table. The table has columns: id, name, email.",
-                "SELECT email, COUNT(*) as count FROM users GROUP BY email HAVING COUNT(*) > 1;",
-                "Group by email, count occurrences, filter groups with count greater than 1.",
+                "Escribe una consulta SQL para encontrar direcciones de email duplicadas en una tabla de usuarios. La tabla tiene las columnas: id, name, email.",
+                "SELECT email, COUNT(*) as count FROM usuarios GROUP BY email HAVING COUNT(*) > 1;",
+                "Agrupa por email, cuenta las ocurrencias, filtra los grupos con count mayor a 1.",
                 480, 80, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("sql", "duplicates", "databases"),
-                databases, medium, admin);
+                List.of("sql", "duplicados", "bases-de-datos"),
+                basesDatos, intermedio, admin);
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Design a URL shortening service like TinyURL. Explain your system design choices including database schema, API design, and scaling considerations.",
+                "Diseña un servicio de acortamiento de URLs como TinyURL. Explica tus decisiones de diseño incluyendo el esquema de base de datos, diseño de API y consideraciones de escalabilidad.",
                 null,
-                "Use a hash function (e.g., Base62 encoding of a unique ID) to generate short codes. Store mappings in a relational DB with the short code as primary key. Cache frequent lookups with Redis. Use a distributed counter (e.g., Snowflake) for unique ID generation across multiple servers.",
+                "Usa una función hash (ej. codificación Base62 de un ID único) para generar códigos cortos. Almacena los mapeos en una BD relacional con el código corto como clave primaria. Cachea las búsquedas frecuentes con Redis. Usa un contador distribuido (ej. Snowflake) para generación de IDs únicos en múltiples servidores.",
                 1200, 150, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.5, \"designWeight\": 0.3}",
-                List.of("system-design", "scalability", "url-shortener"),
-                systemDesign, hard, admin);
+                List.of("diseno-de-sistemas", "escalabilidad", "acortador-urls"),
+                disenoSistemas, avanzado, admin);
 
         log.info("Seed complete — {} users, {} difficulty levels, {} categories, {} questions",
                 userRepo.count(), difficultyLevelRepo.count(), categoryRepo.count(), questionRepo.count());

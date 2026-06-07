@@ -5,17 +5,17 @@ interface LogEntry {
   id: number
   label: string
   category: string
-  priority: "low" | "medium" | "high"
+  priority: "baja" | "media" | "alta"
   timestamp: string
 }
 
 function generateLogs(count: number): LogEntry[] {
-  const categories = ["system", "network", "security", "database", "cache"]
-  const priorities: LogEntry["priority"][] = ["low", "medium", "high"]
+  const categories = ["sistema", "red", "seguridad", "base-datos", "cache"]
+  const priorities: LogEntry["priority"][] = ["baja", "media", "alta"]
 
   return Array.from({ length: count }, (_, i) => ({
     id: i,
-    label: `Event #${i} — ${Math.random().toString(36).slice(2, 8)}`,
+    label: `Evento #${i} — ${Math.random().toString(36).slice(2, 8)}`,
     category: categories[i % categories.length],
     priority: priorities[i % priorities.length],
     timestamp: new Date(Date.now() - i * 60000).toISOString(),
@@ -46,10 +46,10 @@ function ExpensiveLogTable({ logs }: { logs: LogEntry[] }) {
       <table className="w-full text-left text-xs">
         <thead className="sticky top-0 bg-muted">
           <tr>
-            <th className="px-3 py-2 font-medium">Event</th>
-            <th className="px-3 py-2 font-medium">Category</th>
-            <th className="px-3 py-2 font-medium">Priority</th>
-            <th className="px-3 py-2 font-medium">Time</th>
+            <th className="px-3 py-2 font-medium">Evento</th>
+            <th className="px-3 py-2 font-medium">Categoría</th>
+            <th className="px-3 py-2 font-medium">Prioridad</th>
+            <th className="px-3 py-2 font-medium">Hora</th>
           </tr>
         </thead>
         <tbody>
@@ -65,9 +65,9 @@ function ExpensiveLogTable({ logs }: { logs: LogEntry[] }) {
               <td className="px-3 py-1.5">
                 <span
                   className={
-                    log.priority === "high"
+                    log.priority === "alta"
                       ? "text-red-500"
-                      : log.priority === "medium"
+                      : log.priority === "media"
                         ? "text-amber-500"
                         : "text-muted-foreground"
                   }
@@ -109,29 +109,29 @@ export function HeavyListDemo() {
     <div className="flex flex-col gap-4">
       <div>
         <p className="mb-1 text-sm font-medium text-muted-foreground">
-          5,000 log entries · Input updates instantly, table renders deferred
+          5,000 entradas de log · El input se actualiza al instante, la tabla se renderiza diferida
         </p>
         <div className="relative">
           <input
             type="text"
             value={filter}
             onChange={handleChange}
-            placeholder="Filter logs..."
+            placeholder="Filtrar logs..."
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           {isPending && (
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-amber-500">
-              rendering…
+              renderizando…
             </span>
           )}
         </div>
       </div>
 
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span>Showing {filteredLogs.length} of {ALL_LOGS.length} entries</span>
+        <span>Mostrando {filteredLogs.length} de {ALL_LOGS.length} entradas</span>
         {isPending && (
           <span className="rounded bg-amber-100 px-2 py-0.5 text-amber-700 dark:bg-amber-900 dark:text-amber-300">
-            Deferred render in progress
+            Renderizado diferido en progreso
           </span>
         )}
       </div>

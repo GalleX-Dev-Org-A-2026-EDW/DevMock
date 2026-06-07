@@ -9,9 +9,10 @@ export default function Demo() {
         <CardHeader>
           <CardTitle>useDebouncedValue</CardTitle>
           <CardDescription>
-            Reduces function calls by waiting for a pause before committing
-            the value. The debounced value stays stable while the user is
-            still typing — the search only fires after a 400ms pause.
+            Reduce las llamadas a funciones esperando una pausa antes de
+            confirmar el valor. El valor "debounced" se mantiene estable
+            mientras el usuario escribe — la búsqueda solo se ejecuta
+            tras 400ms de pausa.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -23,10 +24,11 @@ export default function Demo() {
         <CardHeader>
           <CardTitle>useDeferredValue</CardTitle>
           <CardDescription>
-            Keeps the input responsive during expensive renders. The input
-            value updates immediately on every keystroke, but the heavy
-            filtered table only renders when the browser has spare cycles.
-            Watch for the "rendering…" indicator when typing fast.
+            Mantiene el input responsive durante renderizados costosos.
+            El valor del input se actualiza al instante con cada tecla,
+            pero la tabla filtrada solo se renderiza cuando el navegador
+            tiene ciclos disponibles. Observa el indicador "renderizando…"
+            al escribir rápido.
           </CardDescription>
         </CardHeader>
         <CardContent>

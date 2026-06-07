@@ -51,10 +51,10 @@ export default function SessionResultsView({ sessionId, onBack }: Props) {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <ScoreBadge label="Final" value={session.finalScore} />
-        <ScoreBadge label="Correctness" value={session.correctnessScore} />
-        <ScoreBadge label="Efficiency" value={session.efficiencyScore} />
-        <ScoreBadge label="Logic" value={session.logicScore} />
-        <ScoreBadge label="Clarity" value={session.clarityScore} />
+        <ScoreBadge label="Corrección" value={session.correctnessScore} />
+        <ScoreBadge label="Eficiencia" value={session.efficiencyScore} />
+        <ScoreBadge label="Lógica" value={session.logicScore} />
+        <ScoreBadge label="Claridad" value={session.clarityScore} />
         <div className="rounded-lg bg-neutral-50 px-4 py-3 text-center">
           <p className="text-2xl font-bold">{fmt(session.totalTimeUsedSeconds)}</p>
           <p className="text-xs font-medium mt-0.5">Tiempo total</p>

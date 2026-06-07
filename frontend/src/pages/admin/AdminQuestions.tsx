@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useQuestions, useCreateQuestion, useUpdateQuestion, useDeleteQuestion } from "@/api/questions.queries"
 import { useCategories } from "@/api/categories.queries"
+import { useDifficultyLevels } from "@/api/difficulty-levels.queries"
 import type { Question, CreateQuestionDto, UpdateQuestionDto } from "@/api/questions"
 import type { QuestionType, AnswerFormat } from "@/api/enums"
 import { Plus, Edit2, Trash2, Eye, EyeOff } from "lucide-react"
@@ -8,6 +9,7 @@ import { Plus, Edit2, Trash2, Eye, EyeOff } from "lucide-react"
 export default function AdminQuestions() {
   const { data: questions, isLoading, isError } = useQuestions()
   const { data: categories } = useCategories()
+  const { data: difficultyLevels } = useDifficultyLevels()
   const createQuestion = useCreateQuestion()
   const updateQuestion = useUpdateQuestion()
   const deleteQuestion = useDeleteQuestion()
@@ -291,13 +293,16 @@ export default function AdminQuestions() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Dificultad</label>
-                  <input
-                    type="text"
-                    placeholder="ID de dificultad"
+                  <select
                     value={form.difficultyId || ""}
                     onChange={(e) => setForm({ ...form, difficultyId: e.target.value || undefined })}
                     className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  >
+                    <option value="">Sin dificultad</option>
+                    {difficultyLevels?.map((dl) => (
+                      <option key={dl.id} value={dl.id}>{dl.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

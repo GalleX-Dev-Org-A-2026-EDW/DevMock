@@ -22,7 +22,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
+  { label: "Panel", icon: LayoutDashboard, path: "/admin" },
   { label: "Usuarios", icon: Users, path: "/admin/users" },
   { label: "Preguntas", icon: HelpCircle, path: "/admin/questions" },
   { label: "Categorías", icon: FolderTree, path: "/admin/categories" },

@@ -106,7 +106,7 @@ async function rawFetch<T>(
   if (!res.ok) {
     const body = await res.text().catch(() => null)
     const parsed = body ? tryParseJson(body) : null
-    const message = parsed?.message ?? body ?? `HTTP ${res.status}`
+    const message = parsed?.message ?? body ?? `Error HTTP ${res.status}`
     throw new ApiError(
       res.status,
       typeof parsed?.code === "string" ? parsed.code : null,

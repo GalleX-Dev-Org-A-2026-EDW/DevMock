@@ -2,21 +2,21 @@ import { useState, useEffect, useMemo } from "react"
 import { useDebouncedValue } from "@/hooks"
 
 const DEMO_ITEMS = [
-  "React Fundamentals",
-  "Advanced TypeScript Patterns",
-  "Tailwind CSS Mastery",
-  "Spring Boot REST APIs",
-  "PostgreSQL Performance Tuning",
-  "Docker & Kubernetes Deployment",
-  "GraphQL with Apollo",
+  "Fundamentos de React",
+  "Patrones Avanzados de TypeScript",
+  "Maestría en Tailwind CSS",
+  "APIs REST con Spring Boot",
+  "Optimización de PostgreSQL",
+  "Despliegue con Docker y Kubernetes",
+  "GraphQL con Apollo",
   "Next.js Full Stack",
-  "Testing with Vitest",
-  "CI/CD with GitHub Actions",
-  "Node.js Microservices",
-  "Python Data Science",
-  "Rust Systems Programming",
-  "Go Concurrency Patterns",
-  "AWS Cloud Architecture",
+  "Pruebas con Vitest",
+  "CI/CD con GitHub Actions",
+  "Microservicios con Node.js",
+  "Ciencia de Datos con Python",
+  "Programación de Sistemas con Rust",
+  "Patrones de Concurrencia en Go",
+  "Arquitectura en la Nube AWS",
 ]
 
 export function SearchDemo() {
@@ -43,7 +43,7 @@ export function SearchDemo() {
     <div className="flex flex-col gap-4">
       <div>
         <p className="mb-1 text-sm font-medium text-muted-foreground">
-          {DEMO_ITEMS.length} courses · Search triggers after 400ms pause
+          {DEMO_ITEMS.length} cursos · La búsqueda se activa tras 400ms de pausa
         </p>
         <div className="relative">
           <input
@@ -53,12 +53,12 @@ export function SearchDemo() {
               setQuery(e.target.value)
               setKeystrokeCount((c) => c + 1)
             }}
-            placeholder="Type to search courses..."
+            placeholder="Escribe para buscar cursos..."
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
           {query && (
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-              {results.length} results
+              {results.length} resultados
             </span>
           )}
         </div>
@@ -67,14 +67,14 @@ export function SearchDemo() {
       {/* Metrics */}
       <div className="flex gap-4 text-xs">
         <span className="rounded bg-muted px-2 py-1 text-muted-foreground">
-          Keystrokes: {keystrokeCount}
+          Teclas: {keystrokeCount}
         </span>
         <span className="rounded bg-muted px-2 py-1 text-muted-foreground">
-          Searches fired: {searchCount}
+          Búsquedas ejecutadas: {searchCount}
         </span>
         {keystrokeCount > 0 && (
           <span className="rounded bg-emerald-100 px-2 py-1 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
-            Saved {keystrokeCount - searchCount} unnecessary API calls
+            Ahorraste {keystrokeCount - searchCount} llamadas API innecesarias
           </span>
         )}
       </div>
@@ -92,7 +92,7 @@ export function SearchDemo() {
           ))
         ) : (
           <li className="py-2 text-sm text-muted-foreground">
-            {query ? "No courses match your search." : "Start typing to filter courses."}
+            {query ? "Ningún curso coincide con tu búsqueda." : "Empieza a escribir para filtrar cursos."}
           </li>
         )}
       </ul>
