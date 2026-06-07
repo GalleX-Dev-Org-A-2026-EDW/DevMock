@@ -17,8 +17,21 @@ function ScoreBadge({ label, value }: { label: string; value: number | null | un
   return (
     <div className={`rounded-lg px-4 py-3 text-center ${color}`}>
       <p className="text-2xl font-bold">{numeric.toFixed(1)}</p>
-      <p className="text-xs font-medium mt-0.5">{label}</p>
+      <p className="mt-0.5 text-xs font-medium">{label}</p>
     </div>
+  )
+}
+
+function SmallScore({ label, value }: { label: string; value: number | null }) {
+  if (value == null) return null
+  const color = value >= 80 ? "bg-emerald-50 text-emerald-700" :
+    value >= 50 ? "bg-amber-50 text-amber-700" :
+    "bg-red-50 text-red-700"
+
+  return (
+    <span className={`rounded-md px-2 py-1 text-xs font-medium ${color}`}>
+      {label}: {value.toFixed(0)}
+    </span>
   )
 }
 
@@ -27,7 +40,7 @@ export default function SessionResultsView({ sessionId, onBack }: Props) {
   const { data: allSQ, isLoading: sqLoading } = useSessionQuestions()
   const { data: allQuestions } = useQuestions()
 
-  if (sLoading || sqLoading) return <p className="text-muted-foreground">Cargando resultados…</p>
+  if (sLoading || sqLoading) return <p className="text-muted-foreground">Cargando resultados...</p>
 
   if (!session) return <p className="text-muted-foreground">Sesión no encontrada.</p>
 
@@ -36,20 +49,23 @@ export default function SessionResultsView({ sessionId, onBack }: Props) {
     .sort((a, b) => a.questionOrder - b.questionOrder)
 
   const fmt = (s: number | null | undefined) => {
-    if (s == null) return "—"
+    if (s == null) return "-"
     const m = Math.floor(s / 60)
     const sec = s % 60
     return `${m}:${sec.toString().padStart(2, "0")}`
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">Resultados</h2>
+        <div>
+          <h2 className="text-xl font-bold">Resultados</h2>
+          <p className="text-sm text-muted-foreground">Resumen de tu simulacro y desempeño por pregunta.</p>
+        </div>
         <Button variant="outline" onClick={onBack}>Volver al inicio</Button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <ScoreBadge label="Final" value={session.finalScore} />
         <ScoreBadge label="Correctness" value={session.correctnessScore} />
         <ScoreBadge label="Efficiency" value={session.efficiencyScore} />
@@ -57,11 +73,11 @@ export default function SessionResultsView({ sessionId, onBack }: Props) {
         <ScoreBadge label="Clarity" value={session.clarityScore} />
         <div className="rounded-lg bg-neutral-50 px-4 py-3 text-center">
           <p className="text-2xl font-bold">{fmt(session.totalTimeUsedSeconds)}</p>
-          <p className="text-xs font-medium mt-0.5">Tiempo total</p>
+          <p className="mt-0.5 text-xs font-medium">Tiempo total</p>
         </div>
-        <div className="rounded-lg bg-neutral-50 px-4 py-3 text-center col-span-2">
+        <div className="col-span-2 rounded-lg bg-neutral-50 px-4 py-3 text-center">
           <p className="text-sm font-medium capitalize">{session.status.toLowerCase()}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">Estado</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Estado</p>
         </div>
       </div>
 
@@ -73,37 +89,40 @@ export default function SessionResultsView({ sessionId, onBack }: Props) {
             <Card key={sq.id}>
               <CardContent className="pt-6">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">
                       {i + 1}. {q?.statement ?? "Pregunta"}
                     </p>
                     {sq.userAnswer && (
                       <details className="mt-2">
-                        <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
+                        <summary className="cursor-pointer text-xs text-muted-foreground transition-colors hover:text-foreground">
                           Tu respuesta
                         </summary>
-                        <p className="mt-1 text-sm whitespace-pre-wrap bg-neutral-50 rounded-md p-3">{sq.userAnswer}</p>
+                        <p className="mt-1 whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-sm">{sq.userAnswer}</p>
+                      </details>
+                    )}
+                    {q?.explanation && (
+                      <details className="mt-2">
+                        <summary className="cursor-pointer text-xs text-muted-foreground transition-colors hover:text-foreground">
+                          Explicación sugerida
+                        </summary>
+                        <p className="mt-1 whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-sm">{q.explanation}</p>
                       </details>
                     )}
                     {sq.evaluationFeedback && (
-                      <p className="text-xs text-muted-foreground mt-2">{sq.evaluationFeedback}</p>
+                      <p className="mt-2 text-xs text-muted-foreground">{sq.evaluationFeedback}</p>
                     )}
                   </div>
-                  <div className="flex gap-2 flex-shrink-0">
+                  <div className="flex max-w-40 flex-shrink-0 flex-wrap justify-end gap-2">
                     {sq.obtainedPoints != null && (
-                      <span className="text-xs font-medium px-2 py-1 rounded-md bg-neutral-100">
+                      <span className="rounded-md bg-neutral-100 px-2 py-1 text-xs font-medium">
                         {sq.obtainedPoints} pts
                       </span>
                     )}
-                    {sq.correctnessScore != null && (
-                      <span className={`text-xs font-medium px-2 py-1 rounded-md ${
-                        sq.correctnessScore >= 80 ? "bg-emerald-50 text-emerald-700" :
-                        sq.correctnessScore >= 50 ? "bg-amber-50 text-amber-700" :
-                        "bg-red-50 text-red-700"
-                      }`}>
-                        C: {sq.correctnessScore.toFixed(0)}
-                      </span>
-                    )}
+                    <SmallScore label="C" value={sq.correctnessScore} />
+                    <SmallScore label="E" value={sq.efficiencyScore} />
+                    <SmallScore label="L" value={sq.logicScore} />
+                    <SmallScore label="Cl" value={sq.clarityScore} />
                   </div>
                 </div>
               </CardContent>

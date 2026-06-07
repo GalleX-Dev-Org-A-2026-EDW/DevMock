@@ -26,12 +26,32 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | null>(null)
   const [step, setStep] = useState(0)
+  const [error, setError] = useState("")
 
   const createSession = useCreateInterviewSession()
   const createSQ = useCreateSessionQuestion()
 
   const handleCreate = async () => {
     if (!selectedType || !selectedCategory || !selectedDifficulty) return
+
+    setError("")
+
+    const filtered = (allQuestions ?? []).filter(
+      (q) =>
+        q.categoryId === selectedCategory.id &&
+        q.difficultyId === selectedDifficulty.id &&
+        q.isActive &&
+        (selectedType.questionType === "MIXED" || q.questionType === selectedType.questionType),
+    )
+
+    const selected = filtered
+      .sort(() => Math.random() - 0.5)
+      .slice(0, selectedType.totalQuestions)
+
+    if (selected.length === 0) {
+      setError("No hay preguntas disponibles para esta combinación. Prueba otra categoría o dificultad.")
+      return
+    }
 
     const res = await createSession.mutateAsync({
       status: "IN_PROGRESS",
@@ -42,24 +62,14 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
     })
 
     const sessionId = res.id
-
-    const filtered = (allQuestions ?? []).filter(
-      (q) =>
-        q.categoryId === selectedCategory.id &&
-        q.difficultyId === selectedDifficulty.id &&
-        q.isActive
-    )
-
-    const selected = filtered
-      .sort(() => Math.random() - 0.5)
-      .slice(0, selectedType.totalQuestions)
+    const fallbackTime = Math.floor(selectedType.totalTimeSeconds / selected.length)
 
     for (let i = 0; i < selected.length; i++) {
       await createSQ.mutateAsync({
         questionOrder: i + 1,
         sessionId,
         questionId: selected[i].id,
-        assignedTimeSeconds: selectedType.totalTimeSeconds,
+        assignedTimeSeconds: selected[i].estimatedTimeSeconds ?? fallbackTime,
       })
     }
 
@@ -67,27 +77,28 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
   }
 
   const loading = typesLoading || catsLoading || diffLoading
+  const creating = createSession.isPending || createSQ.isPending
 
-  if (loading) return <p className="text-muted-foreground">Cargando…</p>
+  if (loading) return <p className="text-muted-foreground">Cargando...</p>
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Nueva entrevista</h2>
-        <button onClick={onCancel} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={onCancel} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
           Cancelar
         </button>
       </div>
 
-      <div className="flex gap-2 mb-6">
+      <div className="mb-6 flex gap-2">
         {["Tipo", "Categoría", "Dificultad"].map((_, i) => (
-          <div key={i} className={`flex-1 h-1 rounded-full transition-colors ${i <= step ? "bg-neutral-900" : "bg-neutral-200"}`} />
+          <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? "bg-neutral-900" : "bg-neutral-200"}`} />
         ))}
       </div>
 
       {step === 0 && (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground mb-4">Selecciona el tipo de entrevista</p>
+          <p className="mb-4 text-sm text-muted-foreground">Selecciona el tipo de entrevista</p>
           <div className="grid gap-3">
             {(types ?? []).map((t) => (
               <Card
@@ -95,14 +106,18 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
                 className={`cursor-pointer transition-all hover:border-neutral-400 ${
                   selectedType?.id === t.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
                 }`}
-                onClick={() => { setSelectedType(t); setStep(1) }}
+                onClick={() => {
+                  setSelectedType(t)
+                  setStep(1)
+                  setError("")
+                }}
               >
                 <CardContent className="pt-6">
                   <p className="font-semibold">{t.name}</p>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {t.totalQuestions} preguntas · {Math.floor(t.totalTimeSeconds / 60)} min · {t.questionType}
                   </p>
-                  {t.description && <p className="text-xs text-muted-foreground mt-1">{t.description}</p>}
+                  {t.description && <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>}
                 </CardContent>
               </Card>
             ))}
@@ -112,7 +127,7 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
 
       {step === 1 && (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground mb-4">Selecciona una categoría</p>
+          <p className="mb-4 text-sm text-muted-foreground">Selecciona una categoría</p>
           <div className="grid gap-3">
             {(categories ?? []).map((c) => (
               <Card
@@ -120,24 +135,33 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
                 className={`cursor-pointer transition-all hover:border-neutral-400 ${
                   selectedCategory?.id === c.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
                 }`}
-                onClick={() => { setSelectedCategory(c); setStep(2) }}
+                onClick={() => {
+                  setSelectedCategory(c)
+                  setStep(2)
+                  setError("")
+                }}
               >
                 <CardContent className="pt-6">
                   <p className="font-semibold">{c.name}</p>
-                  {c.description && <p className="text-sm text-muted-foreground mt-1">{c.description}</p>}
+                  {c.description && <p className="mt-1 text-sm text-muted-foreground">{c.description}</p>}
                 </CardContent>
               </Card>
             ))}
           </div>
-          <button onClick={() => setStep(0)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            ← Volver
+          <button onClick={() => setStep(0)} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            Volver
           </button>
         </div>
       )}
 
       {step === 2 && (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground mb-4">Selecciona el nivel de dificultad</p>
+          <p className="mb-4 text-sm text-muted-foreground">Selecciona el nivel de dificultad</p>
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <div className="grid gap-3">
             {(difficulties ?? []).map((d) => (
               <Card
@@ -145,21 +169,24 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
                 className={`cursor-pointer transition-all hover:border-neutral-400 ${
                   selectedDifficulty?.id === d.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
                 }`}
-                onClick={() => setSelectedDifficulty(d)}
+                onClick={() => {
+                  setSelectedDifficulty(d)
+                  setError("")
+                }}
               >
                 <CardContent className="pt-6">
                   <p className="font-semibold">{d.name}</p>
-                  {d.description && <p className="text-sm text-muted-foreground mt-1">{d.description}</p>}
+                  {d.description && <p className="mt-1 text-sm text-muted-foreground">{d.description}</p>}
                 </CardContent>
               </Card>
             ))}
           </div>
           <div className="flex items-center justify-between pt-4">
-            <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              ← Volver
+            <button onClick={() => setStep(1)} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              Volver
             </button>
-            <Button onClick={handleCreate} disabled={!selectedDifficulty || createSession.isPending}>
-              {createSession.isPending ? "Creando..." : "Iniciar entrevista"}
+            <Button onClick={handleCreate} disabled={!selectedDifficulty || creating}>
+              {creating ? "Creando..." : "Iniciar entrevista"}
             </Button>
           </div>
         </div>
