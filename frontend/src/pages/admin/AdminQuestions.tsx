@@ -207,8 +207,8 @@ export default function AdminQuestions() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-['Work_Sans'] font-bold text-2xl text-white">Preguntas</h1>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
+        <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white">Preguntas</h1>
         <button
           onClick={openCreate}
           className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all flex items-center gap-2"
@@ -300,7 +300,7 @@ export default function AdminQuestions() {
               {editingQuestion ? "Editar pregunta" : "Nueva pregunta"}
             </h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
                   <select
@@ -406,7 +406,7 @@ export default function AdminQuestions() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Puntos base <span className="text-red-400">*</span></label>
                   <input
@@ -429,7 +429,7 @@ export default function AdminQuestions() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Categoría <span className="text-red-400">*</span></label>
                   <select

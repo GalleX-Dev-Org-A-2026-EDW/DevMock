@@ -48,8 +48,8 @@ export default function AdminCategories() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-['Work_Sans'] font-bold text-2xl text-white">Categorías</h1>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
+        <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white">Categorías</h1>
         <button onClick={openCreate} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all flex items-center gap-2"><Plus className="h-4 w-4" /> Nueva categoría</button>
       </div>
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">

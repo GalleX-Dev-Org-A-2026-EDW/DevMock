@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.devmock.backend.dto.CreateEvaluationCriterionRequest;
 import com.devmock.backend.dto.EvaluationCriterionResponse;
 import com.devmock.backend.dto.UpdateEvaluationCriterionRequest;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.service.EvaluationCriterionService;
+import com.devmock.backend.util.AuditHelper;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,16 +30,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class EvaluationCriterionController {
 
     private final EvaluationCriterionService service;
+    private final AuditHelper auditHelper;
 
-    public EvaluationCriterionController(EvaluationCriterionService service) {
+    public EvaluationCriterionController(EvaluationCriterionService service, AuditHelper auditHelper) {
         this.service = service;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     public EvaluationCriterionResponse create(@Valid @RequestBody CreateEvaluationCriterionRequest request) {
-        return service.create(request);
+        EvaluationCriterionResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "EvaluationCriterion", response.getId());
+        return response;
     }
 
     @GetMapping
@@ -64,7 +70,9 @@ public class EvaluationCriterionController {
     public EvaluationCriterionResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateEvaluationCriterionRequest request) {
-        return service.update(id, request);
+        EvaluationCriterionResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "EvaluationCriterion", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
@@ -72,5 +80,6 @@ public class EvaluationCriterionController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "EvaluationCriterion", id);
     }
 }

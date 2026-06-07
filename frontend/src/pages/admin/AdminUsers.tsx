@@ -4,6 +4,8 @@ import type { User, CreateUserDto, UpdateUserDto } from "@/api/users"
 import type { UserRole } from "@/api/enums"
 import { Plus, Edit2, Trash2, UserCheck, UserX, Shield } from "lucide-react"
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function AdminUsers() {
   const { data: users, isLoading, isError } = useUsers()
   const createUser = useCreateUser()
@@ -13,6 +15,7 @@ export default function AdminUsers() {
   const [showModal, setShowModal] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const [form, setForm] = useState<CreateUserDto>({
     email: "",
@@ -21,9 +24,34 @@ export default function AdminUsers() {
     role: "STUDENT" as UserRole,
   })
 
+  const validate = (): boolean => {
+    const next: Record<string, string> = {}
+    if (!form.fullName.trim()) next.fullName = "El nombre es obligatorio"
+    if (!form.email.trim()) {
+      next.email = "El email es obligatorio"
+    } else if (!EMAIL_RE.test(form.email.trim())) {
+      next.email = "Ingrese un email válido"
+    }
+    if (!editingUser) {
+      if (!form.password) next.password = "La contraseña es obligatoria"
+      else if (form.password.length < 8) next.password = "Mínimo 8 caracteres"
+    } else if (form.password && form.password.length < 8) {
+      next.password = "Mínimo 8 caracteres"
+    }
+    setErrors(next)
+    return Object.keys(next).length === 0
+  }
+
+  const clearError = (field: string) => {
+    setErrors((prev) => { const n = { ...prev }; delete n[field]; return n })
+  }
+
+  const closeModal = () => { setShowModal(false); setEditingUser(null); setErrors({}) }
+
   const openCreate = () => {
     setEditingUser(null)
     setForm({ email: "", password: "", fullName: "", role: "STUDENT" })
+    setErrors({})
     setShowModal(true)
   }
 
@@ -37,10 +65,12 @@ export default function AdminUsers() {
       avatarUrl: user.avatarUrl ?? undefined,
       professionalExperienceYears: user.professionalExperienceYears ?? undefined,
     })
+    setErrors({})
     setShowModal(true)
   }
 
   const handleSave = async () => {
+    if (!validate()) return
     if (editingUser) {
       const dto: UpdateUserDto = {
         fullName: form.fullName,
@@ -55,6 +85,7 @@ export default function AdminUsers() {
     }
     setShowModal(false)
     setEditingUser(null)
+    setErrors({})
   }
 
   const handleDelete = async (id: string) => {
@@ -80,8 +111,8 @@ export default function AdminUsers() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-['Work_Sans'] font-bold text-2xl text-white">Usuarios</h1>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
+        <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white">Usuarios</h1>
         <button
           onClick={openCreate}
           className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all flex items-center gap-2"
@@ -155,39 +186,42 @@ export default function AdminUsers() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6" onClick={() => setShowModal(false)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6" onClick={closeModal}>
           <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-['Work_Sans'] font-bold text-xl text-gray-900 mb-6">
               {editingUser ? "Editar usuario" : "Nuevo usuario"}
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre completo <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   value={form.fullName}
-                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  onChange={(e) => { setForm({ ...form, fullName: e.target.value }); clearError("fullName") }}
+                  className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.fullName ? "border-red-400" : "border-gray-200"}`}
                 />
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-400">*</span></label>
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={(e) => { setForm({ ...form, email: e.target.value }); clearError("email") }}
                   disabled={!!editingUser}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50"
+                  className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-50 ${errors.email ? "border-red-400" : "border-gray-200"}`}
                 />
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{editingUser ? "Nueva contraseña (dejar vacío para mantener)" : "Contraseña"}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{editingUser ? "Nueva contraseña (dejar vacío para mantener)" : "Contraseña"} <span className="text-red-400">*</span></label>
                 <input
                   type="password"
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  onChange={(e) => { setForm({ ...form, password: e.target.value }); clearError("password") }}
+                  className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.password ? "border-red-400" : "border-gray-200"}`}
                 />
+                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Rol</label>
@@ -203,7 +237,7 @@ export default function AdminUsers() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={closeModal}
                   className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
                 >
                   Cancelar

@@ -5,12 +5,15 @@ import com.devmock.backend.dto.LoginRequest;
 import com.devmock.backend.dto.RegisterRequest;
 import com.devmock.backend.entity.DifficultyLevel;
 import com.devmock.backend.entity.User;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.entity.en_enum.UserRole;
 import com.devmock.backend.exception.EmailAlreadyExistsException;
 import com.devmock.backend.exception.ResourceNotFoundException;
 import com.devmock.backend.repository.DifficultyLevelRepository;
 import com.devmock.backend.repository.UserRepository;
 import com.devmock.backend.security.JwtService;
+import com.devmock.backend.util.AuditHelper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,17 +31,20 @@ public class AuthController {
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
     private final DifficultyLevelRepository difficultyLevelRepository;
+    private final AuditHelper auditHelper;
 
     public AuthController(UserRepository userRepo,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authManager,
             JwtService jwtService,
-            DifficultyLevelRepository difficultyLevelRepository) {
+            DifficultyLevelRepository difficultyLevelRepository,
+            AuditHelper auditHelper) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.authManager = authManager;
         this.jwtService = jwtService;
         this.difficultyLevelRepository = difficultyLevelRepository;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping("/register")
@@ -64,6 +70,8 @@ public class AuthController {
         user.setIsActive(true);
         user.setIsVerified(false);
         userRepo.save(user);
+        auditHelper.log(user.getId(), AuditAction.CREATE, "User", user.getId());
+        auditHelper.log(user.getId(), AuditAction.LOGIN, "User", user.getId());
         String token = jwtService.generateToken(user.getEmail());
         return new AuthResponse(token, user.getEmail(), user.getFullName(), user.getRole());
     }
@@ -80,6 +88,7 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Contraseña incorrecta");
         }
+        auditHelper.log(user.getId(), AuditAction.LOGIN, "User", user.getId());
         String token = jwtService.generateToken(user.getEmail());
         return new AuthResponse(token, user.getEmail(), user.getFullName(), user.getRole());
     }

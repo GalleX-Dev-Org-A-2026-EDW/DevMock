@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import com.devmock.backend.dto.CategoryResponse;
 import com.devmock.backend.dto.CreateCategoryRequest;
 import com.devmock.backend.dto.UpdateCategoryRequest;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.service.CategoryService;
+import com.devmock.backend.util.AuditHelper;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,16 +21,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class CategoryController {
 
     private final CategoryService service;
+    private final AuditHelper auditHelper;
 
-    public CategoryController(CategoryService service) {
+    public CategoryController(CategoryService service, AuditHelper auditHelper) {
         this.service = service;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse create(@Valid @RequestBody CreateCategoryRequest request) {
-        return service.create(request);
+        CategoryResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "Category", response.getId());
+        return response;
     }
 
     @GetMapping
@@ -54,7 +60,9 @@ public class CategoryController {
     public CategoryResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateCategoryRequest request) {
-        return service.update(id, request);
+        CategoryResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "Category", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
@@ -62,5 +70,6 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "Category", id);
     }
 }

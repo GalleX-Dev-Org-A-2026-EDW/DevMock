@@ -35,8 +35,8 @@ export default function AdminAuditLogs() {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <ClipboardList className="h-6 w-6 text-white" />
-        <h1 className="font-['Work_Sans'] font-bold text-2xl text-white">Registros de Auditoría</h1>
+        <ClipboardList className="h-5 w-5 sm:h-6 sm:w-6 text-white flex-shrink-0" />
+        <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white">Registros de Auditoría</h1>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">

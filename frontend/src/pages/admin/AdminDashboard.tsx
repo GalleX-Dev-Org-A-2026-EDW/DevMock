@@ -39,7 +39,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="font-['Work_Sans'] font-bold text-2xl text-white mb-6">Dashboard Admin</h1>
+      <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white mb-6">Dashboard Admin</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard icon={Users} label="Usuarios totales" value={data.totalUsers} color="text-blue-600 bg-blue-50" />

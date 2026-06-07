@@ -46,8 +46,8 @@ export default function AdminAchievements() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-['Work_Sans'] font-bold text-2xl text-white">Logros</h1>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
+        <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white">Logros</h1>
         <button onClick={openCreate} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all flex items-center gap-2"><Plus className="h-4 w-4" /> Nuevo logro</button>
       </div>
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -103,7 +103,7 @@ export default function AdminAchievements() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                 <textarea value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Puntos de recompensa <span className="text-red-400">*</span></label>
                   <input type="number" value={form.pointsReward ?? ""} onChange={(e) => { setForm({ ...form, pointsReward: e.target.value ? parseInt(e.target.value) : undefined }); clearError("pointsReward") }} className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.pointsReward ? "border-red-400" : "border-gray-200"}`} />

@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.devmock.backend.dto.CreateQuestionCriterionRequest;
 import com.devmock.backend.dto.QuestionCriterionResponse;
 import com.devmock.backend.dto.UpdateQuestionCriterionRequest;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.service.QuestionCriterionService;
+import com.devmock.backend.util.AuditHelper;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,16 +29,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class QuestionCriterionController {
 
     private final QuestionCriterionService service;
+    private final AuditHelper auditHelper;
 
-    public QuestionCriterionController(QuestionCriterionService service) {
+    public QuestionCriterionController(QuestionCriterionService service, AuditHelper auditHelper) {
         this.service = service;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     public QuestionCriterionResponse create(@Valid @RequestBody CreateQuestionCriterionRequest request) {
-        return service.create(request);
+        QuestionCriterionResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "QuestionCriterion", response.getId());
+        return response;
     }
 
     @GetMapping
@@ -56,7 +62,9 @@ public class QuestionCriterionController {
     public QuestionCriterionResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateQuestionCriterionRequest request) {
-        return service.update(id, request);
+        QuestionCriterionResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "QuestionCriterion", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
@@ -64,5 +72,6 @@ public class QuestionCriterionController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "QuestionCriterion", id);
     }
 }

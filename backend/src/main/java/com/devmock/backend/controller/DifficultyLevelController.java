@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import com.devmock.backend.dto.CreateDifficultyLevelRequest;
 import com.devmock.backend.dto.DifficultyLevelResponse;
 import com.devmock.backend.dto.UpdateDifficultyLevelRequest;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.service.DifficultyLevelService;
+import com.devmock.backend.util.AuditHelper;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,16 +21,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class DifficultyLevelController {
 
     private final DifficultyLevelService service;
+    private final AuditHelper auditHelper;
 
-    public DifficultyLevelController(DifficultyLevelService service) {
+    public DifficultyLevelController(DifficultyLevelService service, AuditHelper auditHelper) {
         this.service = service;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     public DifficultyLevelResponse create(@Valid @RequestBody CreateDifficultyLevelRequest request) {
-        return service.create(request);
+        DifficultyLevelResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "DifficultyLevel", response.getId());
+        return response;
     }
 
     @GetMapping
@@ -54,7 +60,9 @@ public class DifficultyLevelController {
     public DifficultyLevelResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateDifficultyLevelRequest request) {
-        return service.update(id, request);
+        DifficultyLevelResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "DifficultyLevel", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
@@ -62,5 +70,6 @@ public class DifficultyLevelController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "DifficultyLevel", id);
     }
 }

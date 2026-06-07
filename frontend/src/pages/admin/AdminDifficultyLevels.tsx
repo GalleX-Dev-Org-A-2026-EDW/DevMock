@@ -47,8 +47,8 @@ export default function AdminDifficultyLevels() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-['Work_Sans'] font-bold text-2xl text-white">Niveles de Dificultad</h1>
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-6">
+        <h1 className="font-['Work_Sans'] font-bold text-xl sm:text-2xl text-white">Niveles de Dificultad</h1>
         <button onClick={openCreate} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all flex items-center gap-2"><Plus className="h-4 w-4" /> Nuevo nivel</button>
       </div>
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -90,7 +90,7 @@ export default function AdminDifficultyLevels() {
           <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-['Work_Sans'] font-bold text-xl text-gray-900 mb-6">{editing ? "Editar nivel" : "Nuevo nivel"}</h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nombre <span className="text-red-400">*</span></label>
                   <input type="text" value={form.name} onChange={(e) => { setForm({ ...form, name: e.target.value }); clearError("name") }} className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.name ? "border-red-400" : "border-gray-200"}`} />
@@ -102,7 +102,7 @@ export default function AdminDifficultyLevels() {
                   {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug}</p>}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Orden <span className="text-red-400">*</span></label>
                   <input type="number" value={form.levelOrder} onChange={(e) => { setForm({ ...form, levelOrder: parseInt(e.target.value) || 0 }); clearError("levelOrder") }} className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.levelOrder ? "border-red-400" : "border-gray-200"}`} />
