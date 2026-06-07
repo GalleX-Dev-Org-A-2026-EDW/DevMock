@@ -31,17 +31,18 @@ npm run preview  # preview production build
 ## Architecture
 
 ### Backend (`backend/`)
-Layered layout under `com.devmock.backend` with 15 entities + 6 enums, **16 services** (interface + `@Transactional` impl), 17 controllers, 15 repos, 49 DTOs:
+Layered layout under `com.devmock.backend` with 15 entities + 6 enums, **16 services** (interface + `@Transactional` impl), 17 controllers, 15 repos, 50 DTOs:
 ```
-entity/         → 15 JPA entities
+entity/         → 15 JPA entities (all with UUID PKs except SessionQuestion)
 entity/en_enum/ → 6 enums (UserRole, QuestionType, AnswerFormat, SessionStatus, RankingPeriod, AuditAction)
-repository/     → Spring Data JPA repos
+repository/     → Spring Data JPA repos (15)
 service/        → service interfaces (16)
-service/impl/   → @Transactional implementations
+service/impl/   → @Transactional implementations (16)
 controller/     → REST controllers (17, incl. AuthController + AdminDashboardController)
-dto/            → 49 request/response DTOs
+dto/            → 50 request/response DTOs
 security/       → JWT + Spring Security
 exception/      → GlobalExceptionHandler + domain exceptions
+util/           → AuditHelper.java (cross-cutting audit logic)
 config/         → DataInitializer.java (seed data CommandLineRunner)
 ```
 
@@ -57,6 +58,7 @@ src/context/      → AuthContext (token, username, role in localStorage)
 src/hooks/        → useDebouncedValue, useDeferredValue
 src/layouts/      → MainLayout
 src/lib/          → utils.ts (cn() via clsx + tailwind-merge)
+src/charts/       → empty dir (chart.js available in deps)
 ```
 
 ### Routing (`App.tsx` via `createBrowserRouter`)
@@ -73,7 +75,7 @@ src/lib/          → utils.ts (cn() via clsx + tailwind-merge)
 - **Timestamps** — `Instant`, UTC, via `@PrePersist`/`@PreUpdate`
 - **Lombok** declared but **not used on entities** — manual getters/setters
 - **`open-in-view=false`** — all DB access inside `@Transactional`
-- **Entity relationships commented out** — no `@ManyToOne`/`@OneToMany` wired yet
+- **Entity relationships** — `@ManyToOne`/`@OneToMany` wired across entities (User, Question, Category, SessionQuestion, InterviewSession, etc.)
 - **Score fields** — `BigDecimal` across 4 dimensions: correctness, efficiency, logic, clarity
 - **CORS**: hardcoded in `SecurityConfig.java` (`http://localhost:5173` only). The `spring.web.cors.allowed-origins` property in `application.properties` is **unused/dead**.
 
