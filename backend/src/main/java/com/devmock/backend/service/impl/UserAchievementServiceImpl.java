@@ -10,6 +10,7 @@ import com.devmock.backend.exception.ResourceNotFoundException;
 import com.devmock.backend.repository.AchievementRepository;
 import com.devmock.backend.repository.UserAchievementRepository;
 import com.devmock.backend.repository.UserRepository;
+import com.devmock.backend.security.SecurityUtils;
 import com.devmock.backend.service.UserAchievementService;
 
 import org.springframework.stereotype.Service;
@@ -25,13 +26,16 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     private final UserAchievementRepository repository;
     private final UserRepository userRepository;
     private final AchievementRepository achievementRepository;
+    private final SecurityUtils securityUtils;
 
     public UserAchievementServiceImpl(UserAchievementRepository repository,
             UserRepository userRepository,
-            AchievementRepository achievementRepository) {
+            AchievementRepository achievementRepository,
+            SecurityUtils securityUtils) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.achievementRepository = achievementRepository;
+        this.securityUtils = securityUtils;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     @Override
     @Transactional(readOnly = true)
     public List<UserAchievementResponse> list() {
-        return repository.findAll()
+        return repository.findByUser(securityUtils.getCurrentUser())
                 .stream()
                 .map(this::toResponse)
                 .toList();

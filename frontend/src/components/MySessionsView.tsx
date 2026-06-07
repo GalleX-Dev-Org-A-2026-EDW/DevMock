@@ -187,7 +187,7 @@ export default function MySessionsView({ onContinue, onResults, onBack }: Props)
                     onClick={() => onResults(session.id)}
                     size="sm"
                     variant="outline"
-                    className="gap-1.5 border-white/20 text-white/80 hover:bg-white/20 hover:text-white"
+                    className="gap-1.5 border-white/20 bg-transparent text-white/80 hover:bg-white/20 hover:text-white"
                   >
                     <BarChart3 className="h-3.5 w-3.5" />
                     Resultados

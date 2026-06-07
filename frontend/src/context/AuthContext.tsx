@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode, useCallback } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { getToken, setToken, getUsername, setUsername, clearAuth, getRole, setRole } from "@/api/http"
 import type { UserRole } from "@/api/enums"
 
@@ -17,6 +18,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient()
   const [user, setUser] = useState<AuthUser | null>(() => {
     const token = getToken()
     const username = getUsername()
@@ -29,12 +31,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUsername(username)
     setRole(role)
     setUser({ token, username, role })
-  }, [])
+    queryClient.invalidateQueries()
+  }, [queryClient])
 
   const logout = useCallback(() => {
     clearAuth()
     setUser(null)
-  }, [])
+    queryClient.invalidateQueries()
+  }, [queryClient])
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

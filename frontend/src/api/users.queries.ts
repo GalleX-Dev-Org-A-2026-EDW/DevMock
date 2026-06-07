@@ -26,6 +26,13 @@ export function useUserByEmail(email: string) {
   })
 }
 
+export function useMe() {
+  return useQuery({
+    queryKey: usersKeys.detail("me"),
+    queryFn: () => usersApi.me(),
+  })
+}
+
 export function useCreateUser() {
   const queryClient = useQueryClient()
   return useMutation<User, Error, CreateUserDto>({

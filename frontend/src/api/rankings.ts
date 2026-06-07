@@ -13,6 +13,7 @@ export interface Ranking {
   userId: string | null
   categoryId: string | null
   difficultyId: string | null
+  userName: string | null
 }
 
 export interface CreateRankingDto {

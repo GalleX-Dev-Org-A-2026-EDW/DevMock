@@ -42,6 +42,8 @@ export interface UpdateUserDto {
 export const usersApi = {
   list: () => http<User[]>("/api/users"),
 
+  me: () => http<User>("/api/users/me"),
+
   getById: (id: string) => http<User>(`/api/users/${id}`),
 
   getByEmail: (email: string) =>

@@ -56,4 +56,10 @@ public class RankingController {
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
+
+    @PostMapping("/recalculate")
+    @ResponseStatus(HttpStatus.OK)
+    public void recalculate() {
+        service.recalculate();
+    }
 }

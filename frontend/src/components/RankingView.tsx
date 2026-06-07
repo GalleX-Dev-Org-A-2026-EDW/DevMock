@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
 import { useRankings } from "@/api/rankings.queries"
-import { useUsers } from "@/api/users.queries"
-import { useAuth } from "@/context/AuthContext"
+import { useMe } from "@/api/users.queries"
 import { ArrowLeft, Medal, Trophy, TrendingUp, Calendar } from "lucide-react"
 import type { RankingPeriod } from "@/api/enums"
 
@@ -42,19 +41,10 @@ function ScoreBar({ score }: { score: number }) {
 
 export default function RankingView({ onBack }: Props) {
   const { data: rankings, isLoading: rLoading } = useRankings()
-  const { data: users } = useUsers()
-  const { user: currentUser } = useAuth()
+  const { data: currentUserData } = useMe()
   const [period, setPeriod] = useState<PeriodTab>("ALL_TIME")
 
-  const currentUserId = useMemo(
-    () => (users ?? []).find((u) => u.email === currentUser?.username)?.id,
-    [users, currentUser],
-  )
-
-  const userMap = useMemo(
-    () => new Map((users ?? []).map((u) => [u.id, u.fullName])),
-    [users],
-  )
+  const currentUserId = currentUserData?.id
 
   const globalRankings = useMemo(() => {
     if (!rankings) return []
@@ -178,11 +168,11 @@ export default function RankingView({ onBack }: Props) {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 text-xs font-bold text-white">
-                          {(userMap.get(entry.userId ?? "") ?? "?").charAt(0).toUpperCase()}
+                          {(entry.userName ?? "?").charAt(0).toUpperCase()}
                         </div>
                         <div>
                           <p className={`text-sm font-medium ${isMe ? "text-emerald-300" : "text-white"}`}>
-                            {userMap.get(entry.userId ?? "") ?? "Usuario"}
+                            {entry.userName ?? "Usuario"}
                             {isMe && <span className="ml-1.5 text-xs text-emerald-400/60">(tú)</span>}
                           </p>
                         </div>
