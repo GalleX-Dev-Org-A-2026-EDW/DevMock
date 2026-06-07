@@ -8,7 +8,7 @@ type Props = {
   onBack: () => void
 }
 
-export default function ProfileEditView({ onBack }: Props) {
+export default function ProfileEdit({ onBack }: Props) {
   const { data: user, isLoading: userLoading } = useMe()
   const { data: difficulties } = useDifficultyLevels()
   const updateMe = useUpdateMe()
@@ -153,7 +153,7 @@ export default function ProfileEditView({ onBack }: Props) {
           )}
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onBack} className="bg-transparent">
+          <Button variant="outline" onClick={onBack} className="border-white/30 bg-transparent text-white/70 hover:bg-white/10 hover:text-white">
             Cancelar
           </Button>
           <Button onClick={handleSave} disabled={updateMe.isPending} className="gap-2">

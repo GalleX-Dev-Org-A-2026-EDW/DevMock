@@ -3,8 +3,8 @@ import { useSessionQuestions, useUpdateSessionQuestion } from "@/api/session-que
 import { useUpdateInterviewSession } from "@/api/interview-sessions.queries"
 import { useQuestions } from "@/api/questions.queries"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import type { Question } from "@/api/questions"
+import { ArrowLeft, Loader2 } from "lucide-react"
 
 type Props = {
   sessionId: string
@@ -84,7 +84,7 @@ function average(values: number[]) {
   return values.reduce((sum, value) => sum + value, 0) / values.length
 }
 
-export default function InterviewView({ sessionId, onFinish, onCancel }: Props) {
+export default function Interview({ sessionId, onFinish, onCancel }: Props) {
   const { data: allSQ, isLoading: sqLoading } = useSessionQuestions()
   const { data: allQuestions } = useQuestions()
 
@@ -221,10 +221,23 @@ export default function InterviewView({ sessionId, onFinish, onCancel }: Props) 
     onFinish(sessionId)
   }
 
-  if (sqLoading) return <p className="text-muted-foreground">Cargando entrevista...</p>
+  if (sqLoading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <div className="text-center">
+          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+          <p className="text-sm text-white/60">Cargando entrevista...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (questions.length === 0) {
-    return <p className="text-muted-foreground">No hay preguntas en esta sesión.</p>
+    return (
+      <div className="flex items-center justify-center py-32">
+        <p className="text-sm text-white/60">No hay preguntas en esta sesión.</p>
+      </div>
+    )
   }
 
   const fmt = (s: number) => {
@@ -236,15 +249,27 @@ export default function InterviewView({ sessionId, onFinish, onCancel }: Props) 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">Entrevista</h2>
-          <p className="text-sm text-muted-foreground">
-            Pregunta {currentIndex + 1} de {questions.length}
-          </p>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onCancel}
+            className="rounded-lg p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+            aria-label="Abandonar entrevista"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className="font-['Work_Sans'] text-2xl font-bold text-white">Entrevista</h1>
+            <p className="mt-1 text-sm text-white/60">
+              Pregunta {currentIndex + 1} de {questions.length}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="font-mono text-sm tabular-nums">{fmt(elapsed)}</span>
-          <button onClick={onCancel} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+          <span className="font-mono text-sm tabular-nums text-white/70">{fmt(elapsed)}</span>
+          <button
+            onClick={onCancel}
+            className="text-sm text-white/50 transition-colors hover:text-white"
+          >
             Abandonar
           </button>
         </div>
@@ -254,28 +279,26 @@ export default function InterviewView({ sessionId, onFinish, onCancel }: Props) 
         {questions.map((_, i) => (
           <div
             key={i}
-            className={`h-1 flex-1 rounded-full transition-colors ${
-              i < currentIndex ? "bg-emerald-500" : i === currentIndex ? "bg-neutral-900" : "bg-neutral-200"
+            className={`h-1.5 flex-1 rounded-full transition-colors ${
+              i < currentIndex ? "bg-emerald-500" : i === currentIndex ? "bg-emerald-500/60" : "bg-white/10"
             }`}
           />
         ))}
       </div>
 
       {questionData && (
-        <Card>
-          <CardContent className="space-y-4 pt-6">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <span className="rounded-md bg-neutral-100 px-2 py-1">{questionData.questionType}</span>
-              <span className="rounded-md bg-neutral-100 px-2 py-1">{questionData.answerFormat}</span>
-              <span className="rounded-md bg-neutral-100 px-2 py-1">{questionData.basePoints} pts</span>
-            </div>
-            <p className="font-medium">{questionData.statement}</p>
-          </CardContent>
-        </Card>
+        <div className="rounded-lg border border-white/10 bg-white/10 p-5 backdrop-blur-sm">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/70">{questionData.questionType}</span>
+            <span className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/70">{questionData.answerFormat}</span>
+            <span className="rounded-md bg-white/10 px-2 py-1 text-xs text-white/70">{questionData.basePoints} pts</span>
+          </div>
+          <p className="text-white">{questionData.statement}</p>
+        </div>
       )}
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-foreground">Tu respuesta</label>
+        <p className="mb-2 text-sm font-medium text-white/70">Tu respuesta</p>
         <textarea
           value={currentSQ ? (answers[currentSQ.id] ?? currentSQ.userAnswer ?? "") : ""}
           onChange={(e) => {
@@ -285,21 +308,30 @@ export default function InterviewView({ sessionId, onFinish, onCancel }: Props) 
           }}
           placeholder="Escribe tu respuesta aquí..."
           rows={8}
-          className="w-full resize-y rounded-lg border border-border bg-white p-4 font-mono text-sm text-foreground transition-all placeholder:text-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full resize-y rounded-lg border border-white/20 bg-white/10 p-4 font-mono text-sm text-white placeholder:text-white/40 transition-all focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
         />
       </div>
 
       <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={handlePrev} disabled={currentIndex === 0}>
+        <Button
+          variant="outline"
+          onClick={handlePrev}
+          disabled={currentIndex === 0}
+          className="border-white/30 bg-transparent text-white/70 hover:bg-white/10 hover:text-white"
+        >
           Anterior
         </Button>
         {currentIndex < questions.length - 1 ? (
           <Button onClick={handleNext} disabled={updateSQ.isPending}>
-            Siguiente
+            {updateSQ.isPending ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Guardando...</>
+            ) : "Siguiente"}
           </Button>
         ) : (
           <Button onClick={handleFinish} disabled={updateSession.isPending || updateSQ.isPending}>
-            {updateSession.isPending || updateSQ.isPending ? "Finalizando..." : "Finalizar entrevista"}
+            {updateSession.isPending || updateSQ.isPending ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Finalizando...</>
+            ) : "Finalizar entrevista"}
           </Button>
         )}
       </div>

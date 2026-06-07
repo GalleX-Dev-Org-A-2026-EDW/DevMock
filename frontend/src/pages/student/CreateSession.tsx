@@ -6,17 +6,17 @@ import { useQuestions } from "@/api/questions.queries"
 import { useCreateInterviewSession } from "@/api/interview-sessions.queries"
 import { useCreateSessionQuestion } from "@/api/session-questions.queries"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import type { InterviewType } from "@/api/interview-types"
 import type { Category } from "@/api/categories"
 import type { DifficultyLevel } from "@/api/difficulty-levels"
+import { ArrowLeft, Loader2 } from "lucide-react"
 
 type Props = {
   onSessionCreated: (sessionId: string) => void
   onCancel: () => void
 }
 
-export default function CreateSessionView({ onSessionCreated, onCancel }: Props) {
+export default function CreateSession({ onSessionCreated, onCancel }: Props) {
   const { data: types, isLoading: typesLoading } = useInterviewTypes(true)
   const { data: categories, isLoading: catsLoading } = useCategories(true)
   const { data: difficulties, isLoading: diffLoading } = useDifficultyLevels()
@@ -79,20 +79,51 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
   const loading = typesLoading || catsLoading || diffLoading
   const creating = createSession.isPending || createSQ.isPending
 
-  if (loading) return <p className="text-sm text-white/60">Cargando...</p>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <div className="text-center">
+          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+          <p className="text-sm text-white/60">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const cardBase =
+    "rounded-lg border border-white/10 bg-white/10 p-4 backdrop-blur-sm cursor-pointer transition-all hover:border-white/30"
+
+  const cardSelected =
+    "border-emerald-500/50 ring-1 ring-emerald-500/30"
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Nueva entrevista</h2>
-        <button onClick={onCancel} className="text-sm text-white/60 transition-colors hover:text-white">
-          Cancelar
+      <div className="flex items-center gap-4">
+        <button
+          onClick={onCancel}
+          className="rounded-lg p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Volver al inicio"
+        >
+          <ArrowLeft className="h-5 w-5" />
         </button>
+        <div>
+          <h1 className="font-['Work_Sans'] text-2xl font-bold text-white">Nueva entrevista</h1>
+          <p className="mt-1 text-sm text-white/60">Configura los parámetros de tu simulacro.</p>
+        </div>
       </div>
 
-      <div className="mb-6 flex gap-2">
-        {["Tipo", "Categoría", "Dificultad"].map((_, i) => (
-          <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? "bg-white" : "bg-white/20"}`} />
+      <div className="flex gap-2">
+        {["Tipo", "Categoría", "Dificultad"].map((label, i) => (
+          <div key={i} className="flex flex-1 items-center gap-2">
+            <div
+              className={`h-2 flex-1 rounded-full transition-colors ${
+                i <= step ? "bg-emerald-500" : "bg-white/10"
+              }`}
+            />
+            <span className={`text-xs font-medium ${i <= step ? "text-emerald-400" : "text-white/40"}`}>
+              {label}
+            </span>
+          </div>
         ))}
       </div>
 
@@ -101,25 +132,21 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
           <p className="mb-4 text-sm text-white/60">Selecciona el tipo de entrevista</p>
           <div className="grid gap-3">
             {(types ?? []).map((t) => (
-              <Card
+              <div
                 key={t.id}
-                className={`cursor-pointer transition-all hover:border-neutral-400 ${
-                  selectedType?.id === t.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
-                }`}
+                className={`${cardBase} ${selectedType?.id === t.id ? cardSelected : ""}`}
                 onClick={() => {
                   setSelectedType(t)
                   setStep(1)
                   setError("")
                 }}
               >
-                <CardContent className="pt-6">
-                  <p className="font-semibold">{t.name}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {t.totalQuestions} preguntas · {Math.floor(t.totalTimeSeconds / 60)} min · {t.questionType}
-                  </p>
-                  {t.description && <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>}
-                </CardContent>
-              </Card>
+                <p className="font-semibold text-white">{t.name}</p>
+                <p className="mt-1 text-sm text-white/60">
+                  {t.totalQuestions} preguntas · {Math.floor(t.totalTimeSeconds / 60)} min · {t.questionType}
+                </p>
+                {t.description && <p className="mt-1 text-xs text-white/50">{t.description}</p>}
+              </div>
             ))}
           </div>
         </div>
@@ -130,25 +157,25 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
           <p className="mb-4 text-sm text-white/60">Selecciona una categoría</p>
           <div className="grid gap-3">
             {(categories ?? []).map((c) => (
-              <Card
+              <div
                 key={c.id}
-                className={`cursor-pointer transition-all hover:border-neutral-400 ${
-                  selectedCategory?.id === c.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
-                }`}
+                className={`${cardBase} ${selectedCategory?.id === c.id ? cardSelected : ""}`}
                 onClick={() => {
                   setSelectedCategory(c)
                   setStep(2)
                   setError("")
                 }}
               >
-                <CardContent className="pt-6">
-                  <p className="font-semibold">{c.name}</p>
-                  {c.description && <p className="mt-1 text-sm text-white/60">{c.description}</p>}
-                </CardContent>
-              </Card>
+                <p className="font-semibold text-white">{c.name}</p>
+                {c.description && <p className="mt-1 text-sm text-white/60">{c.description}</p>}
+              </div>
             ))}
           </div>
-          <button onClick={() => setStep(0)} className="text-sm text-white/60 transition-colors hover:text-white">
+          <button
+            onClick={() => { setStep(0); setSelectedType(null) }}
+            className="flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
             Volver
           </button>
         </div>
@@ -164,29 +191,36 @@ export default function CreateSessionView({ onSessionCreated, onCancel }: Props)
           )}
           <div className="grid gap-3">
             {(difficulties ?? []).map((d) => (
-              <Card
+              <div
                 key={d.id}
-                className={`cursor-pointer transition-all hover:border-neutral-400 ${
-                  selectedDifficulty?.id === d.id ? "border-neutral-900 ring-1 ring-neutral-900" : ""
-                }`}
+                className={`${cardBase} ${selectedDifficulty?.id === d.id ? cardSelected : ""}`}
                 onClick={() => {
                   setSelectedDifficulty(d)
                   setError("")
                 }}
               >
-                <CardContent className="pt-6">
-                  <p className="font-semibold">{d.name}</p>
-                  {d.description && <p className="mt-1 text-sm text-white/60">{d.description}</p>}
-                </CardContent>
-              </Card>
+                <p className="font-semibold text-white">{d.name}</p>
+                {d.description && <p className="mt-1 text-sm text-white/60">{d.description}</p>}
+              </div>
             ))}
           </div>
           <div className="flex items-center justify-between pt-4">
-            <button onClick={() => setStep(1)} className="text-sm text-white/60 transition-colors hover:text-white">
+            <button
+              onClick={() => { setStep(1); setSelectedCategory(null) }}
+              className="flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-white"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
               Volver
             </button>
-            <Button onClick={handleCreate} disabled={!selectedDifficulty || creating}>
-              {creating ? "Creando..." : "Iniciar entrevista"}
+            <Button onClick={handleCreate} disabled={!selectedDifficulty || creating} className="gap-2">
+              {creating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Creando...
+                </>
+              ) : (
+                "Iniciar entrevista"
+              )}
             </Button>
           </div>
         </div>

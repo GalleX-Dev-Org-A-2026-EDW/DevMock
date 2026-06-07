@@ -46,7 +46,7 @@ function formatShortDate(value: string) {
   }).format(new Date(value))
 }
 
-export default function ProgressView({ onBack }: Props) {
+export default function Progress({ onBack }: Props) {
   const { data: sessions, isLoading } = useInterviewSessions()
   const { data: categories } = useCategories(true)
   const { data: allAchievements } = useAchievements()

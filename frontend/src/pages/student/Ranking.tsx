@@ -39,7 +39,7 @@ function ScoreBar({ score }: { score: number }) {
   )
 }
 
-export default function RankingView({ onBack }: Props) {
+export default function Ranking({ onBack }: Props) {
   const { data: rankings, isLoading: rLoading } = useRankings()
   const { data: currentUserData } = useMe()
   const [period, setPeriod] = useState<PeriodTab>("ALL_TIME")

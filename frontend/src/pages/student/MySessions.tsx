@@ -52,12 +52,15 @@ function statusColor(status: InterviewSession["status"]) {
   return colors[status] ?? "bg-neutral-100 text-neutral-500"
 }
 
-export default function MySessionsView({ onContinue, onResults, onBack }: Props) {
+const PAGE_SIZE = 5
+
+export default function MySessions({ onContinue, onResults, onBack }: Props) {
   const { data: sessions, isLoading } = useInterviewSessions()
   const { data: categories } = useCategories(true)
   const { data: difficulties } = useDifficultyLevels()
   const { data: types } = useInterviewTypes(true)
   const [filter, setFilter] = useState<FilterTab>("all")
+  const [page, setPage] = useState(1)
 
   const sortedSessions = useMemo(
     () => [...(sessions ?? [])].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
@@ -69,6 +72,14 @@ export default function MySessionsView({ onContinue, onResults, onBack }: Props)
     if (filter === "in_progress") return sortedSessions.filter((s) => s.status === "IN_PROGRESS")
     return sortedSessions.filter((s) => s.status === "COMPLETED")
   }, [sortedSessions, filter])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+
+  const paginated = useMemo(
+    () => filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [filtered, safePage],
+  )
 
   const typeName = (id: string | null) => types?.find((t) => t.id === id)?.name ?? "Entrevista"
   const categoryName = (id: string | null) => categories?.find((c) => c.id === id)?.name ?? "Categoría"
@@ -110,7 +121,7 @@ export default function MySessionsView({ onContinue, onResults, onBack }: Props)
         {tabs.map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setFilter(tab.key)}
+            onClick={() => { setFilter(tab.key); setPage(1) }}
             className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
               filter === tab.key
                 ? "bg-white text-[#16213e] shadow-sm"
@@ -147,7 +158,7 @@ export default function MySessionsView({ onContinue, onResults, onBack }: Props)
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map((session) => (
+          {paginated.map((session) => (
             <div
               key={session.id}
               className="flex flex-col gap-4 rounded-lg border border-white/10 bg-white/10 p-5 backdrop-blur-sm transition-all hover:bg-white/15 sm:flex-row sm:items-center sm:justify-between"
@@ -196,6 +207,34 @@ export default function MySessionsView({ onContinue, onResults, onBack }: Props)
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
+          <p className="text-sm text-white/50">
+            Página {safePage} de {totalPages} ({filtered.length} sesiones)
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="border-white/20 bg-transparent text-white/70 hover:bg-white/10 hover:text-white"
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="border-white/20 bg-transparent text-white/70 hover:bg-white/10 hover:text-white"
+            >
+              Siguiente
+            </Button>
+          </div>
         </div>
       )}
     </div>
