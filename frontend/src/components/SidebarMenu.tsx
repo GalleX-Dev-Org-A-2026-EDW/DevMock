@@ -1,9 +1,9 @@
 import { useAuth } from "@/context/AuthContext"
 import { useNavigate } from "react-router-dom"
-import { BarChart3, ClipboardList, Home, LogOut, PlayCircle, Plus, Trophy, Medal } from "lucide-react"
+import { BarChart3, ClipboardList, Home, LogOut, PlayCircle, Plus, Trophy, Medal, User } from "lucide-react"
 import devMockIcon from "@/assets/DevMockIcono.png"
 
-export type StudentMenuItem = "home" | "create" | "sessions" | "progress" | "ranking"
+export type StudentMenuItem = "home" | "create" | "sessions" | "progress" | "ranking" | "profile"
 
 type Props = {
   activeItem: StudentMenuItem
@@ -23,6 +23,7 @@ const items: Array<{
   { id: "sessions", label: "Mis sesiones", icon: ClipboardList },
   { id: "progress", label: "Progreso", icon: BarChart3 },
   { id: "ranking", label: "Ranking", icon: Medal },
+  { id: "profile", label: "Mi perfil", icon: User },
 ]
 
 export default function SidebarMenu({

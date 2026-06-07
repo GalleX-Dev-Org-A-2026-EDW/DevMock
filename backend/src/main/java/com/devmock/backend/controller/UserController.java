@@ -67,4 +67,11 @@ public class UserController {
     public UserResponse me() {
         return service.getByEmail(securityUtils.getCurrentUser().getEmail());
     }
+
+    @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public UserResponse updateMe(@Valid @RequestBody UpdateUserRequest request) {
+        var user = securityUtils.getCurrentUser();
+        return service.update(user.getId(), request);
+    }
 }

@@ -8,6 +8,7 @@ import SessionResultsView from "@/components/SessionResultsView"
 import MySessionsView from "@/components/MySessionsView"
 import ProgressView from "@/components/ProgressView"
 import RankingView from "@/components/RankingView"
+import ProfileEditView from "@/components/ProfileEditView"
 import { useInterviewSessions } from "@/api/interview-sessions.queries"
 import { useCategories } from "@/api/categories.queries"
 import { useDifficultyLevels } from "@/api/difficulty-levels.queries"
@@ -16,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { InterviewSession } from "@/api/interview-sessions"
 
-type StudentView = "home" | "create" | "interview" | "results" | "sessions" | "progress" | "ranking"
+type StudentView = "home" | "create" | "interview" | "results" | "sessions" | "progress" | "ranking" | "profile"
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("es-CO", {
@@ -93,7 +94,7 @@ export default function Dashboard() {
   const handleMenuSelect = (item: StudentMenuItem) => {
     setActiveMenuItem(item)
     setActiveSessionId(null)
-    setView(item === "create" ? "create" : item === "sessions" ? "sessions" : item === "progress" ? "progress" : item === "ranking" ? "ranking" : "home")
+    setView(item === "create" ? "create" : item === "sessions" ? "sessions" : item === "progress" ? "progress" : item === "ranking" ? "ranking" : item === "profile" ? "profile" : "home")
   }
 
   const content = (() => {
@@ -141,6 +142,10 @@ export default function Dashboard() {
 
     if (view === "ranking") {
       return <RankingView onBack={goHome} />
+    }
+
+    if (view === "profile") {
+      return <ProfileEditView onBack={goHome} />
     }
 
     return (

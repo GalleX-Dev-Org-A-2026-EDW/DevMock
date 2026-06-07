@@ -61,6 +61,12 @@ export const usersApi = {
       body: JSON.stringify(dto),
     }),
 
+  updateMe: (dto: UpdateUserDto) =>
+    httpRequired<User>("/api/users/me", {
+      method: "PUT",
+      body: JSON.stringify(dto),
+    }),
+
   remove: (id: string) =>
     httpRequired<void>(`/api/users/${id}`, { method: "DELETE" }),
 }

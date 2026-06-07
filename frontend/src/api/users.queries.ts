@@ -54,6 +54,16 @@ export function useUpdateUser() {
   })
 }
 
+export function useUpdateMe() {
+  const queryClient = useQueryClient()
+  return useMutation<User, Error, UpdateUserDto>({
+    mutationFn: (dto) => usersApi.updateMe(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: usersKeys.detail("me") })
+    },
+  })
+}
+
 export function useDeleteUser() {
   const queryClient = useQueryClient()
   return useMutation<void, Error, string>({
