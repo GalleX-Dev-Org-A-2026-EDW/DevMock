@@ -29,8 +29,55 @@ export default function AdminQuestions() {
   })
 
   const [tagInput, setTagInput] = useState("")
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const validate = (): boolean => {
+    const next: Record<string, string> = {}
+    if (!form.statement.trim()) {
+      next.statement = "El enunciado es obligatorio"
+    }
+    if (!form.basePoints || form.basePoints <= 0) {
+      next.basePoints = "Los puntos base deben ser mayor que 0"
+    }
+    if (!form.estimatedTimeSeconds || form.estimatedTimeSeconds <= 0) {
+      next.estimatedTimeSeconds = "El tiempo estimado es obligatorio y debe ser mayor que 0"
+    }
+    if (form.answerFormat === "FREE_TEXT" || form.answerFormat === "CODE") {
+      if (!form.expectedAnswer?.trim()) {
+        next.expectedAnswer = "La respuesta esperada es obligatoria"
+      }
+    }
+    if (form.answerFormat === "MULTIPLE_CHOICE" || form.answerFormat === "SINGLE_CHOICE") {
+      const opts = form.answerOptions || []
+      if (opts.length === 0) {
+        next.options = "Agrega al menos una opción de respuesta"
+      } else {
+        const hasEmpty = opts.some((o) => !o.optionText.trim())
+        if (hasEmpty) next.options = "Todas las opciones deben tener texto"
+        const hasCorrect = opts.some((o) => o.isCorrect)
+        if (!hasCorrect) next.correctOption = "Selecciona al menos una opción como correcta"
+      }
+    }
+    if (!form.categoryId) {
+      next.categoryId = "Selecciona una categoría"
+    }
+    if (!form.difficultyId) {
+      next.difficultyId = "Selecciona una dificultad"
+    }
+    setErrors(next)
+    return Object.keys(next).length === 0
+  }
+
+  const clearError = (field: string) => {
+    setErrors((prev) => {
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
 
   const openCreate = () => {
+    setErrors({})
     setEditingQuestion(null)
     setForm({
       questionType: "THEORETICAL" as QuestionType,
@@ -68,6 +115,7 @@ export default function AdminQuestions() {
   }
 
   const handleSave = async () => {
+    if (!validate()) return
     if (editingQuestion) {
       const dto: UpdateQuestionDto = {
         questionType: form.questionType,
@@ -92,6 +140,13 @@ export default function AdminQuestions() {
     }
     setShowModal(false)
     setEditingQuestion(null)
+    setErrors({})
+  }
+
+  const closeModal = () => {
+    setShowModal(false)
+    setEditingQuestion(null)
+    setErrors({})
   }
 
   const handleDelete = async (id: string) => {
@@ -239,7 +294,7 @@ export default function AdminQuestions() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6" onClick={() => setShowModal(false)}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6" onClick={closeModal}>
           <div className="bg-white rounded-2xl p-8 w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <h2 className="font-['Work_Sans'] font-bold text-xl text-gray-900 mb-6">
               {editingQuestion ? "Editar pregunta" : "Nueva pregunta"}
@@ -274,34 +329,36 @@ export default function AdminQuestions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Enunciado</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Enunciado <span className="text-red-400">*</span></label>
                 <textarea
                   value={form.statement}
-                  onChange={(e) => setForm({ ...form, statement: e.target.value })}
+                  onChange={(e) => { setForm({ ...form, statement: e.target.value }); clearError("statement") }}
                   rows={4}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.statement ? "border-red-400" : "border-gray-200"}`}
                 />
+                {errors.statement && <p className="text-red-500 text-xs mt-1">{errors.statement}</p>}
               </div>
 
               {form.answerFormat === "FREE_TEXT" || form.answerFormat === "CODE" ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Respuesta esperada</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Respuesta esperada <span className="text-red-400">*</span></label>
                   <textarea
                     value={form.expectedAnswer || ""}
-                    onChange={(e) => setForm({ ...form, expectedAnswer: e.target.value })}
+                    onChange={(e) => { setForm({ ...form, expectedAnswer: e.target.value }); clearError("expectedAnswer") }}
                     rows={3}
-                    className={`w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${form.answerFormat === "CODE" ? "font-['JetBrains_Mono']" : ""}`}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${form.answerFormat === "CODE" ? "font-['JetBrains_Mono']" : ""} ${errors.expectedAnswer ? "border-red-400" : "border-gray-200"}`}
                   />
+                  {errors.expectedAnswer && <p className="text-red-500 text-xs mt-1">{errors.expectedAnswer}</p>}
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Opciones de respuesta</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Opciones de respuesta <span className="text-red-400">*</span></label>
                   <div className="space-y-2">
                     {form.answerOptions?.map((opt, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => updateOption(i, "isCorrect", !opt.isCorrect)}
+                          onClick={() => { clearError("options"); clearError("correctOption"); updateOption(i, "isCorrect", !opt.isCorrect) }}
                           className="flex-shrink-0"
                         >
                           {form.answerFormat === "SINGLE_CHOICE" ? (
@@ -313,9 +370,9 @@ export default function AdminQuestions() {
                         <input
                           type="text"
                           value={opt.optionText}
-                          onChange={(e) => updateOption(i, "optionText", e.target.value)}
+                          onChange={(e) => { clearError("options"); updateOption(i, "optionText", e.target.value) }}
                           placeholder={`Opción ${i + 1}`}
-                          className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                          className={`flex-1 px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.options && !opt.optionText.trim() ? "border-red-400" : "border-gray-200"}`}
                         />
                         <button
                           type="button"
@@ -328,12 +385,14 @@ export default function AdminQuestions() {
                     ))}
                     <button
                       type="button"
-                      onClick={addOption}
+                      onClick={() => { clearError("options"); addOption() }}
                       className="flex items-center gap-1 px-3 py-2 text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
                     >
                       <Plus className="h-4 w-4" /> Agregar opción
                     </button>
                   </div>
+                  {errors.options && <p className="text-red-500 text-xs mt-1">{errors.options}</p>}
+                  {errors.correctOption && <p className="text-red-500 text-xs mt-1">{errors.correctOption}</p>}
                 </div>
               )}
 
@@ -349,51 +408,55 @@ export default function AdminQuestions() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Puntos base</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Puntos base <span className="text-red-400">*</span></label>
                   <input
                     type="number"
                     value={form.basePoints}
-                    onChange={(e) => setForm({ ...form, basePoints: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    onChange={(e) => { setForm({ ...form, basePoints: parseInt(e.target.value) || 0 }); clearError("basePoints") }}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.basePoints ? "border-red-400" : "border-gray-200"}`}
                   />
+                  {errors.basePoints && <p className="text-red-500 text-xs mt-1">{errors.basePoints}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Tiempo estimado (seg)</label>
                   <input
                     type="number"
-                    value={form.estimatedTimeSeconds || ""}
-                    onChange={(e) => setForm({ ...form, estimatedTimeSeconds: e.target.value ? parseInt(e.target.value) : undefined })}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={form.estimatedTimeSeconds ?? ""}
+                    onChange={(e) => { setForm({ ...form, estimatedTimeSeconds: e.target.value ? parseInt(e.target.value) : undefined }); clearError("estimatedTimeSeconds") }}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.estimatedTimeSeconds ? "border-red-400" : "border-gray-200"}`}
                   />
+                  {errors.estimatedTimeSeconds && <p className="text-red-500 text-xs mt-1">{errors.estimatedTimeSeconds}</p>}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría <span className="text-red-400">*</span></label>
                   <select
                     value={form.categoryId || ""}
-                    onChange={(e) => setForm({ ...form, categoryId: e.target.value || undefined })}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    onChange={(e) => { setForm({ ...form, categoryId: e.target.value || undefined }); clearError("categoryId") }}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.categoryId ? "border-red-400" : "border-gray-200"}`}
                   >
-                    <option value="">Sin categoría</option>
+                    <option value="">Selecciona una categoría</option>
                     {categories?.map((cat) => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
+                  {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Dificultad</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Dificultad <span className="text-red-400">*</span></label>
                   <select
                     value={form.difficultyId || ""}
-                    onChange={(e) => setForm({ ...form, difficultyId: e.target.value || undefined })}
-                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    onChange={(e) => { setForm({ ...form, difficultyId: e.target.value || undefined }); clearError("difficultyId") }}
+                    className={`w-full px-3 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary ${errors.difficultyId ? "border-red-400" : "border-gray-200"}`}
                   >
-                    <option value="">Sin dificultad</option>
+                    <option value="">Selecciona una dificultad</option>
                     {difficultyLevels?.map((dl) => (
                       <option key={dl.id} value={dl.id}>{dl.name}</option>
                     ))}
                   </select>
+                  {errors.difficultyId && <p className="text-red-500 text-xs mt-1">{errors.difficultyId}</p>}
                 </div>
               </div>
 
@@ -426,7 +489,7 @@ export default function AdminQuestions() {
 
               <div className="flex gap-3 pt-2">
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={closeModal}
                   className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
                 >
                   Cancelar
