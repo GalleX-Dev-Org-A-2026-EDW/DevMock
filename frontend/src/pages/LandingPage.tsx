@@ -1,19 +1,20 @@
-import { Code2, Trophy, TrendingUp, Target, ChevronRight, Play, CheckCircle2, Award, BarChart3, Users } from "lucide-react";
+import { Code2, Trophy, TrendingUp, Target, ChevronRight, Play, CheckCircle2, Award, BarChart3, Users, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import devMockIcon from "@/assets/DevMockIcono.png";
 
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState<"students" | "professionals">("students");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background font-['Manrope']">
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-border z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={devMockIcon} alt="DevMock" className="h-10 w-10" />
-            <span className="font-['Work_Sans'] font-bold text-xl text-foreground">DevMock</span>
+            <img src={devMockIcon} alt="DevMock" className="h-8 sm:h-10 w-8 sm:w-10" />
+            <span className="font-['Work_Sans'] font-bold text-lg sm:text-xl text-foreground">DevMock</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
@@ -32,11 +33,26 @@ export default function LandingPage() {
               Registrarse gratis
             </Link>
           </div>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-border px-4 sm:px-6 py-4 space-y-3">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Características</a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Cómo funciona</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Planes</a>
+            <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium text-foreground hover:text-primary/80 transition-colors">Iniciar sesión</Link>
+            <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="block px-5 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm text-center">Registrarse gratis</Link>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] overflow-hidden">
+      <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
         <div className="max-w-7xl mx-auto relative">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -45,10 +61,10 @@ export default function LandingPage() {
                 <span className="h-2 w-2 bg-emerald-400 rounded-full animate-pulse"></span>
                 <span className="text-sm font-medium text-white/90">Entrenamiento profesional para entrevistas técnicas</span>
               </div>
-              <h1 className="font-['Work_Sans'] font-extrabold text-5xl lg:text-6xl leading-tight mb-6 text-white">
+              <h1 className="font-['Work_Sans'] font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight mb-6 text-white">
                 Domina tus<br />entrevistas técnicas
               </h1>
-              <p className="text-lg text-white/70 mb-10 leading-relaxed max-w-lg">
+              <p className="text-base sm:text-lg text-white/70 mb-8 sm:mb-10 leading-relaxed max-w-lg">
                 Practica con simulacros realistas, recibe retroalimentación multidimensional y compite en rankings globales.
                 La plataforma definitiva para preparar tu próxima entrevista técnica.
               </p>
@@ -130,16 +146,16 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 px-6 bg-gray-50">
+      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
               Características
             </div>
-            <h2 className="font-['Work_Sans'] font-bold text-4xl text-gray-900 mb-4">
+            <h2 className="font-['Work_Sans'] font-bold text-3xl sm:text-4xl text-gray-900 mb-4">
               Todo lo que necesitas para prepararte
             </h2>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto">
               Herramientas profesionales diseñadas para acelerar tu preparación y maximizar tus resultados
             </p>
           </div>
@@ -200,16 +216,16 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 px-6 bg-white">
+      <section id="how-it-works" className="py-16 sm:py-24 px-4 sm:px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
               Proceso
             </div>
-            <h2 className="font-['Work_Sans'] font-bold text-4xl text-gray-900 mb-4">
+            <h2 className="font-['Work_Sans'] font-bold text-3xl sm:text-4xl text-gray-900 mb-4">
               Cómo funciona DevMock
             </h2>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto">
               Un flujo simple y efectivo para maximizar tu aprendizaje
             </p>
           </div>
@@ -259,19 +275,19 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing / Plans */}
-      <section id="pricing" className="py-24 px-6 bg-gray-50">
+      <section id="pricing" className="py-16 sm:py-24 px-4 sm:px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-4">
               Planes
             </div>
-            <h2 className="font-['Work_Sans'] font-bold text-4xl text-gray-900 mb-4">
+            <h2 className="font-['Work_Sans'] font-bold text-3xl sm:text-4xl text-gray-900 mb-4">
               Elige tu nivel de preparación
             </h2>
           </div>
 
           <div className="flex justify-center mb-12">
-            <div className="inline-flex bg-gray-200/70 rounded-xl p-1.5">
+            <div className="inline-flex bg-gray-200/70 rounded-xl p-1.5 flex-wrap justify-center">
               <button
                 onClick={() => setActiveTab("students")}
                 className={`px-8 py-2.5 rounded-lg text-sm font-semibold transition-all ${
@@ -379,13 +395,13 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Final */}
-      <section className="relative py-24 px-6 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] overflow-hidden">
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
         <div className="max-w-4xl mx-auto text-center relative">
-          <h2 className="font-['Work_Sans'] font-extrabold text-4xl lg:text-5xl text-white mb-6">
+          <h2 className="font-['Work_Sans'] font-extrabold text-3xl sm:text-4xl lg:text-5xl text-white mb-6">
             Comienza a prepararte hoy
           </h2>
-          <p className="text-lg text-white/70 mb-10 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-white/70 mb-8 sm:mb-10 max-w-2xl mx-auto">
             Únete a miles de desarrolladores que están mejorando sus habilidades y consiguiendo mejores oportunidades
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -402,7 +418,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 px-6 bg-[#0d1117] text-white">
+      <footer className="py-12 sm:py-16 px-4 sm:px-6 bg-[#0d1117] text-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-10 mb-10">
             <div>

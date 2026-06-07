@@ -1,15 +1,18 @@
 package com.devmock.backend.service.impl;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devmock.backend.dto.AnswerOptionDto;
 import com.devmock.backend.dto.CreateQuestionRequest;
 import com.devmock.backend.dto.QuestionResponse;
 import com.devmock.backend.dto.UpdateQuestionRequest;
+import com.devmock.backend.entity.AnswerOption;
 import com.devmock.backend.entity.Category;
 import com.devmock.backend.entity.DifficultyLevel;
 import com.devmock.backend.entity.Question;
@@ -72,6 +75,19 @@ public class QuestionServiceImpl implements QuestionService {
             q.setDifficulty(level);
         }
 
+        if (request.getAnswerOptions() != null) {
+            q.setAnswerOptions(new ArrayList<>());
+            for (AnswerOptionDto dto : request.getAnswerOptions()) {
+                AnswerOption opt = new AnswerOption();
+                opt.setOptionText(dto.getOptionText());
+                opt.setIsCorrect(dto.getIsCorrect());
+                opt.setExplanation(dto.getExplanation());
+                opt.setDisplayOrder(dto.getDisplayOrder());
+                opt.setQuestion(q);
+                q.getAnswerOptions().add(opt);
+            }
+        }
+
         return toResponse(repository.save(q));
     }
 
@@ -128,6 +144,19 @@ public class QuestionServiceImpl implements QuestionService {
             q.setDifficulty(level);
         }
 
+        if (request.getAnswerOptions() != null) {
+            q.getAnswerOptions().clear();
+            for (AnswerOptionDto dto : request.getAnswerOptions()) {
+                AnswerOption opt = new AnswerOption();
+                opt.setOptionText(dto.getOptionText());
+                opt.setIsCorrect(dto.getIsCorrect());
+                opt.setExplanation(dto.getExplanation());
+                opt.setDisplayOrder(dto.getDisplayOrder());
+                opt.setQuestion(q);
+                q.getAnswerOptions().add(opt);
+            }
+        }
+
         return toResponse(repository.save(q));
     }
 
@@ -165,6 +194,17 @@ public class QuestionServiceImpl implements QuestionService {
         }
         r.setCreatedAt(q.getCreatedAt());
         r.setUpdatedAt(q.getUpdatedAt());
+        if (q.getAnswerOptions() != null) {
+            r.setAnswerOptions(q.getAnswerOptions().stream().map(opt -> {
+                AnswerOptionDto dto = new AnswerOptionDto();
+                dto.setId(opt.getId());
+                dto.setOptionText(opt.getOptionText());
+                dto.setIsCorrect(opt.getIsCorrect());
+                dto.setExplanation(opt.getExplanation());
+                dto.setDisplayOrder(opt.getDisplayOrder());
+                return dto;
+            }).toList());
+        }
         return r;
     }
 }

@@ -39,7 +39,7 @@ async function authFetch<T>(path: string, options: RequestInit): Promise<T> {
     throw new ApiError(
       res.status,
       parsed?.code ?? null,
-      parsed?.message ?? body ?? `HTTP ${res.status}`,
+      parsed?.message ?? body ?? `Error HTTP ${res.status}`,
       parsed?.fields as Record<string, string> | undefined,
     )
   }
