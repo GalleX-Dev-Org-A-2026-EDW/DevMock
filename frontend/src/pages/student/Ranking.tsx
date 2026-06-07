@@ -173,6 +173,16 @@ export default function Ranking({ onBack }: Props) {
                         <div>
                           <p className={`text-sm font-medium ${isMe ? "text-emerald-300" : "text-white"}`}>
                             {entry.userName ?? "Usuario"}
+                            {entry.userRole === "PROFESSIONAL" && (
+                              <span className="ml-1.5 rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-medium text-blue-400">
+                                PRO
+                              </span>
+                            )}
+                            {entry.userRole === "STUDENT" && (
+                              <span className="ml-1.5 rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
+                                STUDENT
+                              </span>
+                            )}
                             {isMe && <span className="ml-1.5 text-xs text-emerald-400/60">(tú)</span>}
                           </p>
                         </div>

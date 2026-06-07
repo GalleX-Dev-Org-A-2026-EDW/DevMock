@@ -254,6 +254,7 @@ public class RankingServiceImpl implements RankingService {
         if (r.getUser() != null) {
             response.setUserId(r.getUser().getId());
             response.setUserName(r.getUser().getFullName());
+            response.setUserRole(r.getUser().getRole());
         }
         if (r.getCategory() != null) response.setCategoryId(r.getCategory().getId());
         if (r.getDifficulty() != null) response.setDifficultyId(r.getDifficulty().getId());
