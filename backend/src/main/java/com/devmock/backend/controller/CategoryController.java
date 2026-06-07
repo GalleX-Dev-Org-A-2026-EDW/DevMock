@@ -12,6 +12,7 @@ import com.devmock.backend.dto.UpdateCategoryRequest;
 import com.devmock.backend.service.CategoryService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -25,26 +26,31 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse create(@Valid @RequestBody CreateCategoryRequest request) {
         return service.create(request);
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<CategoryResponse> list(@RequestParam(name = "activeOnly", required = false, defaultValue = "false") boolean activeOnly) {
         return activeOnly ? service.listActive() : service.list();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public CategoryResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @GetMapping("/by-slug/{slug}")
+    @PreAuthorize("isAuthenticated()")
     public CategoryResponse getBySlug(@PathVariable String slug) {
         return service.getBySlug(slug);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateCategoryRequest request) {
@@ -53,6 +59,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }

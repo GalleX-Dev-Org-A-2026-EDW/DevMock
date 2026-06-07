@@ -1,0 +1,6 @@
+export type UserRole = "STUDENT" | "PROFESSIONAL" | "ADMIN"
+export type SessionStatus = "IN_PROGRESS" | "COMPLETED" | "ABANDONED" | "EXPIRED"
+export type QuestionType = "THEORETICAL" | "PRACTICAL" | "MIXED"
+export type AnswerFormat = "FREE_TEXT" | "CODE" | "MULTIPLE_CHOICE" | "SINGLE_CHOICE"
+export type AuditAction = "CREATE" | "UPDATE" | "DELETE" | "LOGIN" | "LOGOUT"
+export type RankingPeriod = "WEEKLY" | "MONTHLY" | "ALL_TIME" | "HISTORICAL"

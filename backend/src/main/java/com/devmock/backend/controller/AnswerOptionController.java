@@ -20,6 +20,7 @@ import com.devmock.backend.dto.UpdateAnswerOptionRequest;
 import com.devmock.backend.service.AnswerOptionService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/answer-options")
@@ -33,21 +34,25 @@ public class AnswerOptionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public AnswerOptionResponse create(@Valid @RequestBody CreateAnswerOptionRequest request) {
         return service.create(request);
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<AnswerOptionResponse> list() {
         return service.list();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public AnswerOptionResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public AnswerOptionResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateAnswerOptionRequest request) {
@@ -56,6 +61,7 @@ public class AnswerOptionController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }

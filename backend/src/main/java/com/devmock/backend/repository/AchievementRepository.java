@@ -9,4 +9,5 @@ import com.devmock.backend.entity.Achievement;
 public interface AchievementRepository
         extends JpaRepository<Achievement, UUID> {
 
+    long countByIsActiveTrue();
 }

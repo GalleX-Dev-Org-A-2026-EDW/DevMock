@@ -5,11 +5,13 @@ import com.devmock.backend.dto.UserResponse;
 import com.devmock.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
     private final UserService service;
     public UserController(UserService service) {

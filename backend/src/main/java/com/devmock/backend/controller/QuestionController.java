@@ -20,6 +20,7 @@ import com.devmock.backend.dto.UpdateQuestionRequest;
 import com.devmock.backend.service.QuestionService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -33,21 +34,25 @@ public class QuestionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public QuestionResponse create(@Valid @RequestBody CreateQuestionRequest request) {
         return service.create(request);
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<QuestionResponse> list() {
         return service.list();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public QuestionResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public QuestionResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateQuestionRequest request) {
@@ -56,6 +61,7 @@ public class QuestionController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
