@@ -1,6 +1,14 @@
 import { http, httpRequired } from "./http"
 import type { QuestionType, AnswerFormat } from "./enums"
 
+export interface AnswerOptionDto {
+  id?: string
+  optionText: string
+  isCorrect: boolean
+  explanation?: string
+  displayOrder?: number
+}
+
 export interface Question {
   id: string
   questionType: QuestionType
@@ -18,6 +26,7 @@ export interface Question {
   difficultyId: string | null
   createdAt: string
   updatedAt: string
+  answerOptions: AnswerOptionDto[]
 }
 
 export interface CreateQuestionDto {
@@ -33,6 +42,7 @@ export interface CreateQuestionDto {
   createdById?: string
   categoryId?: string
   difficultyId?: string
+  answerOptions?: AnswerOptionDto[]
 }
 
 export interface UpdateQuestionDto {
@@ -49,6 +59,7 @@ export interface UpdateQuestionDto {
   createdById?: string
   categoryId?: string
   difficultyId?: string
+  answerOptions?: AnswerOptionDto[]
 }
 
 export const questionsApi = {

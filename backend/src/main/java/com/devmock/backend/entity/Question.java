@@ -76,7 +76,7 @@ public class Question {
     @ManyToOne
     private DifficultyLevel difficulty;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerOption> answerOptions = new ArrayList<>();
 
     @OneToMany(mappedBy = "question")

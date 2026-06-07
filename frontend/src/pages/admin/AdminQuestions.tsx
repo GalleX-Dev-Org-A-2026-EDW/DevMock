@@ -2,9 +2,9 @@ import { useState } from "react"
 import { useQuestions, useCreateQuestion, useUpdateQuestion, useDeleteQuestion } from "@/api/questions.queries"
 import { useCategories } from "@/api/categories.queries"
 import { useDifficultyLevels } from "@/api/difficulty-levels.queries"
-import type { Question, CreateQuestionDto, UpdateQuestionDto } from "@/api/questions"
+import type { Question, CreateQuestionDto, UpdateQuestionDto, AnswerOptionDto } from "@/api/questions"
 import type { QuestionType, AnswerFormat } from "@/api/enums"
-import { Plus, Edit2, Trash2, Eye, EyeOff } from "lucide-react"
+import { Plus, Edit2, Trash2, Eye, EyeOff, Circle, CircleCheck, CheckSquare, Square } from "lucide-react"
 
 export default function AdminQuestions() {
   const { data: questions, isLoading, isError } = useQuestions()
@@ -25,13 +25,21 @@ export default function AdminQuestions() {
     statement: "",
     basePoints: 10,
     tags: [],
+    answerOptions: [],
   })
 
   const [tagInput, setTagInput] = useState("")
 
   const openCreate = () => {
     setEditingQuestion(null)
-    setForm({ questionType: "THEORETICAL", answerFormat: "FREE_TEXT", statement: "", basePoints: 10, tags: [] })
+    setForm({
+      questionType: "THEORETICAL" as QuestionType,
+      answerFormat: "FREE_TEXT" as AnswerFormat,
+      statement: "",
+      basePoints: 10,
+      tags: [],
+      answerOptions: [],
+    })
     setShowModal(true)
   }
 
@@ -48,6 +56,13 @@ export default function AdminQuestions() {
       tags: q.tags,
       categoryId: q.categoryId ?? undefined,
       difficultyId: q.difficultyId ?? undefined,
+      answerOptions: q.answerOptions?.map(ao => ({
+        id: ao.id,
+        optionText: ao.optionText,
+        isCorrect: ao.isCorrect,
+        explanation: ao.explanation ?? undefined,
+        displayOrder: ao.displayOrder ?? undefined,
+      })) ?? [],
     })
     setShowModal(true)
   }
@@ -66,9 +81,14 @@ export default function AdminQuestions() {
       if (form.estimatedTimeSeconds) dto.estimatedTimeSeconds = form.estimatedTimeSeconds
       if (form.categoryId) dto.categoryId = form.categoryId
       if (form.difficultyId) dto.difficultyId = form.difficultyId
+      if (form.answerOptions) dto.answerOptions = form.answerOptions
       await updateQuestion.mutateAsync({ id: editingQuestion.id, dto })
     } else {
-      await createQuestion.mutateAsync(form)
+      const dto = { ...form }
+      if (form.answerOptions && form.answerOptions.length > 0) {
+        dto.answerOptions = form.answerOptions
+      }
+      await createQuestion.mutateAsync(dto)
     }
     setShowModal(false)
     setEditingQuestion(null)
@@ -89,6 +109,33 @@ export default function AdminQuestions() {
 
   const removeTag = (tag: string) => {
     setForm({ ...form, tags: form.tags?.filter((t) => t !== tag) })
+  }
+
+  const addOption = () => {
+    const opts = form.answerOptions || []
+    setForm({
+      ...form,
+      answerOptions: [
+        ...opts,
+        { optionText: "", isCorrect: false, displayOrder: opts.length },
+      ],
+    })
+  }
+
+  const removeOption = (index: number) => {
+    const opts = form.answerOptions?.filter((_, i) => i !== index) || []
+    setForm({ ...form, answerOptions: opts })
+  }
+
+  const updateOption = (index: number, field: keyof AnswerOptionDto, value: string | boolean | number) => {
+    const opts = [...(form.answerOptions || [])]
+    opts[index] = { ...opts[index], [field]: value }
+    if (field === "isCorrect" && form.answerFormat === "SINGLE_CHOICE" && value === true) {
+      for (let i = 0; i < opts.length; i++) {
+        if (i !== index) opts[i] = { ...opts[i], isCorrect: false }
+      }
+    }
+    setForm({ ...form, answerOptions: opts })
   }
 
   if (isLoading) {
@@ -236,15 +283,59 @@ export default function AdminQuestions() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Respuesta esperada</label>
-                <textarea
-                  value={form.expectedAnswer || ""}
-                  onChange={(e) => setForm({ ...form, expectedAnswer: e.target.value })}
-                  rows={3}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              {form.answerFormat === "FREE_TEXT" || form.answerFormat === "CODE" ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Respuesta esperada</label>
+                  <textarea
+                    value={form.expectedAnswer || ""}
+                    onChange={(e) => setForm({ ...form, expectedAnswer: e.target.value })}
+                    rows={3}
+                    className={`w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${form.answerFormat === "CODE" ? "font-['JetBrains_Mono']" : ""}`}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Opciones de respuesta</label>
+                  <div className="space-y-2">
+                    {form.answerOptions?.map((opt, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => updateOption(i, "isCorrect", !opt.isCorrect)}
+                          className="flex-shrink-0"
+                        >
+                          {form.answerFormat === "SINGLE_CHOICE" ? (
+                            opt.isCorrect ? <CircleCheck className="h-5 w-5 text-emerald-500" /> : <Circle className="h-5 w-5 text-gray-300" />
+                          ) : (
+                            opt.isCorrect ? <CheckSquare className="h-5 w-5 text-emerald-500" /> : <Square className="h-5 w-5 text-gray-300" />
+                          )}
+                        </button>
+                        <input
+                          type="text"
+                          value={opt.optionText}
+                          onChange={(e) => updateOption(i, "optionText", e.target.value)}
+                          placeholder={`Opción ${i + 1}`}
+                          className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeOption(i)}
+                          className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={addOption}
+                      className="flex items-center gap-1 px-3 py-2 text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
+                    >
+                      <Plus className="h-4 w-4" /> Agregar opción
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Explicación</label>
