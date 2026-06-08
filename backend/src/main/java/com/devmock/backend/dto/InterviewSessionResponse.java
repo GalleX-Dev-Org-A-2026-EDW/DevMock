@@ -2,6 +2,7 @@ package com.devmock.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import com.devmock.backend.entity.en_enum.SessionStatus;
@@ -24,6 +25,15 @@ public class InterviewSessionResponse {
     private UUID categoryId;
     private Instant createdAt;
     private Instant updatedAt;
+    private List<AchievementResponse> newlyUnlockedAchievements;
+
+    public List<AchievementResponse> getNewlyUnlockedAchievements() {
+        return newlyUnlockedAchievements;
+    }
+
+    public void setNewlyUnlockedAchievements(List<AchievementResponse> newlyUnlockedAchievements) {
+        this.newlyUnlockedAchievements = newlyUnlockedAchievements;
+    }
 
     public UUID getId() {
         return id;

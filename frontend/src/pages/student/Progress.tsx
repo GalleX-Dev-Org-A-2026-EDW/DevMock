@@ -99,11 +99,6 @@ export default function Progress({ onBack }: Props) {
       .sort((a, b) => b.avg - a.avg)
   }, [completed, categories])
 
-  const unlockedIds = useMemo(
-    () => new Set((userAchievements ?? []).map((ua) => ua.achievementId)),
-    [userAchievements],
-  )
-
   const scoreChartData = useMemo(() => ({
     labels: sortedCompleted.map((s) => formatShortDate(s.createdAt)),
     datasets: [
@@ -340,11 +335,19 @@ export default function Progress({ onBack }: Props) {
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {allAchievements.map((achievement) => {
-              const unlocked = unlockedIds.has(achievement.id)
+              const ua = userAchievements?.find((u) => u.achievementId === achievement.id)
+              const unlocked = !!ua
+              const formattedDate = ua?.unlockedAt
+                ? new Intl.DateTimeFormat("es-CO", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }).format(new Date(ua.unlockedAt))
+                : null
               return (
                 <div
                   key={achievement.id}
-                  className={`rounded-lg border p-4 text-center transition-all ${
+                  className={`group relative rounded-lg border p-4 text-center transition-all ${
                     unlocked
                       ? "border-emerald-500/30 bg-emerald-500/10"
                       : "border-white/10 bg-white/5 opacity-50"
@@ -367,12 +370,28 @@ export default function Progress({ onBack }: Props) {
                     {achievement.name}
                   </p>
                   <p className="mt-0.5 text-xs text-white/40">
-                    {achievement.description ?? achievement.unlockCriteria ?? ""}
+                    {achievement.description ?? ""}
                   </p>
-                  {unlocked && (
-                    <span className="mt-2 inline-block rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-400">
-                      Desbloqueado
-                    </span>
+                  {unlocked ? (
+                    <div className="mt-2 space-y-1">
+                      <span className="inline-block rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-400">
+                        Desbloqueado
+                      </span>
+                      {formattedDate && (
+                        <p className="text-[10px] text-emerald-400/60">
+                          {formattedDate}
+                        </p>
+                      )}
+                      {achievement.pointsReward != null && achievement.pointsReward > 0 && (
+                        <p className="text-[10px] font-medium text-amber-400/70">
+                          +{achievement.pointsReward} pts
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-[10px] text-white/30">
+                      {achievement.unlockCriteria ?? ""}
+                    </p>
                   )}
                 </div>
               )

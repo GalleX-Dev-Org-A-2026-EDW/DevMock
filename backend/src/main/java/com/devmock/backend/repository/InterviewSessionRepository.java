@@ -16,4 +16,5 @@ public interface InterviewSessionRepository extends JpaRepository<InterviewSessi
     List<InterviewSession> findByStatusAndFinalScoreIsNotNull(SessionStatus status);
     List<InterviewSession> findByUser(User user);
     List<InterviewSession> findByUserIsNull();
+    long countByUserAndStatus(User user, SessionStatus status);
 }

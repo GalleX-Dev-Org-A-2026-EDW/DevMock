@@ -1,4 +1,5 @@
 import { http, httpRequired } from "./http"
+import type { Achievement } from "./achievements"
 import type { SessionStatus } from "./enums"
 
 export interface InterviewSession {
@@ -18,6 +19,7 @@ export interface InterviewSession {
   categoryId: string | null
   createdAt: string
   updatedAt: string
+  newlyUnlockedAchievements?: Achievement[]
 }
 
 export interface CreateInterviewSessionDto {

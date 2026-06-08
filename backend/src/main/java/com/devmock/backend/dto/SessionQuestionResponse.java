@@ -2,6 +2,7 @@ package com.devmock.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public class SessionQuestionResponse {
@@ -23,6 +24,15 @@ public class SessionQuestionResponse {
     private UUID selectedOptionId;
     private Instant createdAt;
     private Instant updatedAt;
+    private List<AchievementResponse> newlyUnlockedAchievements;
+
+    public List<AchievementResponse> getNewlyUnlockedAchievements() {
+        return newlyUnlockedAchievements;
+    }
+
+    public void setNewlyUnlockedAchievements(List<AchievementResponse> newlyUnlockedAchievements) {
+        this.newlyUnlockedAchievements = newlyUnlockedAchievements;
+    }
 
     public UUID getId() {
         return id;
