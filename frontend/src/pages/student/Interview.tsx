@@ -25,9 +25,13 @@ type Evaluation = {
 }
 
 function normalize(text: string) {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
+  let lowered: string
+  try {
+    lowered = text.toLowerCase().normalize("NFD")
+  } catch {
+    lowered = text.toLowerCase()
+  }
+  return lowered
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9#]+/g, " ")
     .trim()
@@ -161,6 +165,7 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
   const [elapsed, setElapsed] = useState(0)
   const [enteredAt, setEnteredAt] = useState(0)
   const [isEvaluating, setIsEvaluating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const questions = useMemo(
     () => (allSQ ?? [])
@@ -216,17 +221,19 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
       dto.userAnswer = JSON.stringify(selectedId)
     }
 
-    if (answer !== sq.userAnswer || timeUsedSeconds !== (sq.timeUsedSeconds ?? 0)) {
-      await updateSQ.mutateAsync({ id: sq.id, dto: dto as never })
-    }
+    await updateSQ.mutateAsync({ id: sq.id, dto: dto as never })
   }, [answers, questions, selectedOptions, timeByQuestion, updateSQ])
 
   const handleNext = async () => {
-    const spent = registerTimeForCurrent()
-    await saveAnswer(currentIndex, spent)
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((i) => i + 1)
-      setEnteredAt(elapsed)
+    try {
+      const spent = registerTimeForCurrent()
+      await saveAnswer(currentIndex, spent)
+      if (currentIndex < questions.length - 1) {
+        setCurrentIndex((i) => i + 1)
+        setEnteredAt(elapsed)
+      }
+    } catch {
+      setError("Error al guardar. Revisa tu respuesta e intenta de nuevo.")
     }
   }
 
@@ -240,23 +247,24 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
 
   const handleFinish = async () => {
     const spent = registerTimeForCurrent()
-    await saveAnswer(currentIndex, spent)
 
     const evaluations: Evaluation[] = []
 
     setIsEvaluating(true)
+    setError(null)
     try {
       for (const sq of questions) {
-        const answer = answers[sq.id] ?? sq.userAnswer ?? ""
+        const answer = answers[sq.id] ?? sq.userAnswer
         const timeUsedSeconds = (timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0) + (sq.id === currentSQ?.id ? spent : 0)
         const question = sq.questionId ? questionById.get(sq.questionId) : undefined
         if (!question) continue
 
         let evaluation: Evaluation
         const fmt = question.answerFormat
+
         if (fmt === "CODE") {
           const result = await evaluationsApi.evaluateCode({
-            code: answer,
+            code: answer ?? "",
             expectedAnswer: question.expectedAnswer ?? null,
             evaluationConfig: question.evaluationConfig ?? null,
             estimatedTimeSeconds: question.estimatedTimeSeconds,
@@ -275,24 +283,25 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
           const selectedId = selectedOptions[sq.id] ?? ""
           evaluation = evaluateChoice(question, selectedId)
         } else {
-          evaluation = evaluateAnswer(question, answer, timeUsedSeconds)
+          evaluation = evaluateAnswer(question, answer ?? "", timeUsedSeconds)
         }
         evaluations.push(evaluation)
 
-        await updateSQ.mutateAsync({
-          id: sq.id,
-          dto: {
-            userAnswer: answer,
-            timeUsedSeconds,
-            answeredAt: new Date().toISOString(),
-            obtainedPoints: evaluation.obtainedPoints,
-            correctnessScore: evaluation.correctnessScore,
-            efficiencyScore: evaluation.efficiencyScore,
-            logicScore: evaluation.logicScore,
-            clarityScore: evaluation.clarityScore,
-            evaluationFeedback: evaluation.feedback,
-          },
-        })
+        const dto: Record<string, unknown> = {
+          timeUsedSeconds,
+          answeredAt: new Date().toISOString(),
+          obtainedPoints: evaluation.obtainedPoints,
+          correctnessScore: evaluation.correctnessScore,
+          efficiencyScore: evaluation.efficiencyScore,
+          logicScore: evaluation.logicScore,
+          clarityScore: evaluation.clarityScore,
+          evaluationFeedback: evaluation.feedback,
+        }
+        if (answer != null) {
+          dto.userAnswer = answer
+        }
+
+        await updateSQ.mutateAsync({ id: sq.id, dto: dto as never })
       }
 
       const correctnessScore = average(evaluations.map((e) => e.correctnessScore))
@@ -319,6 +328,8 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
         },
       })
       onFinish(sessionId)
+    } catch {
+      setError("Error al finalizar la entrevista. Intenta de nuevo.")
     } finally {
       setIsEvaluating(false)
     }
@@ -452,6 +463,18 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
           />
         )}
       </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+          {error}
+          <button
+            onClick={() => setError(null)}
+            className="ml-2 underline hover:text-red-200"
+          >
+            Cerrar
+          </button>
+        </div>
+      )}
 
       <div className="flex items-center justify-between">
         <Button

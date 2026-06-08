@@ -32,21 +32,21 @@ cd frontend  ; npm run build                        # typecheck + build
 
 - PostgreSQL running locally; db `devmock_db`, user `postgres`, pass `12345678`
 - No backend `.env` file — DB creds hardcoded in `application.properties` (though `spring-dotenv` dep is present in pom.xml, so one *could* be added)
-- Frontend `.env` at `frontend/` — `VITE_API_URL=http://localhost:8080` (note: no `/api` suffix; `http.ts` prepends it). `.env.example` is stale (wrong URL format).
+- Frontend `.env` at `frontend/` — `VITE_API_URL=http://localhost:8080`. `.env.example` is stale (has `http://localhost:ip/api` — wrong). Note: `http.ts` does NOT add `/api`; each domain module hardcodes `/api/...` in its path argument.
 - Schema: `ddl-auto=update` — no manual migrations; SQL logged to console
 - `DataInitializer.java` auto-seeds on empty DB: admin user (`admin@devmock.com` / `Admin123!`), difficulty levels, categories, interview types, evaluation criteria, achievements, sample questions. **All seed data in Spanish** (e.g., "Fácil", "Algoritmos").
 
 ## Architecture
 
 ### Backend (`backend/`)
-Layered layout under `com.devmock.backend` with 15 entities + 6 enums, **16 services** (interface + `@Transactional` impl), 17 controllers, 15 repos, 50 DTOs:
+Layered layout under `com.devmock.backend` with 15 entities + 6 enums, **17 services** (interface + `@Transactional` impl), 18 controllers, 15 repos, 50 DTOs:
 ```
 entity/         → 15 JPA entities (all with UUID PKs except SessionQuestion)
 entity/en_enum/ → 6 enums (UserRole, QuestionType, AnswerFormat, SessionStatus, RankingPeriod, AuditAction)
 repository/     → Spring Data JPA repos (15)
-service/        → service interfaces (16)
-service/impl/   → @Transactional implementations (16)
-controller/     → REST controllers (17, incl. AuthController + AdminDashboardController)
+service/        → service interfaces (17)
+service/impl/   → @Transactional implementations (17)
+controller/     → REST controllers (18, incl. AuthController + AdminDashboardController)
 dto/            → 50 request/response DTOs
 security/       → JWT + Spring Security
 exception/      → GlobalExceptionHandler + domain exceptions
@@ -103,7 +103,7 @@ src/charts/       → empty dir (chart.js available in deps)
 
 - JWT stateless; BCrypt; JJWT 0.12.6
 - `jwt.secret` and `jwt.expiration-ms` (24h) hardcoded in `application.properties`
-- Only `POST /api/auth/**` is public — all other endpoints require `Authorization: Bearer <token>`
+- `POST /api/auth/**` is public (all methods on that path are permitted, but only POST endpoints exist)
 - `UserDetailsServiceImpl` loads users by email from DB
 
 ## Tests
@@ -113,7 +113,7 @@ src/charts/       → empty dir (chart.js available in deps)
 
 ## Git workflow
 
-- Active branch: `Develop` — all PRs target it (not `main`)
+- Active branch: `develop` — all PRs target it (not `main`)
 - Branches: `feature/*`, `fix/*`, `chore/*`, `docs/*`
 - Conventional Commits: `<type>(<scope>): <description>` — types: feat, fix, refactor, test, chore, docs; scopes: entity, repository, service, controller, dto, config, db
 - Rebase feature branches; squash-and-merge preferred
