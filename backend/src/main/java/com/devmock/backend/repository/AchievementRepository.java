@@ -10,4 +10,6 @@ public interface AchievementRepository
         extends JpaRepository<Achievement, UUID> {
 
     long countByIsActiveTrue();
+
+    java.util.Optional<Achievement> findBySlug(String slug);
 }

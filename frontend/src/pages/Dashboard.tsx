@@ -9,6 +9,7 @@ import MySessions from "@/pages/student/MySessions"
 import Progress from "@/pages/student/Progress"
 import Ranking from "@/pages/student/Ranking"
 import ProfileEdit from "@/pages/student/ProfileEdit"
+import type { Achievement } from "@/api/achievements"
 import { useInterviewSessions } from "@/api/interview-sessions.queries"
 import { useCategories } from "@/api/categories.queries"
 import { useDifficultyLevels } from "@/api/difficulty-levels.queries"
@@ -47,6 +48,7 @@ export default function Dashboard() {
   const [view, setView] = useState<StudentView>("home")
   const [activeMenuItem, setActiveMenuItem] = useState<StudentMenuItem>("home")
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
+  const [unlockedAchievements, setUnlockedAchievements] = useState<Achievement[]>([])
 
   const { data: sessions, isLoading: sessionsLoading } = useInterviewSessions()
   const { data: categories } = useCategories(true)
@@ -77,14 +79,16 @@ export default function Dashboard() {
     setActiveMenuItem("sessions")
   }
 
-  const showResults = (sessionId: string) => {
+  const showResults = (sessionId: string, achievements?: Achievement[]) => {
     setActiveSessionId(sessionId)
+    setUnlockedAchievements(achievements ?? [])
     setView("results")
     setActiveMenuItem("sessions")
   }
 
   const goHome = () => {
     setActiveSessionId(null)
+    setUnlockedAchievements([])
     setView("home")
     setActiveMenuItem("home")
   }
@@ -119,6 +123,7 @@ export default function Dashboard() {
       return (
         <SessionResults
           sessionId={activeSessionId}
+          unlockedAchievements={unlockedAchievements}
           onBack={goHome}
         />
       )

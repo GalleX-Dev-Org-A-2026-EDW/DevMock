@@ -1,23 +1,28 @@
 package com.devmock.backend.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.devmock.backend.dto.AchievementResponse;
 import com.devmock.backend.dto.CreateInterviewSessionRequest;
-import com.devmock.backend.dto.UpdateInterviewSessionRequest;
 import com.devmock.backend.dto.InterviewSessionResponse;
+import com.devmock.backend.dto.UpdateInterviewSessionRequest;
 import com.devmock.backend.entity.Category;
 import com.devmock.backend.entity.DifficultyLevel;
 import com.devmock.backend.entity.InterviewSession;
 import com.devmock.backend.entity.InterviewType;
 import com.devmock.backend.entity.User;
+import com.devmock.backend.entity.en_enum.SessionStatus;
 import com.devmock.backend.exception.ResourceNotFoundException;
 import com.devmock.backend.repository.CategoryRepository;
 import com.devmock.backend.repository.DifficultyLevelRepository;
 import com.devmock.backend.repository.InterviewSessionRepository;
 import com.devmock.backend.repository.InterviewTypeRepository;
 import com.devmock.backend.repository.UserRepository;
-import com.devmock.backend.entity.en_enum.SessionStatus;
 import com.devmock.backend.security.SecurityUtils;
 import com.devmock.backend.service.InterviewSessionService;
 import com.devmock.backend.service.RankingService;
+import com.devmock.backend.service.UserAchievementService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +40,7 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
     private final DifficultyLevelRepository difficultyLevelRepository;
     private final CategoryRepository categoryRepository;
     private final RankingService rankingService;
+    private final UserAchievementService userAchievementService;
     private final SecurityUtils securityUtils;
 
     public InterviewSessionServiceImpl(InterviewSessionRepository repository,
@@ -43,6 +49,7 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
             DifficultyLevelRepository difficultyLevelRepository,
             CategoryRepository categoryRepository,
             RankingService rankingService,
+            UserAchievementService userAchievementService,
             SecurityUtils securityUtils) {
         this.repository = repository;
         this.userRepository = userRepository;
@@ -50,6 +57,7 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
         this.difficultyLevelRepository = difficultyLevelRepository;
         this.categoryRepository = categoryRepository;
         this.rankingService = rankingService;
+        this.userAchievementService = userAchievementService;
         this.securityUtils = securityUtils;
     }
 
@@ -149,10 +157,19 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
         }
 
         InterviewSession saved = repository.save(s);
+        repository.flush();
+
+        List<AchievementResponse> newlyUnlocked = new ArrayList<>();
         if (SessionStatus.COMPLETED.equals(request.getStatus())) {
             rankingService.recalculate();
+            newlyUnlocked = userAchievementService.checkAndUnlockOnSessionCompleted(s.getUser());
         }
-        return toResponse(saved);
+
+        InterviewSessionResponse response = toResponse(saved);
+        if (!newlyUnlocked.isEmpty()) {
+            response.setNewlyUnlockedAchievements(newlyUnlocked);
+        }
+        return response;
     }
 
     @Override

@@ -1,23 +1,30 @@
 package com.devmock.backend.service.impl;
 
-import com.devmock.backend.dto.CreateUserAchievementRequest;
-import com.devmock.backend.dto.UpdateUserAchievementRequest;
-import com.devmock.backend.dto.UserAchievementResponse;
-import com.devmock.backend.entity.Achievement;
-import com.devmock.backend.entity.User;
-import com.devmock.backend.entity.UserAchievement;
-import com.devmock.backend.exception.ResourceNotFoundException;
-import com.devmock.backend.repository.AchievementRepository;
-import com.devmock.backend.repository.UserAchievementRepository;
-import com.devmock.backend.repository.UserRepository;
-import com.devmock.backend.security.SecurityUtils;
-import com.devmock.backend.service.UserAchievementService;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import com.devmock.backend.dto.AchievementResponse;
+import com.devmock.backend.dto.CreateUserAchievementRequest;
+import com.devmock.backend.dto.UpdateUserAchievementRequest;
+import com.devmock.backend.dto.UserAchievementResponse;
+import com.devmock.backend.entity.Achievement;
+import com.devmock.backend.entity.SessionQuestion;
+import com.devmock.backend.entity.User;
+import com.devmock.backend.entity.UserAchievement;
+import com.devmock.backend.entity.en_enum.SessionStatus;
+import com.devmock.backend.exception.ResourceNotFoundException;
+import com.devmock.backend.repository.AchievementRepository;
+import com.devmock.backend.repository.InterviewSessionRepository;
+import com.devmock.backend.repository.UserAchievementRepository;
+import com.devmock.backend.repository.UserRepository;
+import com.devmock.backend.security.SecurityUtils;
+import com.devmock.backend.service.UserAchievementService;
 
 @Service
 @Transactional
@@ -26,15 +33,18 @@ public class UserAchievementServiceImpl implements UserAchievementService {
     private final UserAchievementRepository repository;
     private final UserRepository userRepository;
     private final AchievementRepository achievementRepository;
+    private final InterviewSessionRepository interviewSessionRepository;
     private final SecurityUtils securityUtils;
 
     public UserAchievementServiceImpl(UserAchievementRepository repository,
             UserRepository userRepository,
             AchievementRepository achievementRepository,
+            InterviewSessionRepository interviewSessionRepository,
             SecurityUtils securityUtils) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.achievementRepository = achievementRepository;
+        this.interviewSessionRepository = interviewSessionRepository;
         this.securityUtils = securityUtils;
     }
 
@@ -104,6 +114,72 @@ public class UserAchievementServiceImpl implements UserAchievementService {
             throw new ResourceNotFoundException("UserAchievement " + id + " not found");
         }
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<AchievementResponse> checkAndUnlockOnSessionCompleted(User user) {
+        List<AchievementResponse> newlyUnlocked = new ArrayList<>();
+
+        long completedCount = interviewSessionRepository.countByUserAndStatus(user, SessionStatus.COMPLETED);
+
+        // Primera Sesión — first completed session
+        if (completedCount == 1) {
+            tryUnlock(user, "primera-sesion", newlyUnlocked);
+        }
+
+        // Maratón — 10 completed sessions
+        if (completedCount == 10) {
+            tryUnlock(user, "maraton", newlyUnlocked);
+        }
+
+        return newlyUnlocked;
+    }
+
+    @Override
+    public List<AchievementResponse> checkAndUnlockOnQuestionEvaluated(User user, SessionQuestion sq) {
+        List<AchievementResponse> newlyUnlocked = new ArrayList<>();
+
+        // Puntuación Perfecta — correctnessScore == 100
+        if (sq.getCorrectnessScore() != null
+                && sq.getCorrectnessScore().compareTo(BigDecimal.valueOf(100)) == 0) {
+            tryUnlock(user, "puntuacion-perfecta", newlyUnlocked);
+        }
+
+        // Rápido como un Rayo — completed in less than 50% of assigned time
+        if (sq.getAssignedTimeSeconds() != null && sq.getTimeUsedSeconds() != null
+                && sq.getTimeUsedSeconds() > 0
+                && sq.getTimeUsedSeconds() < sq.getAssignedTimeSeconds() * 0.5) {
+            tryUnlock(user, "rapido-como-un-rayo", newlyUnlocked);
+        }
+
+        return newlyUnlocked;
+    }
+
+    private void tryUnlock(User user, String slug, List<AchievementResponse> newlyUnlocked) {
+        Achievement achievement = achievementRepository.findBySlug(slug).orElse(null);
+        if (achievement == null) return;
+
+        boolean alreadyUnlocked = repository.findByUserAndAchievement(user, achievement).isPresent();
+        if (alreadyUnlocked) return;
+
+        UserAchievement ua = new UserAchievement();
+        ua.setUser(user);
+        ua.setAchievement(achievement);
+        ua.setUnlockedAt(Instant.now());
+        ua.setIsViewed(false);
+        repository.save(ua);
+
+        AchievementResponse resp = new AchievementResponse();
+        resp.setId(achievement.getId());
+        resp.setName(achievement.getName());
+        resp.setSlug(achievement.getSlug());
+        resp.setDescription(achievement.getDescription());
+        resp.setIconUrl(achievement.getIconUrl());
+        resp.setUnlockCriteria(achievement.getUnlockCriteria());
+        resp.setPointsReward(achievement.getPointsReward());
+        resp.setIsActive(achievement.getIsActive());
+        resp.setCreatedAt(achievement.getCreatedAt());
+        newlyUnlocked.add(resp);
     }
 
     private UserAchievementResponse toResponse(UserAchievement ua) {
