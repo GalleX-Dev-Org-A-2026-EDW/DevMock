@@ -91,10 +91,10 @@ export default function SessionResults({ sessionId, onBack }: Props) {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <ScoreBadge label="Final" value={session.finalScore} />
-        <ScoreBadge label="Correctness" value={session.correctnessScore} />
-        <ScoreBadge label="Efficiency" value={session.efficiencyScore} />
-        <ScoreBadge label="Logic" value={session.logicScore} />
-        <ScoreBadge label="Clarity" value={session.clarityScore} />
+        <ScoreBadge label="Corrección" value={session.correctnessScore} />
+        <ScoreBadge label="Eficiencia" value={session.efficiencyScore} />
+        <ScoreBadge label="Lógica" value={session.logicScore} />
+        <ScoreBadge label="Claridad" value={session.clarityScore} />
         <div className="rounded-lg border border-white/10 bg-white/10 px-4 py-3 text-center">
           <p className="text-2xl font-bold text-white">{fmt(session.totalTimeUsedSeconds)}</p>
           <p className="mt-0.5 text-xs font-medium text-white/50">Tiempo total</p>
@@ -146,9 +146,9 @@ export default function SessionResults({ sessionId, onBack }: Props) {
                       {sq.obtainedPoints} pts
                     </span>
                   )}
-                  <SmallScore label="C" value={sq.correctnessScore} />
-                  <SmallScore label="E" value={sq.efficiencyScore} />
-                  <SmallScore label="L" value={sq.logicScore} />
+                  <SmallScore label="Co" value={sq.correctnessScore} />
+                  <SmallScore label="Ef" value={sq.efficiencyScore} />
+                  <SmallScore label="Lg" value={sq.logicScore} />
                   <SmallScore label="Cl" value={sq.clarityScore} />
                 </div>
               </div>

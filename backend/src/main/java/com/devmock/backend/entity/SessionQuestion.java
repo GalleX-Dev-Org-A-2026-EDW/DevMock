@@ -20,6 +20,7 @@ public class SessionQuestion {
     private Integer assignedTimeSeconds;
     private Integer timeUsedSeconds;
 
+    @Column(columnDefinition = "TEXT")
     private String userAnswer;
 
     private BigDecimal obtainedPoints;

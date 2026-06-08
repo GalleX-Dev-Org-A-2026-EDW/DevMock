@@ -34,6 +34,18 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
         int estimatedTime = request.getEstimatedTimeSeconds() != null ? request.getEstimatedTimeSeconds() : 600;
         int timeUsed = request.getTimeUsedSeconds() != null ? request.getTimeUsedSeconds() : estimatedTime;
 
+        log.info("=== CODE EVALUATION ===");
+        log.info("Code length: {}, contains \\\\n: {}, contains \\r: {}",
+                code != null ? code.length() : 0,
+                code != null ? code.contains("\n") : false,
+                code != null ? code.contains("\r") : false);
+        if (code != null) {
+            log.info("Code chars (first 200): {}", code.substring(0, Math.min(200, code.length())).replace("\n", "\\n").replace("\r", "\\r"));
+            log.info("Code lines count: {}", code.split("\n", -1).length);
+        }
+        log.info("Eval config: {}", evalConfig);
+        log.info("Expected answer length: {}", expectedAnswer != null ? expectedAnswer.length() : 0);
+
         BigDecimal efficiencyScore = BigDecimal.valueOf(
                 Math.min(100, Math.max(35, (double) estimatedTime / Math.max(timeUsed, 1) * 80)))
                 .setScale(1, RoundingMode.HALF_UP);
@@ -99,9 +111,12 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
         script.append("    except Exception as e:\n");
         script.append("        print(f'ERROR:{e}')\n");
 
+        String fullScript = script.toString();
+        log.info("Generated Python script:\n---\n{}\n---", fullScript.replace("\r\n", "\n"));
+
         Path tempDir = Files.createTempDirectory("devmock-");
         Path scriptFile = tempDir.resolve("solution.py");
-        Files.writeString(scriptFile, script.toString());
+        Files.writeString(scriptFile, fullScript);
 
         try {
             ProcessBuilder pb = new ProcessBuilder("python", scriptFile.toAbsolutePath().toString());
@@ -112,6 +127,7 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
             boolean finished = process.waitFor(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (!finished) {
                 process.destroyForcibly();
+                log.warn("Python execution timed out after {}s", TIMEOUT_SECONDS);
                 return new ExecutionResult("", "TIMEOUT: Excedió " + TIMEOUT_SECONDS + " segundos", false);
             }
 
@@ -124,6 +140,10 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
                 stderr = stderr.substring(0, MAX_OUTPUT_SIZE);
             }
             boolean success = process.exitValue() == 0;
+
+            log.debug("Python stdout: {}", stdout.replace("\n", "\\n").replace("\r", "\\r"));
+            log.debug("Python stderr: {}", stderr.replace("\n", "\\n").replace("\r", "\\r"));
+            log.debug("Python exit code: {}", process.exitValue());
 
             return new ExecutionResult(stdout, stderr, success);
 
