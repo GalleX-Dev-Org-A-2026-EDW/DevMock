@@ -6,6 +6,7 @@ import com.devmock.backend.dto.UserPerformanceResponse;
 import com.devmock.backend.service.UserPerformanceService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user-performances")
+@PreAuthorize("isAuthenticated()")
 public class UserPerformanceController {
 
     private final UserPerformanceService service;
@@ -54,6 +56,4 @@ public class UserPerformanceController {
     public void delete(@PathVariable UUID id) {
         service.delete(id);
     }
-}  
-
-//alex cacorro jsjsjs 
+}

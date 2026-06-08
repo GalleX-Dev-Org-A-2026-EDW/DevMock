@@ -1,6 +1,7 @@
 package com.devmock.backend.dto;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,8 @@ public class QuestionResponse {
     private UUID difficultyId;
     private Instant createdAt;
     private Instant updatedAt;
+
+    private List<AnswerOptionDto> answerOptions = new ArrayList<>();
 
     public UUID getId() {
         return id;
@@ -152,5 +155,13 @@ public class QuestionResponse {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<AnswerOptionDto> getAnswerOptions() {
+        return answerOptions;
+    }
+
+    public void setAnswerOptions(List<AnswerOptionDto> answerOptions) {
+        this.answerOptions = answerOptions;
     }
 }

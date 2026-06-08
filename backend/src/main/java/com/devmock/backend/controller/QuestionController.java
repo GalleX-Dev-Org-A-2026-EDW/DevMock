@@ -17,46 +17,61 @@ import org.springframework.web.bind.annotation.RestController;
 import com.devmock.backend.dto.CreateQuestionRequest;
 import com.devmock.backend.dto.QuestionResponse;
 import com.devmock.backend.dto.UpdateQuestionRequest;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.service.QuestionService;
+import com.devmock.backend.util.AuditHelper;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/questions")
 public class QuestionController {
 
     private final QuestionService service;
+    private final AuditHelper auditHelper;
 
-    public QuestionController(QuestionService service) {
+    public QuestionController(QuestionService service, AuditHelper auditHelper) {
         this.service = service;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public QuestionResponse create(@Valid @RequestBody CreateQuestionRequest request) {
-        return service.create(request);
+        QuestionResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "Question", response.getId());
+        return response;
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<QuestionResponse> list() {
         return service.list();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public QuestionResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public QuestionResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateQuestionRequest request) {
-        return service.update(id, request);
+        QuestionResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "Question", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "Question", id);
     }
 }

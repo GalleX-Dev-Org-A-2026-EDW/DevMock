@@ -18,4 +18,6 @@ public interface RankingService {
     RankingResponse update(UUID id, UpdateRankingRequest request);
 
     void delete(UUID id);
+
+    void recalculate();
 }

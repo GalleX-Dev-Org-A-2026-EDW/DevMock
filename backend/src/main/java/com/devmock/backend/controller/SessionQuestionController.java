@@ -6,6 +6,7 @@ import com.devmock.backend.dto.SessionQuestionResponse;
 import com.devmock.backend.service.SessionQuestionService;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/session-questions")
+@PreAuthorize("isAuthenticated()")
 public class SessionQuestionController {
 
     private final SessionQuestionService service;

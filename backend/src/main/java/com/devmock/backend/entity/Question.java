@@ -24,6 +24,9 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 @Entity
 @Table(name = "questions")
 public class Question {
@@ -54,9 +57,10 @@ public class Question {
     @Column(nullable = false)
     private Integer basePoints;
 
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "TEXT")
     private String evaluationConfig;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private List<String> tags;
 
@@ -72,7 +76,7 @@ public class Question {
     @ManyToOne
     private DifficultyLevel difficulty;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerOption> answerOptions = new ArrayList<>();
 
     @OneToMany(mappedBy = "question")

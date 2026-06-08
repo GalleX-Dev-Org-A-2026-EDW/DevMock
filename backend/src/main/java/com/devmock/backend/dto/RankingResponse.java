@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import com.devmock.backend.entity.en_enum.RankingPeriod;
+import com.devmock.backend.entity.en_enum.UserRole;
 
 public class RankingResponse {
 
@@ -20,6 +21,8 @@ public class RankingResponse {
     private UUID userId;
     private UUID categoryId;
     private UUID difficultyId;
+    private String userName;
+    private UserRole userRole;
 
     public UUID getId() {
         return id;
@@ -107,5 +110,21 @@ public class RankingResponse {
 
     public void setDifficultyId(UUID difficultyId) {
         this.difficultyId = difficultyId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 }

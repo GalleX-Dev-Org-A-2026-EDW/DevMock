@@ -1,46 +1,85 @@
 package com.devmock.backend.controller;
+
 import com.devmock.backend.dto.CreateUserRequest;
 import com.devmock.backend.dto.UpdateUserRequest;
 import com.devmock.backend.dto.UserResponse;
+import com.devmock.backend.entity.en_enum.AuditAction;
+import com.devmock.backend.security.SecurityUtils;
 import com.devmock.backend.service.UserService;
+import com.devmock.backend.util.AuditHelper;
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/users")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
+
     private final UserService service;
-    public UserController(UserService service) {
+    private final SecurityUtils securityUtils;
+    private final AuditHelper auditHelper;
+
+    public UserController(UserService service, SecurityUtils securityUtils, AuditHelper auditHelper) {
         this.service = service;
+        this.securityUtils = securityUtils;
+        this.auditHelper = auditHelper;
     }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@Valid @RequestBody CreateUserRequest request) {
-        return service.create(request);
+        UserResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "User", response.getId());
+        return response;
     }
+
     @GetMapping
     public List<UserResponse> list() {
         return service.list();
     }
+
     @GetMapping("/{id}")
     public UserResponse getById(@PathVariable UUID id) {
         return service.getById(id);
     }
+
     @GetMapping("/by-email")
     public UserResponse getByEmail(@RequestParam String email) {
         return service.getByEmail(email);
     }
+
     @PutMapping("/{id}")
     public UserResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateUserRequest request) {
-        return service.update(id, request);
+        UserResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "User", id);
+        return response;
     }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "User", id);
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public UserResponse me() {
+        return service.getByEmail(securityUtils.getCurrentUser().getEmail());
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public UserResponse updateMe(@Valid @RequestBody UpdateUserRequest request) {
+        var user = securityUtils.getCurrentUser();
+        return service.update(user.getId(), request);
     }
 }
