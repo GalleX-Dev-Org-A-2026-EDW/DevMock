@@ -587,7 +587,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que seleccione todos los usuarios activos ordenados por fecha de creación descendente.",
                 "SELECT * FROM usuarios WHERE activo = true ORDER BY fecha_creacion DESC;",
                 "Usa WHERE para filtrar usuarios activos y ORDER BY DESC para ordenar del más reciente al más antiguo.",
-                480, 40, langEvalConfig("python"),
+                480, 40, langEvalConfig("sql"),
                 List.of("sql", "select", "facil"),
                 basesDatos, facil, admin);
 
@@ -595,7 +595,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que use JOIN para obtener los pedidos de cada cliente, incluyendo aquellos clientes sin pedidos.",
                 "SELECT c.nombre, p.id AS pedido_id, p.total\nFROM clientes c\nLEFT JOIN pedidos p ON c.id = p.cliente_id\nORDER BY c.nombre;",
                 "LEFT JOIN asegura que todos los clientes aparezcan, incluso si no tienen pedidos. Los clientes sin pedidos tendrán NULL en las columnas de pedidos.",
-                600, 50, langEvalConfig("python"),
+                600, 50, langEvalConfig("sql"),
                 List.of("sql", "join", "facil"),
                 basesDatos, facil, admin);
 
@@ -627,7 +627,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que calcule el total de ventas por producto usando funciones de agregación, mostrando solo productos con más de 10 unidades vendidas.",
                 "SELECT p.nombre, SUM(v.cantidad) AS total_unidades, SUM(v.total) AS ventas_totales\nFROM productos p\nJOIN ventas v ON p.id = v.producto_id\nGROUP BY p.nombre\nHAVING SUM(v.cantidad) > 10\nORDER BY ventas_totales DESC;",
                 "JOIN combina las tablas, GROUP BY agrupa por producto, SUM calcula los totales, HAVING filtra productos con más de 10 unidades, ORDER BY ordena de mayor a menor.",
-                600, 50, langEvalConfig("python"),
+                600, 50, langEvalConfig("sql"),
                 List.of("sql", "agregacion", "facil"),
                 basesDatos, facil, admin);
 
@@ -636,7 +636,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL para encontrar direcciones de email duplicadas en una tabla de usuarios. La tabla tiene las columnas: id, name, email.",
                 "SELECT email, COUNT(*) as count FROM usuarios GROUP BY email HAVING COUNT(*) > 1;",
                 "Agrupa por email, cuenta las ocurrencias, filtra los grupos con count mayor a 1.",
-                480, 80, langEvalConfig("python"),
+                480, 80, langEvalConfig("sql"),
                 List.of("sql", "duplicados", "bases-de-datos"),
                 basesDatos, intermedio, admin);
 
@@ -676,7 +676,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que use una subconsulta o CTE para encontrar empleados con salario superior al promedio de su departamento.",
                 "WITH dept_avg AS (\n    SELECT departamento_id, AVG(salario) AS salario_promedio\n    FROM empleados\n    GROUP BY departamento_id\n)\nSELECT e.nombre, e.salario, d.salario_promedio\nFROM empleados e\nJOIN dept_avg d ON e.departamento_id = d.departamento_id\nWHERE e.salario > d.salario_promedio\nORDER BY e.salario DESC;",
                 "El CTE calcula el salario promedio por departamento. Luego se JOINEA con empleados y se filtran aquellos con salario superior al promedio de su departamento.",
-                800, 100, langEvalConfig("python"),
+                800, 100, langEvalConfig("sql"),
                 List.of("sql", "subconsulta", "cte", "intermedio"),
                 basesDatos, intermedio, admin);
 

@@ -17,6 +17,8 @@ import com.devmock.backend.service.CodeEvaluationService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+
 @Service
 public class CodeEvaluationServiceImpl implements CodeEvaluationService {
 
@@ -55,8 +57,20 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
             return minimalResult(efficiencyScore, basePoints);
         }
 
+        String language = "python";
+        if (evalConfig != null && !evalConfig.isBlank()) {
+            try {
+                JsonNode config = objectMapper.readTree(evalConfig);
+                if (config.has("language")) {
+                    language = config.get("language").asText();
+                }
+            } catch (Exception e) {
+                log.warn("Failed to parse eval config language: {}", e.getMessage());
+            }
+        }
+
         if (evalConfig == null || evalConfig.isBlank()) {
-            return syntaxOnlyResult(code, efficiencyScore, basePoints);
+            return syntaxOnlyResult(code, efficiencyScore, basePoints, language);
         }
 
         try {
@@ -65,7 +79,7 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
             JsonNode testCases = config.get("testCases");
 
             if (functionName == null || testCases == null || !testCases.isArray() || testCases.isEmpty()) {
-                return syntaxOnlyResult(code, efficiencyScore, basePoints);
+                return syntaxOnlyResult(code, efficiencyScore, basePoints, language);
             }
 
             ExecutionResult studentResult = executePython(code, functionName, testCases);
@@ -91,7 +105,7 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
 
         } catch (Exception e) {
             log.warn("Code evaluation failed: {}", e.getMessage());
-            return syntaxOnlyResult(code, efficiencyScore, basePoints);
+            return syntaxOnlyResult(code, efficiencyScore, basePoints, language);
         }
     }
 
@@ -152,6 +166,17 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
         }
     }
 
+    private ExecutionResult checkSqlSyntax(String code) {
+        try {
+            CCJSqlParserUtil.parseStatements(code);
+            return new ExecutionResult("OK", "", true);
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            if (msg != null && msg.length() > 200) msg = msg.substring(0, 200) + "...";
+            return new ExecutionResult("SYNTAX_ERROR: " + msg, msg, false);
+        }
+    }
+
     private ExecutionResult checkPythonSyntax(String code) throws Exception {
         // Use ast.parse to check Python syntax without executing
         String script = "import sys, ast\n" +
@@ -192,9 +217,14 @@ public class CodeEvaluationServiceImpl implements CodeEvaluationService {
         }
     }
 
-    private CodeEvaluationResult syntaxOnlyResult(String code, BigDecimal efficiencyScore, int basePoints) {
+    private CodeEvaluationResult syntaxOnlyResult(String code, BigDecimal efficiencyScore, int basePoints, String language) {
         try {
-            ExecutionResult syntaxResult = checkPythonSyntax(code);
+            ExecutionResult syntaxResult;
+            if ("sql".equalsIgnoreCase(language)) {
+                syntaxResult = checkSqlSyntax(code);
+            } else {
+                syntaxResult = checkPythonSyntax(code);
+            }
             BigDecimal clarityScore = calculateClarity(code);
             BigDecimal correctnessScore;
             String feedback;
