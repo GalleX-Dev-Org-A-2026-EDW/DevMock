@@ -11,7 +11,9 @@ import com.devmock.backend.entity.en_enum.UserRole;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
+    Optional<User> findByEmailAndDeletedAtIsNull(String email);
     boolean existsByEmail(String email);
+    boolean existsByEmailAndDeletedAtIsNull(String email);
     long countByDeletedAtIsNull();
     long countByRoleAndDeletedAtIsNull(UserRole role);
     List<User> findTop10ByDeletedAtIsNullOrderByCreatedAtDesc();

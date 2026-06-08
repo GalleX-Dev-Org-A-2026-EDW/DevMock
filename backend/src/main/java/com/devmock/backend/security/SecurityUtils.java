@@ -22,7 +22,7 @@ public class SecurityUtils {
             throw new IllegalStateException("No authenticated user");
         }
         String email = auth.getName();
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new IllegalStateException("User not found: " + email));
     }
 }

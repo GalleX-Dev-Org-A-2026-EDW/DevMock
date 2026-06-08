@@ -50,25 +50,48 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public AuthResponse register(@Valid @RequestBody RegisterRequest req) {
-        if (userRepo.existsByEmail(req.getEmail())) {
+        if (userRepo.existsByEmailAndDeletedAtIsNull(req.getEmail())) {
             throw new EmailAlreadyExistsException(
                     "Email " + req.getEmail() + " is already registered");
         }
-        User user = new User();
-        user.setEmail(req.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
-        user.setFullName(req.getFullName());
-        user.setRole(req.getRole() != null ? req.getRole() : UserRole.STUDENT);
-        user.setAvatarUrl(req.getAvatarUrl());
-        user.setProfessionalExperienceYears(req.getProfessionalExperienceYears());
-        if (req.getCurrentLevelId() != null) {
-            DifficultyLevel level = difficultyLevelRepository.findById(req.getCurrentLevelId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "DifficultyLevel " + req.getCurrentLevelId() + " not found"));
-            user.setCurrentLevel(level);
+        User user = userRepo.findByEmail(req.getEmail())
+                .filter(u -> u.getDeletedAt() != null)
+                .orElse(null);
+        if (user != null) {
+            user.setDeletedAt(null);
+            user.setIsActive(true);
+            user.setIsVerified(false);
+            user.setEmailVerifiedAt(null);
+            user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
+            user.setFullName(req.getFullName());
+            user.setRole(req.getRole() != null ? req.getRole() : UserRole.STUDENT);
+            user.setAvatarUrl(req.getAvatarUrl());
+            user.setProfessionalExperienceYears(req.getProfessionalExperienceYears());
+            if (req.getCurrentLevelId() != null) {
+                DifficultyLevel level = difficultyLevelRepository.findById(req.getCurrentLevelId())
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "DifficultyLevel " + req.getCurrentLevelId() + " not found"));
+                user.setCurrentLevel(level);
+            } else {
+                user.setCurrentLevel(null);
+            }
+        } else {
+            user = new User();
+            user.setEmail(req.getEmail());
+            user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
+            user.setFullName(req.getFullName());
+            user.setRole(req.getRole() != null ? req.getRole() : UserRole.STUDENT);
+            user.setAvatarUrl(req.getAvatarUrl());
+            user.setProfessionalExperienceYears(req.getProfessionalExperienceYears());
+            if (req.getCurrentLevelId() != null) {
+                DifficultyLevel level = difficultyLevelRepository.findById(req.getCurrentLevelId())
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "DifficultyLevel " + req.getCurrentLevelId() + " not found"));
+                user.setCurrentLevel(level);
+            }
+            user.setIsActive(true);
+            user.setIsVerified(false);
         }
-        user.setIsActive(true);
-        user.setIsVerified(false);
         userRepo.save(user);
         auditHelper.log(user.getId(), AuditAction.CREATE, "User", user.getId());
         auditHelper.log(user.getId(), AuditAction.LOGIN, "User", user.getId());
@@ -78,7 +101,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest req) {
-        User user = userRepo.findByEmail(req.getEmail())
+        User user = userRepo.findByEmailAndDeletedAtIsNull(req.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No existe una cuenta con el email " + req.getEmail()));
         try {

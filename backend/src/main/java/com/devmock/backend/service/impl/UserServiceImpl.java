@@ -33,25 +33,48 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse create(CreateUserRequest request) {
-        if (repository.existsByEmail(request.getEmail())) {
+        if (repository.existsByEmailAndDeletedAtIsNull(request.getEmail())) {
             throw new EmailAlreadyExistsException(
                     "Email " + request.getEmail() + " is already registered");
         }
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setFullName(request.getFullName());
-        user.setRole(request.getRole());
-        user.setAvatarUrl(request.getAvatarUrl());
-        user.setProfessionalExperienceYears(request.getProfessionalExperienceYears());
-        if (request.getCurrentLevelId() != null) {
-            DifficultyLevel level = difficultyLevelRepository.findById(request.getCurrentLevelId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "DifficultyLevel " + request.getCurrentLevelId() + " not found"));
-            user.setCurrentLevel(level);
+        User user = repository.findByEmail(request.getEmail())
+                .filter(u -> u.getDeletedAt() != null)
+                .orElse(null);
+        if (user != null) {
+            user.setDeletedAt(null);
+            user.setIsActive(true);
+            user.setIsVerified(false);
+            user.setEmailVerifiedAt(null);
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+            user.setFullName(request.getFullName());
+            user.setRole(request.getRole());
+            user.setAvatarUrl(request.getAvatarUrl());
+            user.setProfessionalExperienceYears(request.getProfessionalExperienceYears());
+            if (request.getCurrentLevelId() != null) {
+                DifficultyLevel level = difficultyLevelRepository.findById(request.getCurrentLevelId())
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "DifficultyLevel " + request.getCurrentLevelId() + " not found"));
+                user.setCurrentLevel(level);
+            } else {
+                user.setCurrentLevel(null);
+            }
+        } else {
+            user = new User();
+            user.setEmail(request.getEmail());
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+            user.setFullName(request.getFullName());
+            user.setRole(request.getRole());
+            user.setAvatarUrl(request.getAvatarUrl());
+            user.setProfessionalExperienceYears(request.getProfessionalExperienceYears());
+            if (request.getCurrentLevelId() != null) {
+                DifficultyLevel level = difficultyLevelRepository.findById(request.getCurrentLevelId())
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "DifficultyLevel " + request.getCurrentLevelId() + " not found"));
+                user.setCurrentLevel(level);
+            }
+            user.setIsActive(true);
+            user.setIsVerified(false);
         }
-        user.setIsActive(true);
-        user.setIsVerified(false);
         return toResponse(repository.save(user));
     }
 
@@ -76,8 +99,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getByEmail(String email) {
-        User user = repository.findByEmail(email)
-                .filter(u -> u.getDeletedAt() == null)
+        User user = repository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User " + email + " not found"));
         return toResponse(user);
     }

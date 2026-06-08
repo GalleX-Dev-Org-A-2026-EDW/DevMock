@@ -45,7 +45,7 @@ public class AuditHelper {
                 || "anonymousUser".equals(auth.getPrincipal())) {
             return null;
         }
-        return userRepository.findByEmail(auth.getName())
+        return userRepository.findByEmailAndDeletedAtIsNull(auth.getName())
                 .map(User::getId)
                 .orElse(null);
     }
