@@ -26,6 +26,7 @@ export default function AdminDifficultyLevels() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [form, setForm] = useState<CreateDifficultyLevelDto>({ name: "", slug: "", levelOrder: 1, pointsMultiplier: 1.0 })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [page, setPage] = useState(1)
 
   const validate = (): boolean => {
     const next: Record<string, string> = {}
@@ -57,8 +58,6 @@ export default function AdminDifficultyLevels() {
 
   if (isLoading) return <div className="flex items-center justify-center min-h-[40vh]"><div className="h-8 w-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" /></div>
   if (isError) return <p className="text-red-400">Error al cargar niveles de dificultad</p>
-
-  const [page, setPage] = useState(1)
 
   const totalPages = items ? Math.max(1, Math.ceil(items.length / PAGE_SIZE)) : 1
   const currentPage = Math.min(page, totalPages)
