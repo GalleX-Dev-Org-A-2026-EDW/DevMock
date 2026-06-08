@@ -42,6 +42,8 @@ export interface UpdateUserDto {
 export const usersApi = {
   list: () => http<User[]>("/api/users"),
 
+  me: () => http<User>("/api/users/me"),
+
   getById: (id: string) => http<User>(`/api/users/${id}`),
 
   getByEmail: (email: string) =>
@@ -55,6 +57,12 @@ export const usersApi = {
 
   update: (id: string, dto: UpdateUserDto) =>
     httpRequired<User>(`/api/users/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(dto),
+    }),
+
+  updateMe: (dto: UpdateUserDto) =>
+    httpRequired<User>("/api/users/me", {
       method: "PUT",
       body: JSON.stringify(dto),
     }),

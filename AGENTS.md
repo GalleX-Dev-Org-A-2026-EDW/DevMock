@@ -20,6 +20,14 @@ npm run lint     # ESLint (flat config, eslint.config.js)
 npm run preview  # preview production build
 ```
 
+### Verification order (PR checklist)
+```bash
+cd backend   ; mvnw.cmd clean package -DskipTests  # compile check
+cd backend   ; mvnw.cmd test                       # all tests pass
+cd frontend  ; npm run lint                         # lint
+cd frontend  ; npm run build                        # typecheck + build
+```
+
 ## Prerequisites
 
 - PostgreSQL running locally; db `devmock_db`, user `postgres`, pass `12345678`
@@ -46,7 +54,7 @@ util/           → AuditHelper.java (cross-cutting audit logic)
 config/         → DataInitializer.java (seed data CommandLineRunner)
 ```
 
-### Frontend (`frontend/`)
+### Frontend (`frontend/src/`)
 ```
 src/api/          → 17 domain modules, each: {domain}.ts → {domain}.keys.ts → {domain}.queries.ts
                    Exception: auth has no .keys.ts

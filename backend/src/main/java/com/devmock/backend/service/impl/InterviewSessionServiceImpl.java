@@ -14,7 +14,10 @@ import com.devmock.backend.repository.DifficultyLevelRepository;
 import com.devmock.backend.repository.InterviewSessionRepository;
 import com.devmock.backend.repository.InterviewTypeRepository;
 import com.devmock.backend.repository.UserRepository;
+import com.devmock.backend.entity.en_enum.SessionStatus;
+import com.devmock.backend.security.SecurityUtils;
 import com.devmock.backend.service.InterviewSessionService;
+import com.devmock.backend.service.RankingService;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,17 +34,23 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
     private final InterviewTypeRepository interviewTypeRepository;
     private final DifficultyLevelRepository difficultyLevelRepository;
     private final CategoryRepository categoryRepository;
+    private final RankingService rankingService;
+    private final SecurityUtils securityUtils;
 
     public InterviewSessionServiceImpl(InterviewSessionRepository repository,
             UserRepository userRepository,
             InterviewTypeRepository interviewTypeRepository,
             DifficultyLevelRepository difficultyLevelRepository,
-            CategoryRepository categoryRepository) {
+            CategoryRepository categoryRepository,
+            RankingService rankingService,
+            SecurityUtils securityUtils) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.interviewTypeRepository = interviewTypeRepository;
         this.difficultyLevelRepository = difficultyLevelRepository;
         this.categoryRepository = categoryRepository;
+        this.rankingService = rankingService;
+        this.securityUtils = securityUtils;
     }
 
     @Override
@@ -58,12 +67,7 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
         s.setLogicScore(request.getLogicScore());
         s.setClarityScore(request.getClarityScore());
 
-        if (request.getUserId() != null) {
-            User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "User " + request.getUserId() + " not found"));
-            s.setUser(user);
-        }
+        s.setUser(securityUtils.getCurrentUser());
         if (request.getInterviewTypeId() != null) {
             InterviewType type = interviewTypeRepository.findById(request.getInterviewTypeId())
                     .orElseThrow(() -> new ResourceNotFoundException(
@@ -90,7 +94,7 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
     @Override
     @Transactional(readOnly = true)
     public List<InterviewSessionResponse> list() {
-        return repository.findAll()
+        return repository.findByUser(securityUtils.getCurrentUser())
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -144,7 +148,11 @@ public class InterviewSessionServiceImpl implements InterviewSessionService {
             s.setCategory(category);
         }
 
-        return toResponse(repository.save(s));
+        InterviewSession saved = repository.save(s);
+        if (SessionStatus.COMPLETED.equals(request.getStatus())) {
+            rankingService.recalculate();
+        }
+        return toResponse(saved);
     }
 
     @Override

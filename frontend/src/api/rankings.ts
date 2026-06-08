@@ -1,5 +1,5 @@
 import { http, httpRequired } from "./http"
-import type { RankingPeriod } from "./enums"
+import type { RankingPeriod, UserRole } from "./enums"
 
 export interface Ranking {
   id: string
@@ -13,6 +13,8 @@ export interface Ranking {
   userId: string | null
   categoryId: string | null
   difficultyId: string | null
+  userName: string | null
+  userRole?: UserRole | null
 }
 
 export interface CreateRankingDto {
