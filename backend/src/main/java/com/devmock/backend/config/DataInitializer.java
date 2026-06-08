@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devmock.backend.entity.Achievement;
+import com.devmock.backend.entity.AnswerOption;
 import com.devmock.backend.entity.Category;
 import com.devmock.backend.entity.DifficultyLevel;
 import com.devmock.backend.entity.EvaluationCriterion;
@@ -124,21 +125,30 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("fibonacci", "iteracion", "facil"),
                 algoritmos, facil, admin);
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que calcule el factorial de un número entero no negativo.",
-                "def factorial(n):\n    if n == 0:\n        return 1\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result",
-                "El factorial de 0 es 1. Para n > 0, multiplica todos los enteros desde 1 hasta n. Puede implementarse iterativa o recursivamente.",
-                480, 40, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("factorial", "iteracion", "facil"),
-                algoritmos, facil, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes son tipos de datos primitivos en Java?",
+                "int, boolean y double son primitivos. String y Array son tipos de referencia.",
+                "Los tipos primitivos en Java son: byte, short, int, long, float, double, boolean y char. String es una clase, Array es un tipo de referencia.",
+                480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("java", "tipos", "primitivos"),
+                algoritmos, facil, admin,
+                option("int", true, "Correcto: int es un tipo primitivo.", 1),
+                option("String", false, "Incorrecto: String es una clase, no un tipo primitivo.", 2),
+                option("boolean", true, "Correcto: boolean es un tipo primitivo.", 3),
+                option("double", true, "Correcto: double es un tipo primitivo.", 4),
+                option("Array", false, "Incorrecto: Array es un tipo de referencia.", 5));
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que encuentre el valor máximo en un arreglo de enteros.",
-                "def find_max(arr):\n    if not arr:\n        return None\n    max_val = arr[0]\n    for num in arr[1:]:\n        if num > max_val:\n            max_val = num\n    return max_val",
-                "Inicializa max con el primer elemento, luego recorre el arreglo actualizando max cuando encuentres un valor mayor. Si el arreglo está vacío retorna None.",
-                480, 40, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("maximo", "arreglos", "facil"),
-                algoritmos, facil, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Cuál es la complejidad temporal de la búsqueda binaria?",
+                "O(log n)",
+                "La búsqueda binaria divide el espacio de búsqueda a la mitad en cada iteración, resultando en complejidad O(log n).",
+                480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("busqueda-binaria", "complejidad", "algoritmos"),
+                algoritmos, facil, admin,
+                option("O(n)", false, "Incorrecto: esa es la complejidad de la búsqueda lineal.", 1),
+                option("O(log n)", true, "Correcto: cada iteración divide el espacio a la mitad.", 2),
+                option("O(n²)", false, "Incorrecto: esa es la complejidad de Bubble Sort.", 3),
+                option("O(1)", false, "Incorrecto: el acceso a un array por índice es O(1), no la búsqueda binaria.", 4));
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
                 "Escribe una función que cuente el número de vocales (a, e, i, o, u) en una cadena dada. Debe ignorar mayúsculas.",
@@ -173,21 +183,30 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("parentesis", "pila", "intermedio"),
                 algoritmos, intermedio, admin);
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que combine dos arreglos ordenados en un solo arreglo ordenado.",
-                "def merge_sorted(arr1, arr2):\n    i, j = 0, 0\n    result = []\n    while i < len(arr1) and j < len(arr2):\n        if arr1[i] <= arr2[j]:\n            result.append(arr1[i])\n            i += 1\n        else:\n            result.append(arr2[j])\n            j += 1\n    result.extend(arr1[i:])\n    result.extend(arr2[j:])\n    return result",
-                "Usa dos punteros para recorrer ambos arreglos simultáneamente, agregando el menor elemento en cada paso. Al terminar uno, agrega los elementos restantes del otro.",
-                600, 80, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("merge", "ordenamiento", "intermedio"),
-                algoritmos, intermedio, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes algoritmos de ordenamiento tienen complejidad O(n log n) en el caso promedio?",
+                "Merge Sort, Quick Sort y Heap Sort tienen complejidad O(n log n) en promedio.",
+                "Merge Sort: O(n log n) siempre. Quick Sort: O(n log n) promedio, O(n²) peor caso. Heap Sort: O(n log n) siempre. Bubble Sort e Insertion Sort son O(n²).",
+                600, 80, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("ordenamiento", "complejidad", "algoritmos"),
+                algoritmos, intermedio, admin,
+                option("Bubble Sort", false, "Incorrecto: Bubble Sort es O(n²) en promedio.", 1),
+                option("Merge Sort", true, "Correcto: Merge Sort es O(n log n) en todos los casos.", 2),
+                option("Quick Sort", true, "Correcto: Quick Sort es O(n log n) en promedio.", 3),
+                option("Insertion Sort", false, "Incorrecto: Insertion Sort es O(n²) en promedio.", 4),
+                option("Heap Sort", true, "Correcto: Heap Sort es O(n log n) en todos los casos.", 5));
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que elimine los elementos duplicados de un arreglo ordenado, devolviendo la nueva longitud.",
-                "def remove_duplicates(nums):\n    if not nums:\n        return 0\n    i = 0\n    for j in range(1, len(nums)):\n        if nums[j] != nums[i]:\n            i += 1\n            nums[i] = nums[j]\n    return i + 1",
-                "Usa dos punteros: i marca la posición del último elemento único, j recorre el arreglo. Cuando nums[j] != nums[i], avanza i y copia el valor.",
-                600, 80, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("duplicados", "punteros", "intermedio"),
-                algoritmos, intermedio, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué estructura de datos usa el algoritmo DFS (Depth-First Search) para su implementación iterativa?",
+                "Pila (stack)",
+                "DFS usa una pila (stack) porque explora profundizando primero, y la pila permite retroceder al último nodo visitado. BFS usa una cola.",
+                600, 80, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("dfs", "grafos", "estructuras-de-datos"),
+                algoritmos, intermedio, admin,
+                option("Cola (queue)", false, "Incorrecto: la cola se usa para BFS.", 1),
+                option("Pila (stack)", true, "Correcto: DFS iterativo usa una pila explícita.", 2),
+                option("Lista enlazada", false, "Incorrecto: las listas enlazadas no se usan directamente para DFS.", 3),
+                option("Árbol binario", false, "Incorrecto: un árbol binario es una estructura de datos, no un mecanismo de recorrido.", 4));
 
         // --- Algoritmos / Avanzado (5) ---
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
@@ -206,21 +225,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("mergesort", "ordenamiento", "avanzado"),
                 algoritmos, avanzado, admin);
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que encuentre la subsecuencia común más larga (LCS) entre dos cadenas.",
-                "def lcs(s1, s2):\n    m, n = len(s1), len(s2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if s1[i - 1] == s2[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n    return dp[m][n]",
-                "Usa programación dinámica con una tabla dp[i][j] que almacena la longitud del LCS de los prefijos s1[:i] y s2[:j]. Si los caracteres coinciden, suma 1 al valor diagonal; si no, toma el máximo entre el valor superior e izquierdo.",
-                900, 120, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("lcs", "programacion-dinamica", "avanzado"),
-                algoritmos, avanzado, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles son las propiedades fundamentales que debe tener un problema para resolverse con programación dinámica?",
+                "Subestructura óptima y superposición de subproblemas.",
+                "Subestructura óptima: la solución óptima del problema contiene soluciones óptimas de sus subproblemas. Superposición de subproblemas: los mismos subproblemas se resuelven múltiples veces. Divide y vencerás no requiere superposición, y greedy no siempre da la solución óptima.",
+                900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("programacion-dinamica", "algoritmos", "avanzado"),
+                algoritmos, avanzado, admin,
+                option("Subestructura óptima", true, "Correcto: la solución óptima contiene sub-soluciones óptimas.", 1),
+                option("Superposición de subproblemas", true, "Correcto: los mismos subproblemas aparecen repetidamente.", 2),
+                option("Divide y vencerás", false, "Incorrecto: divide y vencerás no requiere superposición de subproblemas.", 3),
+                option("Greedy siempre óptimo", false, "Incorrecto: greedy no siempre encuentra la solución óptima global.", 4));
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que detecte si una lista enlazada tiene un ciclo usando el algoritmo de Floyd (tortuga y liebre).",
-                "def has_cycle(head):\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow == fast:\n            return True\n    return False",
-                "Usa dos punteros que avanzan a diferentes velocidades. Si hay un ciclo, el puntero rápido eventualmente alcanzará al lento. Complejidad O(n) con memoria O(1).",
-                900, 120, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("ciclo", "lista-enlazada", "avanzado"),
-                algoritmos, avanzado, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Cuál es la complejidad temporal del algoritmo de Dijkstra cuando se implementa con un heap binario?",
+                "O((V + E) log V)",
+                "Con un heap binario, cada extracción del mínimo es O(log V) y cada relajación de arista es O(log V), dando O((V+E) log V) donde V son vértices y E son aristas.",
+                900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("dijkstra", "grafos", "complejidad"),
+                algoritmos, avanzado, admin,
+                option("O(V²)", false, "Incorrecto: esa es la complejidad con un array simple.", 1),
+                option("O((V + E) log V)", true, "Correcto: con heap binario esta es la complejidad óptima.", 2),
+                option("O(V + E)", false, "Incorrecto: esa sería la complejidad de un recorrido simple como BFS.", 3),
+                option("O(2^V)", false, "Incorrecto: esa complejidad es exponencial, no aplica aquí.", 4));
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
                 "Implementa el algoritmo de Dijkstra para encontrar la distancia más corta desde un nodo origen en un grafo ponderado.",
@@ -249,21 +276,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("cola", "queue", "facil"),
                 estructurasDatos, facil, admin);
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que recorra una lista enlazada simple e imprima sus valores.",
-                "def traverse(head):\n    current = head\n    while current:\n        print(current.val)\n        current = current.next",
-                "Usa un puntero temporal que avanza nodo por nodo hasta llegar a None. Cada nodo contiene un valor y una referencia al siguiente nodo.",
-                480, 40, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("lista-enlazada", "recorrido", "facil"),
-                estructurasDatos, facil, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de las siguientes son operaciones con complejidad O(1) en una lista enlazada simple?",
+                "Insertar al inicio y eliminar al inicio son O(1).",
+                "Insertar al inicio: solo se actualiza la cabeza, O(1). Eliminar al inicio: misma razón. Buscar un elemento: requiere recorrer, O(n). Acceder por índice: requiere recorrer, O(n). Insertar al final: requiere llegar al último nodo, O(n).",
+                480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("lista-enlazada", "complejidad", "facil"),
+                estructurasDatos, facil, admin,
+                option("Insertar al inicio", true, "Correcto: solo se actualiza el puntero head.", 1),
+                option("Buscar un elemento", false, "Incorrecto: requiere recorrer la lista, O(n).", 2),
+                option("Eliminar al inicio", true, "Correcto: solo se mueve el puntero head.", 3),
+                option("Acceder por índice", false, "Incorrecto: las listas no tienen acceso aleatorio.", 4));
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Escribe una función que encuentre el valor mínimo en un arreglo de enteros.",
-                "def find_min(arr):\n    if not arr:\n        return None\n    min_val = arr[0]\n    for num in arr[1:]:\n        if num < min_val:\n            min_val = num\n    return min_val",
-                "Inicializa min con el primer elemento, luego recorre el arreglo actualizando min cuando encuentres un valor menor. Complejidad O(n).",
-                480, 40, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("minimo", "arreglos", "facil"),
-                estructurasDatos, facil, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué complejidad temporal tiene la búsqueda de un elemento en una tabla hash sin colisiones?",
+                "O(1)",
+                "En una tabla hash sin colisiones, la función hash calcula el índice directamente y se accede al elemento en tiempo constante O(1).",
+                480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("hash-table", "complejidad", "facil"),
+                estructurasDatos, facil, admin,
+                option("O(1)", true, "Correcto: el acceso a una tabla hash es O(1) en el caso promedio sin colisiones.", 1),
+                option("O(log n)", false, "Incorrecto: esa sería la complejidad de un árbol balanceado.", 2),
+                option("O(n)", false, "Incorrecto: esa sería la complejidad de una búsqueda lineal.", 3),
+                option("O(n²)", false, "Incorrecto: esa complejidad no es relevante aquí.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Explica qué es una tabla hash y cómo funciona internamente la resolución de colisiones.",
@@ -290,21 +325,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("min-stack", "pila", "intermedio"),
                 estructurasDatos, intermedio, admin);
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Implementa un Trie (árbol de prefijos) con operaciones de inserción y búsqueda.",
-                "class TrieNode:\n    def __init__(self):\n        self.children = {}\n        self.is_end = False\n\nclass Trie:\n    def __init__(self):\n        self.root = TrieNode()\n\n    def insert(self, word):\n        node = self.root\n        for ch in word:\n            if ch not in node.children:\n                node.children[ch] = TrieNode()\n            node = node.children[ch]\n        node.is_end = True\n\n    def search(self, word):\n        node = self.root\n        for ch in word:\n            if ch not in node.children:\n                return False\n            node = node.children[ch]\n        return node.is_end",
-                "Cada nodo del Trie tiene un mapa de hijos y un marcador de fin de palabra. Insertar recorre o crea nodos para cada carácter. Buscar recorre los nodos existentes y verifica el marcador al final.",
-                900, 100, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes son usos comunes de la estructura de datos Trie?",
+                "Autocompletado, corrector ortográfico y búsqueda por prefijos.",
+                "Un Trie es ideal para búsquedas por prefijo, autocompletado, correctores ortográficos y router de IPs. No se usa típicamente para ordenar elementos (heap), ni para colas de prioridad (heap).",
+                800, 100, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("trie", "prefijos", "intermedio"),
-                estructurasDatos, intermedio, admin);
+                estructurasDatos, intermedio, admin,
+                option("Autocompletado", true, "Correcto: los Tries son excelentes para autocompletado.", 1),
+                option("Corrector ortográfico", true, "Correcto: los Tries permiten verificar palabras rápidamente.", 2),
+                option("Cola de prioridad", false, "Incorrecto: las colas de prioridad usan heaps, no Tries.", 3),
+                option("Búsqueda por prefijos", true, "Correcto: los Tries están optimizados para búsquedas por prefijo.", 4));
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Implementa el recorrido BFS (breadth-first search) en un grafo representado como lista de adyacencia.",
-                "from collections import deque\n\ndef bfs(graph, start):\n    visited = set()\n    queue = deque([start])\n    visited.add(start)\n    while queue:\n        node = queue.popleft()\n        print(node)\n        for neighbor in graph[node]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)",
-                "Usa una cola para explorar nodos por niveles. Visita un nodo, marca como visitado, encola todos sus vecinos no visitados. Repite hasta que la cola esté vacía.",
-                800, 100, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué estructura de datos se usa principalmente en el algoritmo BFS?",
+                "Cola (queue)",
+                "BFS explora el grafo nivel por nivel usando una cola. Los nodos se encolan cuando se descubren y se desencolan para procesarlos, garantizando que se visiten en orden de distancia desde el origen.",
+                800, 100, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("bfs", "grafos", "intermedio"),
-                estructurasDatos, intermedio, admin);
+                estructurasDatos, intermedio, admin,
+                option("Pila (stack)", false, "Incorrecto: la pila se usa para DFS, no para BFS.", 1),
+                option("Cola (queue)", true, "Correcto: BFS usa una cola para el recorrido por niveles.", 2),
+                option("Lista enlazada", false, "Incorrecto: las listas enlazadas no son la estructura principal de BFS.", 3),
+                option("Árbol binario", false, "Incorrecto: BFS no usa árboles binarios.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Explica cómo funciona internamente un HashMap en Java. ¿Qué sucede cuando hay colisiones y cómo se redimensiona?",
@@ -331,21 +374,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("segment-tree", "arbol", "avanzado"),
                 estructurasDatos, avanzado, admin);
 
-        createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
-                "Implementa la estructura de conjuntos disjuntos (Union-Find) con compresión de camino y unión por rango.",
-                "class UnionFind:\n    def __init__(self, n):\n        self.parent = list(range(n))\n        self.rank = [0] * n\n\n    def find(self, x):\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n\n    def union(self, x, y):\n        px, py = self.find(x), self.find(y)\n        if px == py:\n            return False\n        if self.rank[px] < self.rank[py]:\n            self.parent[px] = py\n        elif self.rank[px] > self.rank[py]:\n            self.parent[py] = px\n        else:\n            self.parent[py] = px\n            self.rank[px] += 1\n        return True",
-                "Union-Find mantiene conjuntos disjuntos con dos operaciones: find (encuentra el representante) con compresión de camino, y union (fusiona dos conjuntos) usando el rango para mantener el árbol balanceado.",
-                900, 120, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
-                List.of("union-find", "conjuntos", "avanzado"),
-                estructurasDatos, avanzado, admin);
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿En cuáles de los siguientes problemas es aplicable la estructura Union-Find?",
+                "Detección de ciclos en grafos, Kruskal y conectividad de componentes.",
+                "Union-Find se usa para: detectar ciclos en grafos no dirigidos, algoritmo de Kruskal para MST, determinar componentes conectados, y redes de computadoras. No se usa para caminos más cortos (Dijkstra) ni para ordenamiento de arreglos.",
+                900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+                List.of("union-find", "grafos", "avanzado"),
+                estructurasDatos, avanzado, admin,
+                option("Detectar ciclos en un grafo", true, "Correcto: Union-Find detecta ciclos en grafos no dirigidos.", 1),
+                option("Algoritmo de Kruskal", true, "Correcto: Kruskal usa Union-Find para construir el MST.", 2),
+                option("Camino más corto", false, "Incorrecto: Dijkstra o Bellman-Ford resuelven caminos más cortos.", 3),
+                option("Componentes conectados", true, "Correcto: Union-Find determina componentes en grafos.", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica qué es un árbol AVL y cómo funcionan las rotaciones para mantener el balance.",
-                null,
-                "Un árbol AVL es un BST auto-balanceado donde la diferencia de altura entre los subárboles izquierdo y derecho de cada nodo (factor de balance) no supera 1. Cuando una inserción o eliminación rompe esta propiedad, se aplican rotaciones simples (left, right) o dobles (left-right, right-left) para restaurar el balance. Cada rotación es O(1).",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Cuál es el factor de balance máximo permitido en un árbol AVL?",
+                "1",
+                "En un árbol AVL, la diferencia de altura entre el subárbol izquierdo y derecho de cualquier nodo no puede superar 1. Si el factor de balance es -1, 0 o 1, el árbol está balanceado.",
                 900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("avl", "balance", "avanzado"),
-                estructurasDatos, avanzado, admin);
+                estructurasDatos, avanzado, admin,
+                option("0", false, "Incorrecto: 0 sería un árbol perfectamente balanceado, pero AVL permite diferencia de 1.", 1),
+                option("1", true, "Correcto: el factor de balance debe ser -1, 0 o 1.", 2),
+                option("2", false, "Incorrecto: si la diferencia es 2, el árbol está desbalanceado y requiere rotación.", 3),
+                option("log n", false, "Incorrecto: log n es la altura máxima, no el factor de balance.", 4));
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
                 "Implementa DFS recursivo en un grafo representado como lista de adyacencia.",
@@ -374,21 +425,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("css", "flexbox", "grid", "facil"),
                 desarrolloWeb, facil, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "¿Cuál es la diferencia entre los métodos HTTP GET y POST? ¿Cuándo usarías cada uno?",
-                null,
-                "GET solicita datos al servidor, los parámetros van en la URL, es idempotente y puede cachearse. POST envía datos al servidor para crear/modificar recursos, los parámetros van en el cuerpo, no es idempotente ni cacheable. GET es seguro para lecturas; POST se usa para operaciones que cambian el estado del servidor.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes son métodos HTTP válidos?",
+                "GET, POST, PUT, DELETE, PATCH son métodos HTTP válidos.",
+                "Los métodos HTTP principales son: GET (leer), POST (crear), PUT (reemplazar), PATCH (actualizar parcial), DELETE (eliminar), HEAD, OPTIONS, TRACE, CONNECT. SAVE y FETCH no son métodos HTTP.",
                 480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("http", "get", "post", "facil"),
-                desarrolloWeb, facil, admin);
+                List.of("http", "metodos", "facil"),
+                desarrolloWeb, facil, admin,
+                option("GET", true, "Correcto: GET es un método HTTP estándar para recuperar datos.", 1),
+                option("SAVE", false, "Incorrecto: SAVE no es un método HTTP.", 2),
+                option("DELETE", true, "Correcto: DELETE es un método HTTP para eliminar recursos.", 3),
+                option("PATCH", true, "Correcto: PATCH se usa para actualizaciones parciales.", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica los principios del diseño responsivo (responsive design).",
-                null,
-                "El diseño responsivo usa rejillas flexibles, imágenes adaptables y media queries CSS para que el sitio se vea bien en cualquier dispositivo. Los principios clave incluyen: enfoque mobile-first, layouts fluidos (usando % o fr en lugar de px fijos), breakpoints basados en contenido, y pruebas en múltiples dispositivos.",
-                600, 50, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué técnica CSS se usa principalmente para crear diseños responsivos que se adapten a diferentes tamaños de pantalla?",
+                "Media queries",
+                "Las media queries en CSS permiten aplicar estilos condicionales según el tamaño de la pantalla, resolución, orientación, etc. Son la base del diseño responsivo junto con unidades relativas y grids flexibles.",
+                480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("responsive", "css", "facil"),
-                desarrolloWeb, facil, admin);
+                desarrolloWeb, facil, admin,
+                option("Variables CSS", false, "Incorrecto: las variables CSS son para reutilizar valores, no para diseño responsivo.", 1),
+                option("Media queries", true, "Correcto: las media queries son esenciales para el diseño responsivo.", 2),
+                option("Flexbox", false, "Incorrecto: Flexbox es un modelo de layout, no una técnica de adaptación por sí mismo.", 3),
+                option("Animaciones CSS", false, "Incorrecto: las animaciones no están relacionadas con diseño responsivo.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "¿Qué es una cookie HTTP y cómo se usa en aplicaciones web?",
@@ -407,13 +466,17 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("rest", "graphql", "api", "web"),
                 desarrolloWeb, intermedio, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica qué es CORS (Cross-Origin Resource Sharing) y cómo se configura en el servidor.",
-                null,
-                "CORS es un mecanismo de seguridad del navegador que controla las solicitudes entre diferentes orígenes. El servidor debe incluir cabeceras como Access-Control-Allow-Origin en las respuestas. Para solicitudes complejas, el navegador envía una solicitud preflight OPTIONS antes de la solicitud real.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes son mecanismos de seguridad en aplicaciones web?",
+                "CORS, CSP y SameSite cookies son mecanismos de seguridad web.",
+                "CORS controla solicitudes entre orígenes. CSP (Content Security Policy) previene XSS. SameSite cookies protege contra CSRF. TCP es un protocolo de transporte, no de seguridad. SQL es un lenguaje de consulta.",
                 600, 80, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("cors", "seguridad", "intermedio"),
-                desarrolloWeb, intermedio, admin);
+                List.of("seguridad", "cors", "csp", "intermedio"),
+                desarrolloWeb, intermedio, admin,
+                option("CORS", true, "Correcto: CORS controla el acceso entre diferentes orígenes.", 1),
+                option("CSP", true, "Correcto: Content Security Policy previene ataques XSS.", 2),
+                option("TCP", false, "Incorrecto: TCP es un protocolo de la capa de transporte, no de seguridad web.", 3),
+                option("SameSite cookies", true, "Correcto: SameSite protege contra ataques CSRF.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Explica el flujo de autenticación usando JWT (JSON Web Tokens).",
@@ -423,13 +486,17 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("jwt", "autenticacion", "intermedio"),
                 desarrolloWeb, intermedio, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Compara WebSockets con SSE (Server-Sent Events). ¿Cuándo usarías cada uno?",
-                null,
-                "WebSockets proporcionan comunicación bidireccional full-duplex, ideal para aplicaciones en tiempo real como chats o juegos. SSE es unidireccional (servidor a cliente) sobre HTTP, más simple y con reintentos automáticos, ideal para notificaciones, actualizaciones de feeds o dashboards. WebSockets requieren un servidor especializado; SSE funciona con servidores HTTP estándar.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué tecnología permite comunicación bidireccional en tiempo real entre cliente y servidor?",
+                "WebSockets",
+                "WebSockets proporcionan comunicación bidireccional full-duplex, donde tanto el cliente como el servidor pueden enviar mensajes en cualquier momento. SSE es unidireccional (solo servidor a cliente).",
                 600, 80, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("websockets", "sse", "tiempo-real", "intermedio"),
-                desarrolloWeb, intermedio, admin);
+                List.of("websockets", "tiempo-real", "intermedio"),
+                desarrolloWeb, intermedio, admin,
+                option("SSE", false, "Incorrecto: SSE es unidireccional, solo servidor a cliente.", 1),
+                option("WebSockets", true, "Correcto: WebSockets permite comunicación bidireccional full-duplex.", 2),
+                option("HTTP Long Polling", false, "Incorrecto: el long polling simula tiempo real pero no es bidireccional verdadero.", 3),
+                option("REST", false, "Incorrecto: REST es un estilo de arquitectura, no de comunicación en tiempo real.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "¿Qué son las PWAs (Progressive Web Apps) y cuáles son sus características principales?",
@@ -448,13 +515,17 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("microservicios", "arquitectura", "avanzado"),
                 desarrolloWeb, avanzado, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica el flujo completo de OAuth 2.0 con el grant type Authorization Code.",
-                null,
-                "El cliente redirige al usuario al servidor de autorización, quien autentica al usuario y solicita consentimiento. Luego redirige al cliente con un código de autorización. El cliente intercambia este código por un access token (y opcionalmente un refresh token) mediante una solicitud directa al servidor de autorización. Este grant type es el más seguro porque el token nunca pasa por el navegador del usuario.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes son componentes del flujo OAuth 2.0?",
+                "Resource owner, client, authorization server y resource server.",
+                "Los cuatro actores principales de OAuth 2.0 son: resource owner (usuario), client (aplicación), authorization server (emite tokens), y resource server (aloja los recursos protegidos). JWT es un formato de token, no un actor.",
                 900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("oauth2", "autenticacion", "avanzado"),
-                desarrolloWeb, avanzado, admin);
+                List.of("oauth2", "autenticacion", "seguridad"),
+                desarrolloWeb, avanzado, admin,
+                option("Resource owner", true, "Correcto: el usuario propietario de los recursos.", 1),
+                option("JWT", false, "Incorrecto: JWT es un formato de token, no un componente de OAuth 2.0.", 2),
+                option("Authorization server", true, "Correcto: el servidor que emite los tokens.", 3),
+                option("Resource server", true, "Correcto: el servidor que aloja los recursos protegidos.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Compara Docker y Kubernetes. ¿Qué problema resuelve cada uno?",
@@ -464,13 +535,17 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("docker", "kubernetes", "avanzado"),
                 desarrolloWeb, avanzado, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica cómo funciona una CDN y qué estrategias de caché se usan para optimizar la entrega de contenido.",
-                null,
-                "Una CDN (Content Delivery Network) distribuye contenido estático en servidores geográficamente dispersos (edge servers). Cuando un usuario solicita contenido, se sirve desde el edge server más cercano. Estrategias de caché: TTL (time-to-live), cache invalidation por versión (fingerprinting), cache-control headers, stale-while-revalidate, y purging selectivo. Las CDN mejoran latencia, disponibilidad y reducen carga en el servidor de origen.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué protocolo de resolución de nombres se usa para dirigir al usuario al servidor CDN más cercano?",
+                "Anycast DNS",
+                "Anycast DNS permite que múltiples servidores compartan la misma dirección IP, y el tráfico se enruta al servidor más cercano geográficamente. Round Robin DNS distribuye entre varias IPs pero no considera cercanía.",
                 900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("cdn", "cache", "rendimiento", "avanzado"),
-                desarrolloWeb, avanzado, admin);
+                List.of("cdn", "dns", "anycast"),
+                desarrolloWeb, avanzado, admin,
+                option("Round Robin DNS", false, "Incorrecto: Round Robin distribuye tráfico entre IPs pero no dirige al más cercano.", 1),
+                option("Anycast DNS", true, "Correcto: Anycast enruta al servidor más cercano disponible.", 2),
+                option("HTTP Redirect", false, "Incorrecto: HTTP Redirect requiere una solicitud adicional del cliente.", 3),
+                option("DNS CNAME", false, "Incorrecto: CNAME es un alias de dominio, no resuelve cercanía geográfica.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Explica las vulnerabilidades de seguridad web más comunes: XSS, CSRF y SQL Injection. ¿Cómo se mitigan?",
@@ -499,21 +574,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("sql", "join", "facil"),
                 basesDatos, facil, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica la diferencia entre clave primaria (primary key) y clave foránea (foreign key).",
-                null,
-                "La clave primaria identifica de forma única cada fila de una tabla. No puede ser NULL y debe ser única. La clave foránea es un campo que referencia la clave primaria de otra tabla, estableciendo una relación entre ambas tablas. Las FK mantienen la integridad referencial: no se puede insertar un valor FK que no exista en la tabla referenciada.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de las siguientes afirmaciones sobre claves primarias son correctas?",
+                "Una clave primaria identifica unívocamente cada fila, no puede ser NULL y debe ser única.",
+                "La clave primaria (PK) identifica cada fila de forma única. No puede contener NULL y todos sus valores deben ser únicos. Una tabla puede tener una sola PK, que puede ser simple o compuesta. La FK referencia la PK de otra tabla.",
                 480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("primary-key", "foreign-key", "facil"),
-                basesDatos, facil, admin);
+                List.of("primary-key", "bases-de-datos", "facil"),
+                basesDatos, facil, admin,
+                option("Identifica unívocamente cada fila", true, "Correcto: la PK es el identificador único de cada registro.", 1),
+                option("Puede contener valores NULL", false, "Incorrecto: una PK no puede contener NULL por definición.", 2),
+                option("Debe ser única en la tabla", true, "Correcto: todos los valores de la PK deben ser únicos.", 3),
+                option("Una tabla puede tener varias PK", false, "Incorrecto: una tabla puede tener solo una PK (puede ser compuesta).", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "¿Cuál es la diferencia entre WHERE y HAVING en SQL?",
-                null,
-                "WHERE filtra filas antes de la agrupación (GROUP BY), no puede usar funciones de agregación. HAVING filtra grupos después de la agrupación y puede usar funciones de agregación como COUNT(), SUM(), AVG(). Se usan juntos: WHERE primero, luego GROUP BY, luego HAVING.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿En qué orden se ejecutan las cláusulas en una consulta SQL con GROUP BY?",
+                "WHERE → GROUP BY → HAVING",
+                "El orden correcto de ejecución es: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY. WHERE filtra filas individuales antes de agrupar, HAVING filtra grupos después de GROUP BY.",
                 480, 40, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("sql", "where", "having", "facil"),
-                basesDatos, facil, admin);
+                List.of("sql", "group-by", "having"),
+                basesDatos, facil, admin,
+                option("GROUP BY → HAVING → WHERE", false, "Incorrecto: WHERE se ejecuta antes de GROUP BY.", 1),
+                option("WHERE → GROUP BY → HAVING", true, "Correcto: WHERE filtra filas, luego GROUP BY agrupa, luego HAVING filtra grupos.", 2),
+                option("HAVING → WHERE → GROUP BY", false, "Incorrecto: HAVING requiere que GROUP BY ya haya ocurrido.", 3),
+                option("GROUP BY → WHERE → HAVING", false, "Incorrecto: WHERE debe ejecutarse antes de GROUP BY.", 4));
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
                 "Escribe una consulta SQL que calcule el total de ventas por producto usando funciones de agregación, mostrando solo productos con más de 10 unidades vendidas.",
@@ -540,21 +623,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("indices", "rendimiento", "intermedio"),
                 basesDatos, intermedio, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica el concepto de transacciones y las propiedades ACID en bases de datos.",
-                null,
-                "Una transacción agrupa operaciones que se ejecutan como una unidad atómica. ACID: Atomicidad (todo o nada), Consistencia (la BD siempre está en estado válido), Aislamiento (las transacciones concurrentes no interfieren), Durabilidad (los cambios persisten ante fallos). En PostgreSQL se controlan con BEGIN, COMMIT, ROLLBACK y niveles de aislamiento.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles son las propiedades ACID de las transacciones en bases de datos?",
+                "Atomicity, Consistency, Isolation y Durability.",
+                "ACID: Atomicidad (todo o nada), Consistencia (estado válido siempre), Aislamiento (transacciones concurrentes no interfieren), Durabilidad (los cambios persisten ante fallos). Escalabilidad y Disponibilidad no son propiedades ACID.",
                 600, 80, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("transacciones", "acid", "intermedio"),
-                basesDatos, intermedio, admin);
+                basesDatos, intermedio, admin,
+                option("Atomicidad", true, "Correcto: la transacción se ejecuta completamente o no se ejecuta.", 1),
+                option("Escalabilidad", false, "Incorrecto: la escalabilidad no es una propiedad ACID.", 2),
+                option("Aislamiento", true, "Correcto: las transacciones no interfieren entre sí.", 3),
+                option("Disponibilidad", false, "Incorrecto: la disponibilidad no es parte de ACID.", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica las formas normales en bases de datos relacionales (1FN, 2FN, 3FN).",
-                null,
-                "1FN: cada celda contiene un solo valor atómico, no hay grupos repetitivos. 2FN: está en 1FN y cada columna no clave depende completamente de la clave primaria completa (no de parte de ella). 3FN: está en 2FN y no hay dependencias transitivas (una columna no clave no depende de otra columna no clave). La normalización reduce la redundancia y mejora la integridad de los datos.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué forma normal requiere que cada columna no clave dependa completamente de la clave primaria completa?",
+                "2FN (Segunda Forma Normal)",
+                "La 2FN requiere que el esquema esté en 1FN y que cada columna no clave dependa de toda la clave primaria (no solo de parte de ella). Esto aplica principalmente a claves primarias compuestas.",
                 600, 80, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("normalizacion", "formas-normales", "intermedio"),
-                basesDatos, intermedio, admin);
+                basesDatos, intermedio, admin,
+                option("1FN", false, "Incorrecto: 1FN solo requiere valores atómicos.", 1),
+                option("2FN", true, "Correcto: 2FN elimina dependencias parciales de la clave.", 2),
+                option("3FN", false, "Incorrecto: 3FN elimina dependencias transitivas, asumiendo que ya se cumple 2FN.", 3),
+                option("BCFN", false, "Incorrecto: BCFN es una forma más estricta que 3FN.", 4));
 
         createQuestion(QuestionType.PRACTICAL, AnswerFormat.CODE,
                 "Escribe una consulta SQL que use una subconsulta o CTE para encontrar empleados con salario superior al promedio de su departamento.",
@@ -581,21 +672,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("sharding", "escalabilidad", "avanzado"),
                 basesDatos, avanzado, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica las diferentes estrategias de replicación en bases de datos (maestro-esclavo, multi-maestro, síncrona, asíncrona).",
-                null,
-                "Maestro-esclavo: un nodo principal recibe escrituras, los secundarios replican para lecturas. Multi-maestro: varios nodos aceptan escrituras. Replicación síncrona: el maestro espera confirmación de los esclavos antes de confirmar (mayor consistencia, menor rendimiento). Asíncrona: el maestro no espera confirmación (mayor rendimiento, posible pérdida de datos). PostgreSQL soporta streaming replication, logical replication y cascading replication.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de las siguientes son ventajas de la replicación en bases de datos?",
+                "Alta disponibilidad, balanceo de lecturas y tolerancia a fallos.",
+                "La replicación mejora la disponibilidad (si un nodo falla, otro responde), permite distribuir lecturas entre réplicas (balanceo), y proporciona tolerancia a fallos. No elimina la necesidad de backups (son complementarios) ni acelera las escrituras (puede ralentizarlas en replicación síncrona).",
                 900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
                 List.of("replicacion", "alta-disponibilidad", "avanzado"),
-                basesDatos, avanzado, admin);
+                basesDatos, avanzado, admin,
+                option("Alta disponibilidad", true, "Correcto: si un nodo falla, otro puede tomar su lugar.", 1),
+                option("Elimina la necesidad de backups", false, "Incorrecto: los backups son necesarios aunque haya replicación.", 2),
+                option("Balanceo de lecturas", true, "Correcto: las réplicas pueden servir consultas de solo lectura.", 3),
+                option("Tolerancia a fallos", true, "Correcto: el sistema sigue funcionando si un nodo falla.", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Compara bases de datos SQL y NoSQL. ¿En qué casos elegirías cada una?",
-                null,
-                "SQL: esquema fijo, consistencia fuerte, relaciones y joins, ideales para datos estructurados y transacciones ACID (ej. sistemas financieros). NoSQL: esquema flexible, escalabilidad horizontal, varios modelos (documentos, clave-valor, grafos, columnas). MongoDB (documentos) para datos semiestructurados, Redis (clave-valor) para caché, Neo4j (grafos) para relaciones complejas. La elección depende de los requisitos del proyecto: consistencia vs disponibilidad, estructura vs flexibilidad.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué propiedad de las bases de datos SQL es la más importante para sistemas financieros?",
+                "Consistencia fuerte (ACID)",
+                "Los sistemas financieros requieren consistencia fuerte: cada transacción debe dejar los datos en un estado válido y cualquier lectura debe reflejar las escrituras más recientes. Esto lo garantizan las propiedades ACID de las bases de datos SQL.",
                 900, 120, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("nosql", "sql", "bases-de-datos", "avanzado"),
-                basesDatos, avanzado, admin);
+                List.of("sql", "nosql", "acid"),
+                basesDatos, avanzado, admin,
+                option("Escalabilidad horizontal", false, "Incorrecto: los sistemas financieros priorizan consistencia sobre escalabilidad.", 1),
+                option("Esquema flexible", false, "Incorrecto: los sistemas financieros requieren esquemas estrictos y validados.", 2),
+                option("Consistencia fuerte (ACID)", true, "Correcto: la integridad de los datos es crítica en finanzas.", 3),
+                option("Alta velocidad de escritura", false, "Incorrecto: la velocidad es secundaria frente a la consistencia.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Explica el Teorema CAP y cómo afecta al diseño de sistemas distribuidos de bases de datos.",
@@ -624,21 +723,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("api-gateway", "microservicios", "facil"),
                 disenoSistemas, facil, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica el concepto de balanceo de carga. ¿Qué estrategias de balanceo conoces?",
-                null,
-                "El balanceo de carga distribuye el tráfico entre varios servidores para evitar sobrecargar uno solo. Estrategias: round robin (distribuye equitativamente), least connections (envía al servidor con menos conexiones activas), IP hash (misma IP siempre al mismo servidor), weighted round robin (asigna según capacidad). Los balanceadores pueden ser de capa 4 (transporte, basado en IP/puerto) o capa 7 (aplicación, basado en contenido HTTP).",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes son algoritmos de balanceo de carga?",
+                "Round Robin, Least Connections e IP Hash son algoritmos de balanceo.",
+                "Round Robin: distribuye equitativamente. Least Connections: envía al servidor con menos conexiones. IP Hash: misma IP siempre al mismo servidor. Thread Pool y Quick Sort no son algoritmos de balanceo de carga.",
                 600, 50, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("balanceo-carga", "escalabilidad", "facil"),
-                disenoSistemas, facil, admin);
+                List.of("balanceo-carga", "algoritmos", "facil"),
+                disenoSistemas, facil, admin,
+                option("Round Robin", true, "Correcto: Round Robin distribuye las solicitudes secuencialmente.", 1),
+                option("Thread Pool", false, "Incorrecto: Thread Pool es un patrón de concurrencia, no de balanceo de carga.", 2),
+                option("Least Connections", true, "Correcto: envía tráfico al servidor con menos conexiones activas.", 3),
+                option("IP Hash", true, "Correcto: la IP del cliente determina el servidor destino.", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Compara la arquitectura monolítica con la de microservicios. ¿Cuáles son las ventajas y desventajas de cada una?",
-                null,
-                "Monolítica: una sola aplicación que contiene toda la funcionalidad. Ventajas: simplicidad, despliegue único, monitoreo centralizado, desarrollo inicial rápido. Desventajas: escalado de todo o nada, acoplamiento, equipos dependientes, adopción tecnológica difícil. Microservicios: servicios independientes. Ventajas: escalado granular, equipos autónomos, despliegue independiente, diversidad tecnológica. Desventajas: complejidad operativa, latencia de red, consistencia eventual.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Cuál de las siguientes es una desventaja de la arquitectura de microservicios?",
+                "Complejidad operativa y de despliegue.",
+                "Los microservicios aumentan la complejidad operativa: necesitas orquestación, monitoreo distribuido, manejo de consistencia eventual, comunicación por red, y despliegue coordinado. La escalabilidad independiente y el desarrollo paralelo son ventajas, no desventajas.",
                 600, 50, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("monolitico", "microservicios", "facil"),
-                disenoSistemas, facil, admin);
+                List.of("microservicios", "arquitectura", "facil"),
+                disenoSistemas, facil, admin,
+                option("Escalabilidad independiente", false, "Incorrecto: esa es una ventaja de los microservicios.", 1),
+                option("Complejidad operativa", true, "Correcto: la complejidad de orquestación y monitoreo es una desventaja clave.", 2),
+                option("Despliegue independiente", false, "Incorrecto: esa es una ventaja de los microservicios.", 3),
+                option("Equipos autónomos", false, "Incorrecto: esa también es una ventaja.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Explica la diferencia entre escalabilidad vertical y horizontal.",
@@ -665,21 +772,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("redis", "cache", "intermedio"),
                 disenoSistemas, intermedio, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica cómo funcionan las colas de mensajes (message queues). ¿Qué papel juegan en sistemas distribuidos?",
-                null,
-                "Las colas de mensajes permiten comunicación asíncrona entre servicios mediante un intermediario (broker). El productor envía mensajes a la cola, el consumidor los procesa cuando puede. Beneficios: desacoplamiento, buffering de picos de tráfico, tolerancia a fallos (mensajes persisten si el consumidor falla), procesamiento asíncrono. Ejemplos: RabbitMQ (AMQP), Apache Kafka (streaming), AWS SQS. Patrones: work queues, publish/subscribe, routing por topic.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles de los siguientes son beneficios de usar colas de mensajes en sistemas distribuidos?",
+                "Desacoplamiento, buffering y tolerancia a fallos.",
+                "Las colas de mensajes desacoplan productores y consumidores, absorben picos de tráfico (buffering), y proporcionan tolerancia a fallos (los mensajes persisten). Reducen la latencia (procesamiento asíncrono), no la aumentan. El escalado horizontal es posible pero no automático.",
                 800, 100, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("message-queue", "rabbitmq", "kafka", "intermedio"),
-                disenoSistemas, intermedio, admin);
+                List.of("message-queue", "arquitectura", "intermedio"),
+                disenoSistemas, intermedio, admin,
+                option("Desacoplamiento de servicios", true, "Correcto: productores y consumidores no se conocen entre sí.", 1),
+                option("Mayor latencia", false, "Incorrecto: las colas reducen la latencia percibida al procesar de forma asíncrona.", 2),
+                option("Buffering de picos de tráfico", true, "Correcto: las colas absorven ráfagas de mensajes.", 3),
+                option("Tolerancia a fallos", true, "Correcto: si un consumidor falla, los mensajes no se pierden.", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Diseña un sistema de CDN (Content Delivery Network). Explica cómo se almacena y distribuye el contenido globalmente.",
-                null,
-                "Una CDN global tiene edge servers en múltiples ubicaciones geográficas. Flujo: 1. Usuario solicita contenido, 2. DNS resuelve al edge server más cercano (Anycast), 3. Si el edge tiene el contenido en caché, lo sirve (cache hit). 4. Si no (cache miss), lo solicita al origin server, lo almacena localmente (con TTL configurable), y lo sirve al usuario. Estrategias: push (pre-cargar contenido) vs pull (cargar bajo demanda), purging por API, versionado de assets.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué sucede cuando un edge server de una CDN no tiene el contenido solicitado en caché?",
+                "El edge server solicita el contenido al origin server.",
+                "En un cache miss, el edge server actúa como proxy: solicita el contenido al servidor de origen, lo almacena localmente con un TTL configurable, y lo sirve al usuario. Las solicitudes siguientes para el mismo recurso serán cache hits hasta que expire el TTL.",
                 900, 100, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.8}",
-                List.of("cdn", "distribucion", "intermedio"),
-                disenoSistemas, intermedio, admin);
+                List.of("cdn", "cache", "distribucion"),
+                disenoSistemas, intermedio, admin,
+                option("Redirige al usuario al origin server", false, "Incorrecto: eso eliminaría el beneficio de la CDN.", 1),
+                option("Responde con error 404", false, "Incorrecto: la CDN debe intentar obtener el contenido.", 2),
+                option("Solicita el contenido al origin server", true, "Correcto: el edge hace un pull del origen y cachea el resultado.", 3),
+                option("Replica el contenido desde otro edge", false, "Incorrecto: la replicación entre edges no es automática en CDN pull.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Explica cómo funciona la indexación en bases de datos y cómo diseñar índices efectivos para mejorar el rendimiento.",
@@ -706,21 +821,29 @@ public class DataInitializer implements CommandLineRunner {
                 List.of("rate-limiter", "diseno-de-sistemas", "avanzado"),
                 disenoSistemas, avanzado, admin);
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Explica el concepto de hashing consistente (consistent hashing). ¿Cómo se usa en sistemas distribuidos como Cassandra o DynamoDB?",
-                null,
-                "El hashing consistente mapea cada nodo a múltiples puntos en un anillo hash usando varias funciones hash (réplicas virtuales). Cada clave se asigna al siguiente nodo en el anillo. Cuando se agrega o elimina un nodo, solo las claves de ese nodo adyacente necesitan reasignarse (en lugar de rehashear todas). Se usa en Cassandra (particionamiento), DynamoDB, CDNs, y sistemas de caché distribuida como Memcached. Minimiza la reorganización de datos al escalar.",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.MULTIPLE_CHOICE,
+                "¿Cuáles son ventajas del hashing consistente sobre el hashing tradicional?",
+                "Minimiza la reorganización de datos al agregar o eliminar nodos.",
+                "El hashing consistente solo requiere reasignar las claves del nodo adyacente cuando se agrega o elimina un nodo, a diferencia del hashing tradicional que requiere rehashear la mayoría de las claves. No elimina colisiones (solo las reduce) ni acelera el cálculo del hash.",
                 1200, 150, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.5, \"designWeight\": 0.3}",
                 List.of("consistent-hashing", "distribuidos", "avanzado"),
-                disenoSistemas, avanzado, admin);
+                disenoSistemas, avanzado, admin,
+                option("Minimiza la reorganización al escalar", true, "Correcto: solo las claves del nodo vecino se reasignan.", 1),
+                option("Elimina todas las colisiones", false, "Incorrecto: las colisiones pueden seguir ocurriendo.", 2),
+                option("Facilita agregar o quitar nodos", true, "Correcto: agregar o quitar nodos afecta solo a los nodos adyacentes en el anillo.", 3),
+                option("Es más rápido de calcular", false, "Incorrecto: el hashing consistente no es inherentemente más rápido.", 4));
 
-        createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
-                "Diseña un almacén clave-valor distribuido como DynamoDB o Cassandra. Explica la partición, replicación y consistencia.",
-                null,
-                "Partición: hashing consistente con réplicas virtuales distribuye los datos entre nodos. Replicación: cada clave se replica en N nodos (factor de replicación), el coordinador escribe en todas las réplicas. Consistencia: quorum (R + W > N para lecturas/escrituras fuertemente consistentes), eventual (lecturas pueden devolver datos obsoletos). Gossip protocol para descubrimiento, hinted handoff para tolerancia a fallos, hinted replication para reparación. Merge de conflictos usando vectores de versión o LWW (last-write-wins).",
+        createQuestion(QuestionType.THEORETICAL, AnswerFormat.SINGLE_CHOICE,
+                "¿Qué nivel de consistencia se logra en DynamoDB cuando se configura con R + W > N (quorum)?",
+                "Consistencia fuerte",
+                "La fórmula R + W > N garantiza que hay superposición entre las réplicas leídas y escritas, asegurando que al menos una réplica tenga los datos más recientes. Por ejemplo, con N=3, R=2, W=2 se cumple 2+2 > 3 y se obtiene consistencia fuerte.",
                 1200, 150, "{\"timeWeight\": 0.2, \"correctnessWeight\": 0.5, \"designWeight\": 0.3}",
-                List.of("key-value-store", "distribuidos", "avanzado"),
-                disenoSistemas, avanzado, admin);
+                List.of("key-value-store", "consistencia", "avanzado"),
+                disenoSistemas, avanzado, admin,
+                option("Consistencia eventual", false, "Incorrecto: R+W <= N da consistencia eventual.", 1),
+                option("Consistencia fuerte", true, "Correcto: R+W > N garantiza superposición de réplicas.", 2),
+                option("Sin consistencia", false, "Incorrecto: siempre hay algún nivel de consistencia.", 3),
+                option("Consistencia débil", false, "Incorrecto: R+W > N es el requisito para consistencia fuerte, no débil.", 4));
 
         createQuestion(QuestionType.THEORETICAL, AnswerFormat.FREE_TEXT,
                 "Diseña un sistema de leaderboard en tiempo real para un videojuego online con millones de jugadores.",
@@ -803,7 +926,8 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createQuestion(QuestionType qtype, AnswerFormat fmt, String statement, String answer, String explanation,
             int estimatedTime, int basePoints, String evalConfig, List<String> tags,
-            Category category, DifficultyLevel difficulty, User createdBy) {
+            Category category, DifficultyLevel difficulty, User createdBy,
+            AnswerOption... options) {
 
         var q = new Question();
         q.setQuestionType(qtype);
@@ -819,6 +943,19 @@ public class DataInitializer implements CommandLineRunner {
         q.setDifficulty(difficulty);
         q.setCreatedBy(createdBy);
         q.setIsActive(true);
+        for (var opt : options) {
+            opt.setQuestion(q);
+            q.getAnswerOptions().add(opt);
+        }
         questionRepo.save(q);
+    }
+
+    private AnswerOption option(String text, boolean correct, String explanation, int order) {
+        var opt = new AnswerOption();
+        opt.setOptionText(text);
+        opt.setIsCorrect(correct);
+        opt.setExplanation(explanation);
+        opt.setDisplayOrder(order);
+        return opt;
     }
 }
