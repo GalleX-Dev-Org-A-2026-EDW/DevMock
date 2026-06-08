@@ -3,7 +3,9 @@ package com.devmock.backend.controller;
 import com.devmock.backend.dto.AchievementResponse;
 import com.devmock.backend.dto.CreateAchievementRequest;
 import com.devmock.backend.dto.UpdateAchievementRequest;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.service.AchievementService;
+import com.devmock.backend.util.AuditHelper;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,9 +21,11 @@ import java.util.UUID;
 public class AchievementController {
 
     private final AchievementService service;
+    private final AuditHelper auditHelper;
 
-    public AchievementController(AchievementService service) {
+    public AchievementController(AchievementService service, AuditHelper auditHelper) {
         this.service = service;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
@@ -29,8 +33,9 @@ public class AchievementController {
     @PreAuthorize("hasRole('ADMIN')")
     public AchievementResponse create(
             @Valid @RequestBody CreateAchievementRequest request) {
-
-        return service.create(request);
+        AchievementResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "Achievement", response.getId());
+        return response;
     }
 
     @GetMapping
@@ -50,8 +55,9 @@ public class AchievementController {
     public AchievementResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateAchievementRequest request) {
-
-        return service.update(id, request);
+        AchievementResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "Achievement", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
@@ -59,5 +65,6 @@ public class AchievementController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "Achievement", id);
     }
 }

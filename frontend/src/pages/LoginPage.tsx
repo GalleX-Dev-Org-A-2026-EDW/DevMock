@@ -82,16 +82,15 @@ export default function LoginPage() {
     }`
 
   return (
-    <div className="min-h-screen bg-slate-100 font-['Manrope'] flex items-center justify-center p-6">
-      <Link
-        to="/"
-        className="absolute top-6 left-6 flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Volver al inicio
-      </Link>
-
+    <div className="min-h-screen bg-slate-100 font-['Manrope'] flex flex-col items-center justify-center px-4 sm:px-6 py-8">
       <div className="w-full max-w-md">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-6"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Volver al inicio
+        </Link>
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <img src={devMockIcon} alt="DevMock" className="h-12 w-12" />
@@ -105,7 +104,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-border">
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-border">
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             {error && !Object.keys(fieldErrors).length && (
               <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 flex items-start gap-3">

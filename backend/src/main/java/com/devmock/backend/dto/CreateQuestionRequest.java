@@ -1,5 +1,6 @@
 package com.devmock.backend.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +42,8 @@ public class CreateQuestionRequest {
     private UUID categoryId;
 
     private UUID difficultyId;
+
+    private List<AnswerOptionDto> answerOptions = new ArrayList<>();
 
     public QuestionType getQuestionType() {
         return questionType;
@@ -136,5 +139,13 @@ public class CreateQuestionRequest {
 
     public void setDifficultyId(UUID difficultyId) {
         this.difficultyId = difficultyId;
+    }
+
+    public List<AnswerOptionDto> getAnswerOptions() {
+        return answerOptions;
+    }
+
+    public void setAnswerOptions(List<AnswerOptionDto> answerOptions) {
+        this.answerOptions = answerOptions;
     }
 }

@@ -3,9 +3,10 @@ package com.devmock.backend.controller;
 import com.devmock.backend.dto.CreateUserRequest;
 import com.devmock.backend.dto.UpdateUserRequest;
 import com.devmock.backend.dto.UserResponse;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.security.SecurityUtils;
 import com.devmock.backend.service.UserService;
-
+import com.devmock.backend.util.AuditHelper;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -22,16 +23,20 @@ public class UserController {
 
     private final UserService service;
     private final SecurityUtils securityUtils;
+    private final AuditHelper auditHelper;
 
-    public UserController(UserService service, SecurityUtils securityUtils) {
+    public UserController(UserService service, SecurityUtils securityUtils, AuditHelper auditHelper) {
         this.service = service;
         this.securityUtils = securityUtils;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@Valid @RequestBody CreateUserRequest request) {
-        return service.create(request);
+        UserResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "User", response.getId());
+        return response;
     }
 
     @GetMapping
@@ -53,13 +58,16 @@ public class UserController {
     public UserResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateUserRequest request) {
-        return service.update(id, request);
+        UserResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "User", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "User", id);
     }
 
     @GetMapping("/me")

@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.devmock.backend.dto.CreateInterviewTypeRequest;
 import com.devmock.backend.dto.InterviewTypeResponse;
 import com.devmock.backend.dto.UpdateInterviewTypeRequest;
+import com.devmock.backend.entity.en_enum.AuditAction;
 import com.devmock.backend.service.InterviewTypeService;
+import com.devmock.backend.util.AuditHelper;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,16 +30,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class InterviewTypeController {
 
     private final InterviewTypeService service;
+    private final AuditHelper auditHelper;
 
-    public InterviewTypeController(InterviewTypeService service) {
+    public InterviewTypeController(InterviewTypeService service, AuditHelper auditHelper) {
         this.service = service;
+        this.auditHelper = auditHelper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     public InterviewTypeResponse create(@Valid @RequestBody CreateInterviewTypeRequest request) {
-        return service.create(request);
+        InterviewTypeResponse response = service.create(request);
+        auditHelper.log(AuditAction.CREATE, "InterviewType", response.getId());
+        return response;
     }
 
     @GetMapping
@@ -64,7 +70,9 @@ public class InterviewTypeController {
     public InterviewTypeResponse update(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateInterviewTypeRequest request) {
-        return service.update(id, request);
+        InterviewTypeResponse response = service.update(id, request);
+        auditHelper.log(AuditAction.UPDATE, "InterviewType", id);
+        return response;
     }
 
     @DeleteMapping("/{id}")
@@ -72,5 +80,6 @@ public class InterviewTypeController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID id) {
         service.delete(id);
+        auditHelper.log(AuditAction.DELETE, "InterviewType", id);
     }
 }

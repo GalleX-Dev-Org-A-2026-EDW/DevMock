@@ -7,6 +7,9 @@ export function useAuditLogs() {
   return useQuery({
     queryKey: auditLogsKeys.lists(),
     queryFn: () => auditLogsApi.list(),
+    staleTime: 0,
+    refetchInterval: 15000,
+    refetchIntervalInBackground: true,
   })
 }
 
