@@ -160,6 +160,7 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
   const [timeByQuestion, setTimeByQuestion] = useState<Record<string, number>>({})
   const [elapsed, setElapsed] = useState(0)
   const [enteredAt, setEnteredAt] = useState(0)
+  const [isEvaluating, setIsEvaluating] = useState(false)
 
   const questions = useMemo(
     () => (allSQ ?? [])
@@ -243,79 +244,84 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
 
     const evaluations: Evaluation[] = []
 
-    for (const sq of questions) {
-      const answer = answers[sq.id] ?? sq.userAnswer ?? ""
-      const timeUsedSeconds = (timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0) + (sq.id === currentSQ?.id ? spent : 0)
-      const question = sq.questionId ? questionById.get(sq.questionId) : undefined
-      if (!question) continue
+    setIsEvaluating(true)
+    try {
+      for (const sq of questions) {
+        const answer = answers[sq.id] ?? sq.userAnswer ?? ""
+        const timeUsedSeconds = (timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0) + (sq.id === currentSQ?.id ? spent : 0)
+        const question = sq.questionId ? questionById.get(sq.questionId) : undefined
+        if (!question) continue
 
-      let evaluation: Evaluation
-      const fmt = question.answerFormat
-      if (fmt === "CODE") {
-        const result = await evaluationsApi.evaluateCode({
-          code: answer,
-          expectedAnswer: question.expectedAnswer ?? null,
-          evaluationConfig: question.evaluationConfig ?? null,
-          estimatedTimeSeconds: question.estimatedTimeSeconds,
-          timeUsedSeconds,
-          basePoints: question.basePoints,
-        })
-        evaluation = {
-          obtainedPoints: result.obtainedPoints,
-          correctnessScore: result.correctnessScore,
-          efficiencyScore: result.efficiencyScore,
-          logicScore: result.logicScore,
-          clarityScore: result.clarityScore,
-          feedback: result.evaluationFeedback,
+        let evaluation: Evaluation
+        const fmt = question.answerFormat
+        if (fmt === "CODE") {
+          const result = await evaluationsApi.evaluateCode({
+            code: answer,
+            expectedAnswer: question.expectedAnswer ?? null,
+            evaluationConfig: question.evaluationConfig ?? null,
+            estimatedTimeSeconds: question.estimatedTimeSeconds,
+            timeUsedSeconds,
+            basePoints: question.basePoints,
+          })
+          evaluation = {
+            obtainedPoints: result.obtainedPoints,
+            correctnessScore: result.correctnessScore,
+            efficiencyScore: result.efficiencyScore,
+            logicScore: result.logicScore,
+            clarityScore: result.clarityScore,
+            feedback: result.evaluationFeedback,
+          }
+        } else if (fmt === "SINGLE_CHOICE" || fmt === "MULTIPLE_CHOICE") {
+          const selectedId = selectedOptions[sq.id] ?? ""
+          evaluation = evaluateChoice(question, selectedId)
+        } else {
+          evaluation = evaluateAnswer(question, answer, timeUsedSeconds)
         }
-      } else if (fmt === "SINGLE_CHOICE" || fmt === "MULTIPLE_CHOICE") {
-        const selectedId = selectedOptions[sq.id] ?? ""
-        evaluation = evaluateChoice(question, selectedId)
-      } else {
-        evaluation = evaluateAnswer(question, answer, timeUsedSeconds)
-      }
-      evaluations.push(evaluation)
+        evaluations.push(evaluation)
 
-      await updateSQ.mutateAsync({
-        id: sq.id,
+        await updateSQ.mutateAsync({
+          id: sq.id,
+          dto: {
+            userAnswer: answer,
+            timeUsedSeconds,
+            answeredAt: new Date().toISOString(),
+            obtainedPoints: evaluation.obtainedPoints,
+            correctnessScore: evaluation.correctnessScore,
+            efficiencyScore: evaluation.efficiencyScore,
+            logicScore: evaluation.logicScore,
+            clarityScore: evaluation.clarityScore,
+            evaluationFeedback: evaluation.feedback,
+          },
+        })
+      }
+
+      const correctnessScore = average(evaluations.map((e) => e.correctnessScore))
+      const efficiencyScore = average(evaluations.map((e) => e.efficiencyScore))
+      const logicScore = average(evaluations.map((e) => e.logicScore))
+      const clarityScore = average(evaluations.map((e) => e.clarityScore))
+      const finalScore =
+        (correctnessScore * 0.4) +
+        (efficiencyScore * 0.25) +
+        (clarityScore * 0.2) +
+        (logicScore * 0.15)
+
+      await updateSession.mutateAsync({
+        id: sessionId,
         dto: {
-          userAnswer: answer,
-          timeUsedSeconds,
-          answeredAt: new Date().toISOString(),
-          obtainedPoints: evaluation.obtainedPoints,
-          correctnessScore: evaluation.correctnessScore,
-          efficiencyScore: evaluation.efficiencyScore,
-          logicScore: evaluation.logicScore,
-          clarityScore: evaluation.clarityScore,
-          evaluationFeedback: evaluation.feedback,
+          status: "COMPLETED",
+          finishedAt: new Date().toISOString(),
+          totalTimeUsedSeconds: elapsed,
+          finalScore: Number(finalScore.toFixed(1)),
+          correctnessScore: Number(correctnessScore.toFixed(1)),
+          efficiencyScore: Number(efficiencyScore.toFixed(1)),
+          logicScore: Number(logicScore.toFixed(1)),
+          clarityScore: Number(clarityScore.toFixed(1)),
         },
       })
+      onFinish(sessionId)
+    } finally {
+      setIsEvaluating(false)
     }
-
-    const correctnessScore = average(evaluations.map((e) => e.correctnessScore))
-    const efficiencyScore = average(evaluations.map((e) => e.efficiencyScore))
-    const logicScore = average(evaluations.map((e) => e.logicScore))
-    const clarityScore = average(evaluations.map((e) => e.clarityScore))
-    const finalScore =
-      (correctnessScore * 0.4) +
-      (efficiencyScore * 0.25) +
-      (clarityScore * 0.2) +
-      (logicScore * 0.15)
-
-    await updateSession.mutateAsync({
-      id: sessionId,
-      dto: {
-        status: "COMPLETED",
-        finishedAt: new Date().toISOString(),
-        totalTimeUsedSeconds: elapsed,
-        finalScore: Number(finalScore.toFixed(1)),
-        correctnessScore: Number(correctnessScore.toFixed(1)),
-        efficiencyScore: Number(efficiencyScore.toFixed(1)),
-        logicScore: Number(logicScore.toFixed(1)),
-        clarityScore: Number(clarityScore.toFixed(1)),
-      },
-    })
-    onFinish(sessionId)
   }
 
   if (sqLoading) {
@@ -463,13 +469,35 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
             ) : "Siguiente"}
           </Button>
         ) : (
-          <Button onClick={handleFinish} disabled={updateSession.isPending || updateSQ.isPending}>
-            {updateSession.isPending || updateSQ.isPending ? (
+          <Button onClick={handleFinish} disabled={isEvaluating || updateSession.isPending || updateSQ.isPending}>
+            {isEvaluating ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> Enviando...</>
+            ) : updateSession.isPending || updateSQ.isPending ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> Finalizando...</>
             ) : "Finalizar entrevista"}
           </Button>
         )}
       </div>
+
+      {isEvaluating && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-6">
+            <div className="relative">
+              <div className="h-16 w-16 animate-spin rounded-full border-4 border-emerald-500/30 border-t-emerald-400" />
+              <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-4 border-emerald-400/20" />
+            </div>
+            <div className="text-center">
+              <p className="font-['Work_Sans'] text-2xl font-semibold text-white">Evaluando respuestas...</p>
+              <p className="mt-2 text-sm text-white/50">Procesando y calificando cada pregunta</p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:0ms]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:150ms]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:300ms]" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
