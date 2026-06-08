@@ -5,6 +5,9 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
+import com.devmock.backend.entity.Achievement;
 import com.devmock.backend.entity.User;
 import com.devmock.backend.entity.UserAchievement;
 
@@ -13,4 +16,5 @@ public interface UserAchievementRepository
 
     List<UserAchievement> findByUser(User user);
     List<UserAchievement> findByUserIsNull();
+    Optional<UserAchievement> findByUserAndAchievement(User user, Achievement achievement);
 }

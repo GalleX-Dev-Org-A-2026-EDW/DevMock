@@ -1,4 +1,5 @@
 import { http, httpRequired } from "./http"
+import type { Achievement } from "./achievements"
 
 export interface SessionQuestion {
   id: string
@@ -18,6 +19,7 @@ export interface SessionQuestion {
   selectedOptionId: string | null
   createdAt: string
   updatedAt: string
+  newlyUnlockedAchievements?: Achievement[]
 }
 
 export interface CreateSessionQuestionDto {

@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
+import { userAchievementsKeys } from "@/api/user-achievements.keys"
+import { rankingsKeys } from "@/api/rankings.keys"
 import { useSessionQuestions, useUpdateSessionQuestion } from "@/api/session-questions.queries"
 import { useUpdateInterviewSession } from "@/api/interview-sessions.queries"
 import { useQuestions } from "@/api/questions.queries"
 import { Button } from "@/components/ui/button"
+import type { Achievement } from "@/api/achievements"
 import type { Question } from "@/api/questions"
 import { evaluationsApi } from "@/api/evaluations"
 import CodeEditor from "@/components/CodeEditor"
@@ -11,7 +15,7 @@ import { ArrowLeft, Loader2 } from "lucide-react"
 
 type Props = {
   sessionId: string
-  onFinish: (sessionId: string) => void
+  onFinish: (sessionId: string, achievements?: Achievement[]) => void
   onCancel: () => void
 }
 
@@ -155,6 +159,7 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
   const { data: allSQ, isLoading: sqLoading } = useSessionQuestions()
   const { data: allQuestions } = useQuestions()
 
+  const queryClient = useQueryClient()
   const updateSQ = useUpdateSessionQuestion()
   const updateSession = useUpdateInterviewSession()
 
@@ -200,12 +205,12 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
     return spent
   }, [currentIndex, elapsed, enteredAt, questions])
 
-  const saveAnswer = useCallback(async (index: number, extraTime = 0) => {
+  const saveAnswer = useCallback(async (index: number) => {
     const sq = questions[index]
     if (!sq) return
 
     const answer = answers[sq.id] ?? ""
-    const timeUsedSeconds = (timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0) + extraTime
+    const timeUsedSeconds = timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0
     const selectedId = selectedOptions[sq.id]
 
     const dto: Record<string, unknown> = {
@@ -226,8 +231,8 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
 
   const handleNext = async () => {
     try {
-      const spent = registerTimeForCurrent()
-      await saveAnswer(currentIndex, spent)
+      registerTimeForCurrent()
+      await saveAnswer(currentIndex)
       if (currentIndex < questions.length - 1) {
         setCurrentIndex((i) => i + 1)
         setEnteredAt(elapsed)
@@ -246,16 +251,17 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
   }
 
   const handleFinish = async () => {
-    const spent = registerTimeForCurrent()
+    registerTimeForCurrent()
 
     const evaluations: Evaluation[] = []
 
     setIsEvaluating(true)
     setError(null)
+    const newAchievements: Achievement[] = []
     try {
       for (const sq of questions) {
         const answer = answers[sq.id] ?? sq.userAnswer
-        const timeUsedSeconds = (timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0) + (sq.id === currentSQ?.id ? spent : 0)
+        const timeUsedSeconds = timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0
         const question = sq.questionId ? questionById.get(sq.questionId) : undefined
         if (!question) continue
 
@@ -301,7 +307,10 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
           dto.userAnswer = answer
         }
 
-        await updateSQ.mutateAsync({ id: sq.id, dto: dto as never })
+        const sqResponse = await updateSQ.mutateAsync({ id: sq.id, dto: dto as never })
+        if (sqResponse.newlyUnlockedAchievements?.length) {
+          newAchievements.push(...sqResponse.newlyUnlockedAchievements)
+        }
       }
 
       const correctnessScore = average(evaluations.map((e) => e.correctnessScore))
@@ -314,7 +323,7 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
         (clarityScore * 0.2) +
         (logicScore * 0.15)
 
-      await updateSession.mutateAsync({
+      const sessionResponse = await updateSession.mutateAsync({
         id: sessionId,
         dto: {
           status: "COMPLETED",
@@ -327,7 +336,12 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
           clarityScore: Number(clarityScore.toFixed(1)),
         },
       })
-      onFinish(sessionId)
+      if (sessionResponse.newlyUnlockedAchievements?.length) {
+        newAchievements.push(...sessionResponse.newlyUnlockedAchievements)
+      }
+      queryClient.invalidateQueries({ queryKey: userAchievementsKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: rankingsKeys.lists() })
+      onFinish(sessionId, newAchievements.length > 0 ? newAchievements : undefined)
     } catch {
       setError("Error al finalizar la entrevista. Intenta de nuevo.")
     } finally {
@@ -521,6 +535,7 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
           </div>
         </div>
       )}
+
     </div>
   )
 }

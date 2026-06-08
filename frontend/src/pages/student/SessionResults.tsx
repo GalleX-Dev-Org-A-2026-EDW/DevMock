@@ -1,12 +1,15 @@
+import { useEffect, useState } from "react"
 import { useInterviewSession } from "@/api/interview-sessions.queries"
 import { useSessionQuestions } from "@/api/session-questions.queries"
 import { useQuestions } from "@/api/questions.queries"
+import type { Achievement } from "@/api/achievements"
 import type { Question } from "@/api/questions"
 import type { SessionQuestion } from "@/api/session-questions"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Trophy } from "lucide-react"
 
 type Props = {
   sessionId: string
+  unlockedAchievements?: Achievement[]
   onBack: () => void
 }
 
@@ -69,10 +72,27 @@ function getDisplayAnswer(
   return sq.userAnswer
 }
 
-export default function SessionResults({ sessionId, onBack }: Props) {
+export default function SessionResults({ sessionId, unlockedAchievements, onBack }: Props) {
   const { data: session, isLoading: sLoading } = useInterviewSession(sessionId)
   const { data: allSQ, isLoading: sqLoading } = useSessionQuestions()
   const { data: allQuestions } = useQuestions()
+  const [visibleAchievementCount, setVisibleAchievementCount] = useState(
+    unlockedAchievements?.length ? 1 : 0,
+  )
+
+  useEffect(() => {
+    if (!unlockedAchievements?.length) return
+    const timer = setInterval(() => {
+      setVisibleAchievementCount((prev) => {
+        if (prev >= unlockedAchievements.length) {
+          clearInterval(timer)
+          return prev
+        }
+        return prev + 1
+      })
+    }, 2500)
+    return () => clearInterval(timer)
+  }, [unlockedAchievements])
 
   if (sLoading || sqLoading) {
     return (
@@ -121,6 +141,37 @@ export default function SessionResults({ sessionId, onBack }: Props) {
           </div>
         </div>
       </div>
+
+      {unlockedAchievements && unlockedAchievements.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="font-['Work_Sans'] text-lg font-semibold text-emerald-400">
+            Logros desbloqueados
+          </h2>
+          {unlockedAchievements.slice(0, visibleAchievementCount).map((a, i) => (
+            <div
+              key={a.id}
+              className="animate-fadeIn rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 backdrop-blur-sm"
+              style={{ animationDelay: `${i * 200}ms` }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
+                  <Trophy className="h-5 w-5 text-emerald-400" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-white">{a.name}</p>
+                  <p className="text-xs text-white/60">{a.description ?? a.unlockCriteria ?? ""}</p>
+                  {a.pointsReward != null && a.pointsReward > 0 && (
+                    <p className="mt-0.5 text-xs font-medium text-amber-400">+{a.pointsReward} pts</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          {visibleAchievementCount < (unlockedAchievements?.length ?? 0) && (
+            <p className="animate-pulse text-center text-xs text-white/40">Descubriendo más logros...</p>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <ScoreBadge label="Final" value={session.finalScore} />

@@ -1,8 +1,15 @@
 package com.devmock.backend.service.impl;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.devmock.backend.dto.AchievementResponse;
 import com.devmock.backend.dto.CreateSessionQuestionRequest;
-import com.devmock.backend.dto.UpdateSessionQuestionRequest;
 import com.devmock.backend.dto.SessionQuestionResponse;
+import com.devmock.backend.dto.UpdateSessionQuestionRequest;
 import com.devmock.backend.entity.AnswerOption;
 import com.devmock.backend.entity.InterviewSession;
 import com.devmock.backend.entity.Question;
@@ -13,12 +20,7 @@ import com.devmock.backend.repository.InterviewSessionRepository;
 import com.devmock.backend.repository.QuestionRepository;
 import com.devmock.backend.repository.SessionQuestionRepository;
 import com.devmock.backend.service.SessionQuestionService;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.UUID;
+import com.devmock.backend.service.UserAchievementService;
 
 @Service
 @Transactional
@@ -28,15 +30,18 @@ public class SessionQuestionServiceImpl implements SessionQuestionService {
     private final InterviewSessionRepository sessionRepository;
     private final QuestionRepository questionRepository;
     private final AnswerOptionRepository answerOptionRepository;
+    private final UserAchievementService userAchievementService;
 
     public SessionQuestionServiceImpl(SessionQuestionRepository repository,
             InterviewSessionRepository sessionRepository,
             QuestionRepository questionRepository,
-            AnswerOptionRepository answerOptionRepository) {
+            AnswerOptionRepository answerOptionRepository,
+            UserAchievementService userAchievementService) {
         this.repository = repository;
         this.sessionRepository = sessionRepository;
         this.questionRepository = questionRepository;
         this.answerOptionRepository = answerOptionRepository;
+        this.userAchievementService = userAchievementService;
     }
 
     @Override
@@ -131,7 +136,16 @@ public class SessionQuestionServiceImpl implements SessionQuestionService {
             s.setSelectedOption(option);
         }
 
-        return toResponse(repository.save(s));
+        SessionQuestion saved = repository.save(s);
+
+        List<AchievementResponse> newlyUnlocked = userAchievementService
+                .checkAndUnlockOnQuestionEvaluated(saved.getSession().getUser(), saved);
+
+        SessionQuestionResponse response = toResponse(saved);
+        if (!newlyUnlocked.isEmpty()) {
+            response.setNewlyUnlockedAchievements(newlyUnlocked);
+        }
+        return response;
     }
 
     @Override
