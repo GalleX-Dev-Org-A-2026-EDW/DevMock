@@ -1,6 +1,8 @@
 import { useInterviewSession } from "@/api/interview-sessions.queries"
 import { useSessionQuestions } from "@/api/session-questions.queries"
 import { useQuestions } from "@/api/questions.queries"
+import type { Question } from "@/api/questions"
+import type { SessionQuestion } from "@/api/session-questions"
 import { ArrowLeft } from "lucide-react"
 
 type Props = {
@@ -34,6 +36,37 @@ function SmallScore({ label, value }: { label: string; value: number | null }) {
       {label}: {value.toFixed(0)}
     </span>
   )
+}
+
+function getDisplayAnswer(
+  sq: Pick<SessionQuestion, "userAnswer" | "selectedOptionId">,
+  question: Pick<Question, "answerFormat" | "answerOptions"> | undefined,
+): string | null {
+  if (!question) return sq.userAnswer
+
+  if (question.answerFormat === "SINGLE_CHOICE") {
+    if (!sq.selectedOptionId) return null
+    const opt = question.answerOptions?.find((o) => o.id === sq.selectedOptionId)
+    return opt?.optionText ?? null
+  }
+
+  if (question.answerFormat === "MULTIPLE_CHOICE") {
+    if (!sq.userAnswer) return null
+    try {
+      const ids = JSON.parse(sq.userAnswer)
+      if (!Array.isArray(ids)) return sq.userAnswer
+      return ids
+        .map((id: string) => {
+          const opt = question.answerOptions?.find((o) => o.id === id)
+          return opt?.optionText ?? id
+        })
+        .join(", ")
+    } catch {
+      return sq.userAnswer
+    }
+  }
+
+  return sq.userAnswer
 }
 
 export default function SessionResults({ sessionId, onBack }: Props) {
@@ -116,16 +149,19 @@ export default function SessionResults({ sessionId, onBack }: Props) {
                   <p className="text-sm font-medium text-white">
                     {i + 1}. {q?.statement ?? "Pregunta"}
                   </p>
-                  {sq.userAnswer && (
-                    <details className="mt-2">
-                      <summary className="cursor-pointer text-xs text-white/50 transition-colors hover:text-white">
-                        Tu respuesta
-                      </summary>
-                      <p className="mt-1 whitespace-pre-wrap rounded-md border border-white/10 bg-white/5 p-3 text-sm text-white/80">
-                        {sq.userAnswer}
-                      </p>
-                    </details>
-                  )}
+                  {(() => {
+                    const displayAnswer = getDisplayAnswer(sq, q)
+                    return displayAnswer ? (
+                      <details className="mt-2">
+                        <summary className="cursor-pointer text-xs text-white/50 transition-colors hover:text-white">
+                          Tu respuesta
+                        </summary>
+                        <p className="mt-1 whitespace-pre-wrap rounded-md border border-white/10 bg-white/5 p-3 text-sm text-white/80">
+                          {displayAnswer}
+                        </p>
+                      </details>
+                    ) : null
+                  })()}
                   {q?.explanation && (
                     <details className="mt-2">
                       <summary className="cursor-pointer text-xs text-white/50 transition-colors hover:text-white">
