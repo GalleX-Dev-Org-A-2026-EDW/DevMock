@@ -183,10 +183,10 @@ export default function Progress({ onBack }: Props) {
     avgDimension((s) => s[field])
 
   const dims = [
-    { label: "Correctness", key: "correctnessScore" as const, color: "bg-emerald-500" },
-    { label: "Efficiency", key: "efficiencyScore" as const, color: "bg-blue-500" },
-    { label: "Logic", key: "logicScore" as const, color: "bg-violet-500" },
-    { label: "Clarity", key: "clarityScore" as const, color: "bg-amber-500" },
+    { label: "Corrección", key: "correctnessScore" as const, color: "bg-emerald-500" },
+    { label: "Eficiencia", key: "efficiencyScore" as const, color: "bg-blue-500" },
+    { label: "Lógica", key: "logicScore" as const, color: "bg-violet-500" },
+    { label: "Claridad", key: "clarityScore" as const, color: "bg-amber-500" },
   ]
 
   if (isLoading) {

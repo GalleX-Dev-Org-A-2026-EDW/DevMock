@@ -78,6 +78,11 @@
     border-color: var(--color-border);
   }
 
+  select option {
+    color: #000;
+    background: #fff;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);

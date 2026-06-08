@@ -4,6 +4,9 @@ import { useUpdateInterviewSession } from "@/api/interview-sessions.queries"
 import { useQuestions } from "@/api/questions.queries"
 import { Button } from "@/components/ui/button"
 import type { Question } from "@/api/questions"
+import { evaluationsApi } from "@/api/evaluations"
+import CodeEditor from "@/components/CodeEditor"
+import ChoiceQuestion from "@/components/ChoiceQuestion"
 import { ArrowLeft, Loader2 } from "lucide-react"
 
 type Props = {
@@ -84,6 +87,66 @@ function average(values: number[]) {
   return values.reduce((sum, value) => sum + value, 0) / values.length
 }
 
+function detectLanguage(evalConfig: string | null): "python" | "java" | "sql" {
+  if (!evalConfig) return "python"
+  try {
+    const parsed = JSON.parse(evalConfig)
+    const lang = parsed.language
+    if (lang === "java" || lang === "sql") return lang
+    return "python"
+  } catch {
+    return "python"
+  }
+}
+
+function evaluateChoice(question: Question | undefined, selectedId: string | string[]): Evaluation {
+  const options = question?.answerOptions ?? []
+  const isCorrect = (opt: { isCorrect?: boolean }) => opt.isCorrect === true
+
+  if (question?.answerFormat === "SINGLE_CHOICE") {
+    const selected = options.find((o) => o.id === (selectedId as string))
+    const correct = selected ? !!selected.isCorrect : false
+    const score = correct ? 100 : 0
+    return {
+      obtainedPoints: correct ? (question.basePoints ?? 0) : 0,
+      correctnessScore: score,
+      efficiencyScore: 100,
+      logicScore: score,
+      clarityScore: 100,
+      feedback: correct
+        ? "Respuesta correcta."
+        : `Incorrecto. ${options.find((o) => o.isCorrect)?.optionText ?? ""}`,
+    }
+  }
+
+  const selectedArr = selectedId as string[]
+  const correctOptions = options.filter(isCorrect)
+  let hits = 0
+  let misses = 0
+  for (const id of selectedArr) {
+    if (options.find((o) => o.id === id)?.isCorrect) hits++
+    else misses++
+  }
+  const totalCorrect = correctOptions.length
+  const precision = hits + misses > 0 ? hits / (hits + misses) : 0
+  const recall = totalCorrect > 0 ? hits / totalCorrect : 0
+  const f1 = precision + recall > 0 ? 2 * (precision * recall) / (precision + recall) : 0
+  const score = Math.round(f1 * 100)
+  const obtainedPoints = Math.round(((question?.basePoints ?? 0) * score) / 100)
+  return {
+    obtainedPoints,
+    correctnessScore: score,
+    efficiencyScore: 100,
+    logicScore: score,
+    clarityScore: 100,
+    feedback: score >= 100
+      ? "Todas las opciones correctas seleccionadas."
+      : score >= 60
+        ? "Mayoría de opciones correctas."
+        : "Varias opciones incorrectas seleccionadas.",
+  }
+}
+
 export default function Interview({ sessionId, onFinish, onCancel }: Props) {
   const { data: allSQ, isLoading: sqLoading } = useSessionQuestions()
   const { data: allQuestions } = useQuestions()
@@ -93,6 +156,7 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string | string[]>>({})
   const [timeByQuestion, setTimeByQuestion] = useState<Record<string, number>>({})
   const [elapsed, setElapsed] = useState(0)
   const [enteredAt, setEnteredAt] = useState(0)
@@ -136,18 +200,25 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
 
     const answer = answers[sq.id] ?? ""
     const timeUsedSeconds = (timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0) + extraTime
+    const selectedId = selectedOptions[sq.id]
+
+    const dto: Record<string, unknown> = {
+      userAnswer: answer,
+      timeUsedSeconds,
+      answeredAt: new Date().toISOString(),
+    }
+
+    if (typeof selectedId === "string") {
+      dto.selectedOptionId = selectedId
+      dto.userAnswer = ""
+    } else if (Array.isArray(selectedId)) {
+      dto.userAnswer = JSON.stringify(selectedId)
+    }
 
     if (answer !== sq.userAnswer || timeUsedSeconds !== (sq.timeUsedSeconds ?? 0)) {
-      await updateSQ.mutateAsync({
-        id: sq.id,
-        dto: {
-          userAnswer: answer,
-          timeUsedSeconds,
-          answeredAt: new Date().toISOString(),
-        },
-      })
+      await updateSQ.mutateAsync({ id: sq.id, dto: dto as never })
     }
-  }, [answers, questions, timeByQuestion, updateSQ])
+  }, [answers, questions, selectedOptions, timeByQuestion, updateSQ])
 
   const handleNext = async () => {
     const spent = registerTimeForCurrent()
@@ -176,7 +247,33 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
       const answer = answers[sq.id] ?? sq.userAnswer ?? ""
       const timeUsedSeconds = (timeByQuestion[sq.id] ?? sq.timeUsedSeconds ?? 0) + (sq.id === currentSQ?.id ? spent : 0)
       const question = sq.questionId ? questionById.get(sq.questionId) : undefined
-      const evaluation = evaluateAnswer(question, answer, timeUsedSeconds)
+      if (!question) continue
+
+      let evaluation: Evaluation
+      const fmt = question.answerFormat
+      if (fmt === "CODE") {
+        const result = await evaluationsApi.evaluateCode({
+          code: answer,
+          expectedAnswer: question.expectedAnswer ?? null,
+          evaluationConfig: question.evaluationConfig ?? null,
+          estimatedTimeSeconds: question.estimatedTimeSeconds,
+          timeUsedSeconds,
+          basePoints: question.basePoints,
+        })
+        evaluation = {
+          obtainedPoints: result.obtainedPoints,
+          correctnessScore: result.correctnessScore,
+          efficiencyScore: result.efficiencyScore,
+          logicScore: result.logicScore,
+          clarityScore: result.clarityScore,
+          feedback: result.evaluationFeedback,
+        }
+      } else if (fmt === "SINGLE_CHOICE" || fmt === "MULTIPLE_CHOICE") {
+        const selectedId = selectedOptions[sq.id] ?? ""
+        evaluation = evaluateChoice(question, selectedId)
+      } else {
+        evaluation = evaluateAnswer(question, answer, timeUsedSeconds)
+      }
       evaluations.push(evaluation)
 
       await updateSQ.mutateAsync({
@@ -298,18 +395,56 @@ export default function Interview({ sessionId, onFinish, onCancel }: Props) {
       )}
 
       <div>
-        <p className="mb-2 text-sm font-medium text-white/70">Tu respuesta</p>
-        <textarea
-          value={currentSQ ? (answers[currentSQ.id] ?? currentSQ.userAnswer ?? "") : ""}
-          onChange={(e) => {
-            if (currentSQ) {
-              setAnswers((prev) => ({ ...prev, [currentSQ.id]: e.target.value }))
-            }
-          }}
-          placeholder="Escribe tu respuesta aquí..."
-          rows={8}
-          className="w-full resize-y rounded-lg border border-white/20 bg-white/10 p-4 font-mono text-sm text-white placeholder:text-white/40 transition-all focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
-        />
+        <p className="mb-2 text-sm font-medium text-white/70">
+          {questionData?.answerFormat === "CODE"
+            ? "Tu código"
+            : questionData?.answerFormat === "SINGLE_CHOICE" || questionData?.answerFormat === "MULTIPLE_CHOICE"
+              ? "Selecciona una opción"
+              : "Tu respuesta"}
+        </p>
+        {questionData?.answerFormat === "CODE" ? (
+          <CodeEditor
+            value={currentSQ ? (answers[currentSQ.id] ?? currentSQ.userAnswer ?? "") : ""}
+            onChange={(v) => {
+              if (currentSQ) setAnswers((prev) => ({ ...prev, [currentSQ.id]: v }))
+            }}
+            language={detectLanguage(questionData.evaluationConfig)}
+          />
+        ) : questionData?.answerFormat === "SINGLE_CHOICE" ? (
+          <ChoiceQuestion
+            type="SINGLE_CHOICE"
+            options={questionData.answerOptions}
+            selectedId={currentSQ ? (selectedOptions[currentSQ.id] ?? "") : ""}
+            onChange={(id) => {
+              if (currentSQ) {
+                setSelectedOptions((prev) => ({ ...prev, [currentSQ.id]: id as string }))
+              }
+            }}
+          />
+        ) : questionData?.answerFormat === "MULTIPLE_CHOICE" ? (
+          <ChoiceQuestion
+            type="MULTIPLE_CHOICE"
+            options={questionData.answerOptions}
+            selectedId={currentSQ ? (selectedOptions[currentSQ.id] ?? []) : []}
+            onChange={(ids) => {
+              if (currentSQ) {
+                setSelectedOptions((prev) => ({ ...prev, [currentSQ.id]: ids as string[] }))
+              }
+            }}
+          />
+        ) : (
+          <textarea
+            value={currentSQ ? (answers[currentSQ.id] ?? currentSQ.userAnswer ?? "") : ""}
+            onChange={(e) => {
+              if (currentSQ) {
+                setAnswers((prev) => ({ ...prev, [currentSQ.id]: e.target.value }))
+              }
+            }}
+            placeholder="Escribe tu respuesta aquí..."
+            rows={8}
+            className="w-full resize-y rounded-lg border border-white/20 bg-white/10 p-4 font-mono text-sm text-white placeholder:text-white/40 transition-all focus:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
+          />
+        )}
       </div>
 
       <div className="flex items-center justify-between">

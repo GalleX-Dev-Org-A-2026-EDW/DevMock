@@ -33,6 +33,7 @@ const actionColors: Record<string, string> = {
 export default function AdminAuditLogs() {
   const PAGE_SIZE = 10
   const { data: items, isLoading, isError } = useAuditLogs()
+  const [page, setPage] = useState(1)
 
   if (isLoading) {
     return (
@@ -50,8 +51,6 @@ export default function AdminAuditLogs() {
       </div>
     )
   }
-
-  const [page, setPage] = useState(1)
 
   const totalPages = items ? Math.max(1, Math.ceil(items.length / PAGE_SIZE)) : 1
   const currentPage = Math.min(page, totalPages)
