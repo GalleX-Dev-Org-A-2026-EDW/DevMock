@@ -113,7 +113,10 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una función que verifique si una cadena dada es un palíndromo. La función debe ignorar mayúsculas, espacios y signos de puntuación.",
                 "def is_palindrome(s):\n    cleaned = ''.join(c.lower() for c in s if c.isalnum())\n    return cleaned == cleaned[::-1]",
                 "Limpia la cadena conservando solo caracteres alfanuméricos, convierte a minúsculas, luego compara con su reverso.",
-                600, 50, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 50, pythonEvalConfig("is_palindrome",
+                        testCase(List.of("\"racecar\""), "True"),
+                        testCase(List.of("\"hello\""), "False"),
+                        testCase(List.of("\"A man a plan a canal Panama\""), "True")),
                 List.of("palindromo", "cadenas", "facil"),
                 algoritmos, facil, admin);
 
@@ -121,7 +124,11 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una función que genere los primeros n números de la secuencia de Fibonacci.",
                 "def fibonacci(n):\n    if n <= 1:\n        return n\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b",
                 "Usa dos variables para mantener los dos últimos valores y actualizarlos iterativamente. Casos base: fib(0)=0, fib(1)=1.",
-                600, 50, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 50, pythonEvalConfig("fibonacci",
+                        testCase(List.of("0"), "0"),
+                        testCase(List.of("1"), "1"),
+                        testCase(List.of("10"), "55"),
+                        testCase(List.of("20"), "6765")),
                 List.of("fibonacci", "iteracion", "facil"),
                 algoritmos, facil, admin);
 
@@ -154,7 +161,10 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una función que cuente el número de vocales (a, e, i, o, u) en una cadena dada. Debe ignorar mayúsculas.",
                 "def count_vowels(s):\n    vowels = set('aeiou')\n    count = 0\n    for ch in s.lower():\n        if ch in vowels:\n            count += 1\n    return count",
                 "Convierte la cadena a minúsculas, itera sobre cada carácter y verifica si pertenece al conjunto de vocales. Usar un conjunto hace la búsqueda O(1) por carácter.",
-                480, 40, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                480, 40, pythonEvalConfig("count_vowels",
+                        testCase(List.of("\"hello\""), "2"),
+                        testCase(List.of("\"python\""), "1"),
+                        testCase(List.of("\"AEIOU\""), "5")),
                 List.of("vocales", "cadenas", "facil"),
                 algoritmos, facil, admin);
 
@@ -163,7 +173,10 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una función que encuentre dos números en un arreglo que sumen un valor objetivo dado. Asume que existe exactamente una solución.",
                 "def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return None",
                 "Usa un diccionario para almacenar los números ya visitados y sus índices. Para cada número, calcula el complemento necesario para alcanzar el objetivo y verifica si ya lo has visto.",
-                600, 80, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 80, pythonEvalConfig("two_sum",
+                        testCase(List.of("[2,7,11,15]", "9"), "[0, 1]"),
+                        testCase(List.of("[3,2,4]", "6"), "[1, 2]"),
+                        testCase(List.of("[3,3]", "6"), "[0, 1]")),
                 List.of("two-sum", "hash-map", "intermedio"),
                 algoritmos, intermedio, admin);
 
@@ -171,7 +184,10 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa una función de búsqueda binaria en un arreglo ordenado de enteros.",
                 "def binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = left + (right - left) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1",
                 "Divide el espacio de búsqueda a la mitad en cada iteración comparando el valor medio con el objetivo. Requiere que el arreglo esté ordenado. Complejidad O(log n).",
-                600, 80, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 80, pythonEvalConfig("binary_search",
+                        testCase(List.of("[1,2,3,4,5]", "3"), "2"),
+                        testCase(List.of("[1,2,3,4,5]", "6"), "-1"),
+                        testCase(List.of("[]", "1"), "-1")),
                 List.of("busqueda-binaria", "algoritmos", "intermedio"),
                 algoritmos, intermedio, admin);
 
@@ -179,7 +195,10 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una función que determine si una cadena que contiene solo los caracteres '(', ')', '{', '}', '[' y ']' tiene paréntesis válidos.",
                 "def is_valid_parentheses(s):\n    stack = []\n    pairs = {')': '(', '}': '{', ']': '['}\n    for ch in s:\n        if ch in pairs:\n            if not stack or stack.pop() != pairs[ch]:\n                return False\n        else:\n            stack.append(ch)\n    return len(stack) == 0",
                 "Usa una pila para rastrear los paréntesis de apertura. Al encontrar un cierre, verifica que coincida con el tope de la pila.",
-                600, 80, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 80, pythonEvalConfig("is_valid_parentheses",
+                        testCase(List.of("\"()\""), "True"),
+                        testCase(List.of("\"()[]{}\""), "True"),
+                        testCase(List.of("\"(]\""), "False")),
                 List.of("parentesis", "pila", "intermedio"),
                 algoritmos, intermedio, admin);
 
@@ -213,7 +232,10 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa el algoritmo QuickSort para ordenar un arreglo de enteros.",
                 "def quicksort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quicksort(left) + middle + quicksort(right)",
                 "Selecciona un pivote, particiona el arreglo en elementos menores, iguales y mayores que el pivote, luego ordena recursivamente las particiones izquierda y derecha. Complejidad promedio O(n log n).",
-                900, 120, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                900, 120, pythonEvalConfig("quicksort",
+                        testCase(List.of("[3,1,4,1,5]"), "[1, 1, 3, 4, 5]"),
+                        testCase(List.of("[]"), "[]"),
+                        testCase(List.of("[1]"), "[1]")),
                 List.of("quicksort", "ordenamiento", "avanzado"),
                 algoritmos, avanzado, admin);
 
@@ -221,7 +243,10 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa el algoritmo MergeSort para ordenar un arreglo de enteros.",
                 "def merge_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\ndef merge(left, right):\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i]); i += 1\n        else:\n            result.append(right[j]); j += 1\n    result.extend(left[i:]); result.extend(right[j:])\n    return result",
                 "Divide el arreglo en mitades recursivamente hasta tener elementos individuales, luego combina las mitades ordenadamente. Complejidad O(n log n) garantizado.",
-                900, 120, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                900, 120, pythonEvalConfig("merge_sort",
+                        testCase(List.of("[5,4,3,2,1]"), "[1, 2, 3, 4, 5]"),
+                        testCase(List.of("[1]"), "[1]"),
+                        testCase(List.of("[]"), "[]")),
                 List.of("mergesort", "ordenamiento", "avanzado"),
                 algoritmos, avanzado, admin);
 
@@ -253,7 +278,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa el algoritmo de Dijkstra para encontrar la distancia más corta desde un nodo origen en un grafo ponderado.",
                 "import heapq\n\ndef dijkstra(graph, start):\n    distances = {node: float('inf') for node in graph}\n    distances[start] = 0\n    pq = [(0, start)]\n    while pq:\n        dist, node = heapq.heappop(pq)\n        if dist > distances[node]:\n            continue\n        for neighbor, weight in graph[node]:\n            new_dist = dist + weight\n            if new_dist < distances[neighbor]:\n                distances[neighbor] = new_dist\n                heapq.heappush(pq, (new_dist, neighbor))\n    return distances",
                 "Usa una cola de prioridad para explorar siempre el nodo con menor distancia acumulada. Relaja las aristas actualizando las distancias cuando encuentra un camino más corto.",
-                1200, 150, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                1200, 150, langEvalConfig("python"),
                 List.of("dijkstra", "grafos", "avanzado"),
                 algoritmos, avanzado, admin);
 
@@ -264,7 +289,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa una pila (stack) usando un arreglo. Debe incluir push, pop y peek.",
                 "class Stack:\n    def __init__(self, capacity=10):\n        self.capacity = capacity\n        self.arr = [None] * capacity\n        self.top = -1\n\n    def push(self, val):\n        if self.top == self.capacity - 1:\n            raise OverflowError('Stack overflow')\n        self.top += 1\n        self.arr[self.top] = val\n\n    def pop(self):\n        if self.top == -1:\n            raise IndexError('Empty stack')\n        val = self.arr[self.top]\n        self.top -= 1\n        return val\n\n    def peek(self):\n        if self.top == -1:\n            return None\n        return self.arr[self.top]",
                 "Usa un arreglo con un índice 'top' que apunta al último elemento insertado. Push incrementa top y asigna el valor. Pop devuelve el valor en top y lo decrementa.",
-                600, 50, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 50, langEvalConfig("python"),
                 List.of("pila", "stack", "facil"),
                 estructurasDatos, facil, admin);
 
@@ -272,7 +297,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa una cola (queue) usando una lista enlazada. Debe incluir enqueue, dequeue y front.",
                 "class Node:\n    def __init__(self, val):\n        self.val = val\n        self.next = None\n\nclass Queue:\n    def __init__(self):\n        self.front = self.rear = None\n\n    def enqueue(self, val):\n        node = Node(val)\n        if not self.rear:\n            self.front = self.rear = node\n            return\n        self.rear.next = node\n        self.rear = node\n\n    def dequeue(self):\n        if not self.front:\n            return None\n        val = self.front.val\n        self.front = self.front.next\n        if not self.front:\n            self.rear = None\n        return val",
                 "Usa dos punteros (front y rear). Enqueue agrega al final, dequeue remueve del frente. Una lista enlazada permite operaciones O(1) en ambos extremos.",
-                600, 50, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 50, langEvalConfig("python"),
                 List.of("cola", "queue", "facil"),
                 estructurasDatos, facil, admin);
 
@@ -313,7 +338,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa un árbol binario de búsqueda (BST) con operaciones de inserción y búsqueda.",
                 "class Node { int value; Node left, right; Node(int v) { value = v; } } class BST { Node insert(Node root, int v) { if (root == null) return new Node(v); if (v < root.value) root.left = insert(root.left, v); else root.right = insert(root.right, v); return root; } boolean search(Node root, int v) { if (root == null) return false; if (root.value == v) return true; return v < root.value ? search(root.left, v) : search(root.right, v); } }",
                 "Cada nodo tiene un valor, un hijo izquierdo y un hijo derecho. Insertar busca recursivamente la posición correcta. Buscar recorre recursivamente izquierda o derecha según la comparación de valores.",
-                900, 100, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                900, 100, langEvalConfig("python"),
                 List.of("bst", "arboles", "estructuras-de-datos"),
                 estructurasDatos, intermedio, admin);
 
@@ -321,7 +346,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa una pila que además de las operaciones normales tenga un método min() que devuelva el elemento mínimo en tiempo O(1).",
                 "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.min_stack = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.min_stack or val <= self.min_stack[-1]:\n            self.min_stack.append(val)\n\n    def pop(self):\n        if not self.stack:\n            return None\n        val = self.stack.pop()\n        if val == self.min_stack[-1]:\n            self.min_stack.pop()\n        return val\n\n    def min(self):\n        if not self.min_stack:\n            return None\n        return self.min_stack[-1]",
                 "Usa una pila auxiliar que siempre tenga el mínimo actual en el tope. En push, si el nuevo valor es menor o igual al tope de min_stack, también se apila allí. En pop, si el valor extraído es el tope de min_stack, se desapila también.",
-                800, 100, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                800, 100, langEvalConfig("python"),
                 List.of("min-stack", "pila", "intermedio"),
                 estructurasDatos, intermedio, admin);
 
@@ -362,7 +387,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa un montículo binario (min-heap) con operaciones de insertar y extraer mínimo.",
                 "class MinHeap:\n    def __init__(self):\n        self.heap = []\n\n    def insert(self, val):\n        self.heap.append(val)\n        self._bubble_up(len(self.heap) - 1)\n\n    def extract_min(self):\n        if not self.heap:\n            return None\n        self.heap[0], self.heap[-1] = self.heap[-1], self.heap[0]\n        min_val = self.heap.pop()\n        self._bubble_down(0)\n        return min_val\n\n    def _bubble_up(self, i):\n        parent = (i - 1) // 2\n        while i > 0 and self.heap[i] < self.heap[parent]:\n            self.heap[i], self.heap[parent] = self.heap[parent], self.heap[i]\n            i = parent\n            parent = (i - 1) // 2\n\n    def _bubble_down(self, i):\n        n = len(self.heap)\n        while True:\n            smallest = i\n            left = 2 * i + 1\n            right = 2 * i + 2\n            if left < n and self.heap[left] < self.heap[smallest]:\n                smallest = left\n            if right < n and self.heap[right] < self.heap[smallest]:\n                smallest = right\n            if smallest == i:\n                break\n            self.heap[i], self.heap[smallest] = self.heap[smallest], self.heap[i]\n            i = smallest",
                 "Un min-heap es un árbol binario completo donde cada nodo es menor que sus hijos. Insertar agrega al final y hace bubble-up. Extraer mínimo intercambia raíz con último, elimina y hace bubble-down. Complejidad O(log n) en ambas operaciones.",
-                900, 120, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                900, 120, langEvalConfig("python"),
                 List.of("heap", "monticulo", "avanzado"),
                 estructurasDatos, avanzado, admin);
 
@@ -370,7 +395,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa un árbol de segmentos para consultas de suma en rango con actualizaciones puntuales.",
                 "class SegmentTree:\n    def __init__(self, arr):\n        n = len(arr)\n        self.tree = [0] * (4 * n)\n        self.arr = arr\n        self._build(0, 0, n - 1)\n\n    def _build(self, node, start, end):\n        if start == end:\n            self.tree[node] = self.arr[start]\n        else:\n            mid = (start + end) // 2\n            self._build(2 * node + 1, start, mid)\n            self._build(2 * node + 2, mid + 1, end)\n            self.tree[node] = self.tree[2 * node + 1] + self.tree[2 * node + 2]\n\n    def query(self, node, start, end, l, r):\n        if r < start or l > end:\n            return 0\n        if l <= start and end <= r:\n            return self.tree[node]\n        mid = (start + end) // 2\n        left = self.query(2 * node + 1, start, mid, l, r)\n        right = self.query(2 * node + 2, mid + 1, end, l, r)\n        return left + right\n\n    def update(self, node, start, end, idx, val):\n        if start == end:\n            self.arr[idx] = val\n            self.tree[node] = val\n        else:\n            mid = (start + end) // 2\n            if idx <= mid:\n                self.update(2 * node + 1, start, mid, idx, val)\n            else:\n                self.update(2 * node + 2, mid + 1, end, idx, val)\n            self.tree[node] = self.tree[2 * node + 1] + self.tree[2 * node + 2]",
                 "Un árbol de segmentos almacena información agregada (suma, mínimo, etc.) de segmentos del arreglo en un árbol binario. Las consultas y actualizaciones se realizan en O(log n) dividiendo recursivamente el rango.",
-                1200, 150, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                1200, 150, langEvalConfig("python"),
                 List.of("segment-tree", "arbol", "avanzado"),
                 estructurasDatos, avanzado, admin);
 
@@ -402,7 +427,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Implementa DFS recursivo en un grafo representado como lista de adyacencia.",
                 "def dfs_recursive(graph, node, visited=None):\n    if visited is None:\n        visited = set()\n    visited.add(node)\n    print(node)\n    for neighbor in graph[node]:\n        if neighbor not in visited:\n            dfs_recursive(graph, neighbor, visited)\n    return visited\n\ndef dfs_iterative(graph, start):\n    visited = set()\n    stack = [start]\n    while stack:\n        node = stack.pop()\n        if node not in visited:\n            visited.add(node)\n            print(node)\n            for neighbor in reversed(graph[node]):\n                if neighbor not in visited:\n                    stack.append(neighbor)",
                 "DFS explora un grafo profundizando primero antes de retroceder. La versión recursiva usa el call stack implícitamente. La versión iterativa usa una pila explícita para evitar recursión.",
-                900, 120, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                900, 120, langEvalConfig("python"),
                 List.of("dfs", "grafos", "avanzado"),
                 estructurasDatos, avanzado, admin);
 
@@ -562,7 +587,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que seleccione todos los usuarios activos ordenados por fecha de creación descendente.",
                 "SELECT * FROM usuarios WHERE activo = true ORDER BY fecha_creacion DESC;",
                 "Usa WHERE para filtrar usuarios activos y ORDER BY DESC para ordenar del más reciente al más antiguo.",
-                480, 40, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                480, 40, langEvalConfig("python"),
                 List.of("sql", "select", "facil"),
                 basesDatos, facil, admin);
 
@@ -570,7 +595,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que use JOIN para obtener los pedidos de cada cliente, incluyendo aquellos clientes sin pedidos.",
                 "SELECT c.nombre, p.id AS pedido_id, p.total\nFROM clientes c\nLEFT JOIN pedidos p ON c.id = p.cliente_id\nORDER BY c.nombre;",
                 "LEFT JOIN asegura que todos los clientes aparezcan, incluso si no tienen pedidos. Los clientes sin pedidos tendrán NULL en las columnas de pedidos.",
-                600, 50, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 50, langEvalConfig("python"),
                 List.of("sql", "join", "facil"),
                 basesDatos, facil, admin);
 
@@ -602,7 +627,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que calcule el total de ventas por producto usando funciones de agregación, mostrando solo productos con más de 10 unidades vendidas.",
                 "SELECT p.nombre, SUM(v.cantidad) AS total_unidades, SUM(v.total) AS ventas_totales\nFROM productos p\nJOIN ventas v ON p.id = v.producto_id\nGROUP BY p.nombre\nHAVING SUM(v.cantidad) > 10\nORDER BY ventas_totales DESC;",
                 "JOIN combina las tablas, GROUP BY agrupa por producto, SUM calcula los totales, HAVING filtra productos con más de 10 unidades, ORDER BY ordena de mayor a menor.",
-                600, 50, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                600, 50, langEvalConfig("python"),
                 List.of("sql", "agregacion", "facil"),
                 basesDatos, facil, admin);
 
@@ -611,7 +636,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL para encontrar direcciones de email duplicadas en una tabla de usuarios. La tabla tiene las columnas: id, name, email.",
                 "SELECT email, COUNT(*) as count FROM usuarios GROUP BY email HAVING COUNT(*) > 1;",
                 "Agrupa por email, cuenta las ocurrencias, filtra los grupos con count mayor a 1.",
-                480, 80, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                480, 80, langEvalConfig("python"),
                 List.of("sql", "duplicados", "bases-de-datos"),
                 basesDatos, intermedio, admin);
 
@@ -651,7 +676,7 @@ public class DataInitializer implements CommandLineRunner {
                 "Escribe una consulta SQL que use una subconsulta o CTE para encontrar empleados con salario superior al promedio de su departamento.",
                 "WITH dept_avg AS (\n    SELECT departamento_id, AVG(salario) AS salario_promedio\n    FROM empleados\n    GROUP BY departamento_id\n)\nSELECT e.nombre, e.salario, d.salario_promedio\nFROM empleados e\nJOIN dept_avg d ON e.departamento_id = d.departamento_id\nWHERE e.salario > d.salario_promedio\nORDER BY e.salario DESC;",
                 "El CTE calcula el salario promedio por departamento. Luego se JOINEA con empleados y se filtran aquellos con salario superior al promedio de su departamento.",
-                800, 100, "{\"timeWeight\": 0.3, \"correctnessWeight\": 0.7}",
+                800, 100, langEvalConfig("python"),
                 List.of("sql", "subconsulta", "cte", "intermedio"),
                 basesDatos, intermedio, admin);
 
@@ -957,5 +982,35 @@ public class DataInitializer implements CommandLineRunner {
         opt.setExplanation(explanation);
         opt.setDisplayOrder(order);
         return opt;
+    }
+
+    @SafeVarargs
+    private String pythonEvalConfig(String functionName, java.util.Map<String, Object>... testCases) {
+        try {
+            var config = new java.util.LinkedHashMap<String, Object>();
+            config.put("language", "python");
+            config.put("functionName", functionName);
+            config.put("testCases", java.util.List.of(testCases));
+            return new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(config);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to build eval config", e);
+        }
+    }
+
+    private java.util.Map<String, Object> testCase(java.util.List<String> args, String expected) {
+        var tc = new java.util.LinkedHashMap<String, Object>();
+        tc.put("args", args);
+        tc.put("expected", expected);
+        return tc;
+    }
+
+    private String langEvalConfig(String language) {
+        try {
+            var config = new java.util.LinkedHashMap<String, Object>();
+            config.put("language", language);
+            return new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(config);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to build eval config", e);
+        }
     }
 }
